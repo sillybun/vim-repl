@@ -12,7 +12,16 @@ function! s:SendChunkLines() range
 	endif
 endfunction
 
-let row_width = g:repl_row_width
+
+if !exists('g:sendtorepl_invoke_key')
+	let g:sendtorepl_invoke_key = "ww"
+endif
+
+if !exists('g:repl_row_width')
+	let g:repl_row_width = 12
+endif
+
+let row_width = float2nr(g:repl_row_width)
 
 silent! exe 'command! REPL :term ++close ++rows=' . row_width . ' python'
 
