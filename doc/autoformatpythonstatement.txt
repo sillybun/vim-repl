@@ -1,0 +1,27 @@
+*autoformatpythonstatement.txt* A short multi line description of your plugin
+
+===============================================================================
+CONTENTS                                            *autoformatpythonstatement*
+
+    1. Intro ................................ |autoformatpythonstatement-intro|
+    2. Requirements .................. |autoformatpythonstatement-requirements|
+    3. Usage ................................ |autoformatpythonstatement-usage|
+    4. Licence ............................ |autoformatpythonstatement-licence|
+===============================================================================
+1. Intro                                      *autoformatpythonstatement-intro*
+
+Overview of plugin
+
+2. Requirements                        *autoformatpythonstatement-requirements*
+
+What additional programs are required to run the plugin
+
+3. Usage                                      *autoformatpythonstatement-usage*
+
+How to use the plugin. What functions does it give the user?
+
+4. Licence                                  *autoformatpythonstatement-licence*
+
+This is open source make sure to include a licence
+
+vim:ft=help
