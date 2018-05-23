@@ -14,8 +14,11 @@ endfunction
 
 command! REPL :term ++close ++rows=10 python
 
-nnoremap <silent> ww :SendLineToREPL<Cr>
-vnoremap <silent> ww :SendLineToREPL<Cr>
+let g:sendtorepl_invoke_key = "ww"
+let invoke_key = g:sendtorepl_invoke_key
+
+silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
+silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range -bar SendLineToREPL <line1>,<line2>call s:SendChunkLines()
 autocmd bufenter * if (winnr("$") == 1 && bufexists("!python")) | q! | endif
