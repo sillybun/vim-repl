@@ -12,7 +12,9 @@ function! s:SendChunkLines() range
 	endif
 endfunction
 
-command! REPL :term ++close ++rows=10 python
+let row_width = g:repl_row_width
+
+silent! exe 'command! REPL :term ++close ++rows=' . float2nr(row_width) . ' python'
 
 let invoke_key = g:sendtorepl_invoke_key
 
