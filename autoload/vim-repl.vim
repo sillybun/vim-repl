@@ -3,5 +3,5 @@ if !exists('g:sendtorepl_invoke_key')
 endif
 
 if !exists('g:repl_row_width')
-	let g:repl_row_width = 12
+	let g:repl_row_width = "12"
 endif
