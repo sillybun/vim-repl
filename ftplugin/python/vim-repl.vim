@@ -14,7 +14,6 @@ endfunction
 
 command! REPL :term ++close ++rows=10 python
 
-let g:sendtorepl_invoke_key = "ww"
 let invoke_key = g:sendtorepl_invoke_key
 
 silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
