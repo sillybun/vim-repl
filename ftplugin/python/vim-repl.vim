@@ -64,7 +64,7 @@ if !exists('g:repl_row_width')
 	let g:repl_row_width = 10
 endif
 
-if !exits('g:repl_at_top')
+if !exists('g:repl_at_top')
 	let g:repl_at_top = 0
 endif
 
