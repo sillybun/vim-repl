@@ -15,7 +15,15 @@ function! s:REPLClose()"{{{
     endif
 
     exe bufwinnr(g:repl_target_n) . "wincmd w"
+
 endfunction"}}}
+
+function! s:REPLHide()
+	if s:REPLIsVisible()
+		call s:REPLGoToWindowForBufferName("!python")
+		hide!
+	endif
+endfunction
 
 function! s:REPLOpen()"{{{
 	if g:repl_at_top
@@ -36,6 +44,7 @@ endfunction"}}}
 function! s:REPLToggle()"{{{
     if s:REPLIsVisible()
         call s:REPLClose()
+		" call s:REPLHide()
     else
         let g:repl_target_n = bufnr('')
         let g:repl_target_f = @%
@@ -87,5 +96,5 @@ silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range -bar SendLineToREPL <line1>,<line2>call s:SendChunkLines()
-command REPLToggle call s:REPLToggle()
+command! REPLToggle call s:REPLToggle()
 autocmd bufenter * if (winnr("$") == 1 && bufexists("!python")) | q! | endif
