@@ -81,22 +81,6 @@ function! s:SendChunkLines() range
 endfunction
 
 
-if !exists('g:sendtorepl_invoke_key')
-	let g:sendtorepl_invoke_key = "ww"
-endif
-
-if !exists('g:repl_row_width')
-	let g:repl_row_width = 10
-endif
-
-if !exists('g:repl_at_top')
-	let g:repl_at_top = 0
-endif
-
-if !exists('g:repl_stayatrepl_when_open')
-	let g:repl_stayatrepl_when_open = 0
-endif
-
 let row_width = float2nr(g:repl_row_width)
 
 " silent! exe 'command! REPL :bo term ++close ++rows=' . row_width . ' python'
