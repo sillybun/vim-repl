@@ -1,22 +1,14 @@
-# autoformat-python
+# vim-repl
 
 ## Introduction
 
-This is a plugin aimed to autoformat python statement. When you finish type a line and type \<Cr\> to start a new line, the previous line will be formatted automatically.
+Open the interactive environment with the code you are writing.
+
+Read–Eval–Print Loop (REPL), also known as an interactive toplevel or language shell, is extremely useful in python coding. However, it's difficult to interact with REPL when writing python with vim. Therefore, I write this plugin to provide a better repl environment for python in vim. It use the terminal feature for vim8. So your vim version must be no less than 8.0 and support termianl function to use this plugin.
 
 ## Details
 
-if you write python file like that:
 
-```
-a =1+2<cursor>
-```
-that looks ulgy, right? Don't worry. With the help of this plugin, you simply press return button in `insert mode` or `normal mode`, then the code will be formated automatically by autopep8 into this:
-
-```
-a = 1 + 2
-<cursor>
-```
 
 ## Installation
 
