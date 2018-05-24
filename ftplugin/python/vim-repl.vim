@@ -41,7 +41,7 @@ function! s:REPLToggle()"{{{
         let g:repl_target_f = @%
         call s:REPLOpen()
     endif
-	if g:repl_stayatrepl_when_open == 1
+	if g:repl_stayatrepl_when_open == 0
 		exe bufwinnr(g:repl_target_n) . "wincmd w"
 	endif
 endfunction"}}}
