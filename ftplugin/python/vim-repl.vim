@@ -8,6 +8,7 @@ function! s:REPLGoToWindowForBufferName(name)"{{{
 endfunction"}}}
 
 function! s:REPLClose()"{{{
+
 	if s:REPLIsVisible()
 		call term_sendkeys('python', "\<Cr>")
 		call term_sendkeys('python', "quit()\<Cr>")
@@ -17,10 +18,11 @@ function! s:REPLClose()"{{{
 endfunction"}}}
 
 function! s:REPLOpen()"{{{
-	if g:repl_at_top:
+	if g:repl_at_top
 		exe 'to term ++close ++rows=' . g:row_width . ' python'
-	else:
+	else
 		exe 'bo term ++close ++rows=' . g:row_width . ' python'
+	endif
 endfunction"}}}
 
 function! s:REPLIsVisible()"{{{
@@ -39,6 +41,9 @@ function! s:REPLToggle()"{{{
         let g:repl_target_f = @%
         call s:REPLOpen()
     endif
+	if g:repl_stayatrepl_when_open == 1
+		exe bufwinnr(g:repl_target_n) . "wincmd w"
+	endif
 endfunction"}}}
 
 function! s:SendCurrentLine()
@@ -66,6 +71,10 @@ endif
 
 if !exists('g:repl_at_top')
 	let g:repl_at_top = 0
+endif
+
+if !exists('g:repl_stayatrepl_when_open')
+	let g:repl_stayatrepl_when_open = 0
 endif
 
 let row_width = float2nr(g:repl_row_width)
