@@ -37,24 +37,24 @@ Use your plugin manager of choice.
 
 ## Usage
 
-###How to open REPL
+### How to open REPL
 
 ```
 :REPLToggle
 ```
 
-###How to exit REPL
+### How to exit REPL
 
 ```
 :REPLToggle
 ```
 
-###How to send code to REPL
+### How to send code to REPL
 
 - In Normal Mode, press `ww`, code in the current line (including leading space and the end center) will be transmitted to REPL
 - In Visual Mode, press `ww`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
-###How to change to REPL environment
+### How to change to REPL environment
 
 You can change buffer between file and REPL environment the same as change between two vim buffer. press `<C-W><C-w>` will change between file and REPL environment. `<C-w><C-h,j,k,l>` also work the way it should be
 
