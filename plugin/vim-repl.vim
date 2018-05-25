@@ -31,9 +31,12 @@ endfunction"}}}
 function! s:REPLClose()"{{{
 
 	if s:REPLIsVisible()
-		exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
-		exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
-		exe "call term_sendkeys('" . s:REPLGetName() . ''', "' . s:REPLGetExitCommand() . '\<Cr>")'
+		exe "call term_sendkeys('" . s:REPLGetName() . ''', "\<C-W>\<C-C>")'
+		if s:REPLIsVisible()
+			exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
+			exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
+			exe "call term_sendkeys('" . s:REPLGetName() . ''', "' . s:REPLGetExitCommand() . '\<Cr>")'
+		endif
 	endif
 
 	exe bufwinnr(g:repl_target_n) . "wincmd w"
@@ -58,7 +61,7 @@ function! s:REPLOpen()"{{{
 		endif
 	elseif g:repl_position == 1
 		if exists('g:repl_height')
-			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . s:REPLGetName()
+			exe 'to term ++close ++rows=' . float2nr(g:repl_height) . ' ' . s:REPLGetName()
 		else
 			exe 'to term ++close ' . s:REPLGetName()
 		endif
