@@ -9,12 +9,17 @@ if !exists('g:sendtorepl_invoke_key')
 	let g:sendtorepl_invoke_key = "ww"
 endif
 
-if !exists('g:repl_row_width')
-	let g:repl_row_width = 10
-endif
+if !exists('g:repl_exit_commands')
+	let g:repl_exit_commands = {
+				\	"python": "quit()",
+				\	"bash": "exit",
+				\	"zsh": "exit",
+				\	"default": "exit",
+				\	}
+end
 
-if !exists('g:repl_at_top')
-	let g:repl_at_top = 0
+if !exists('g:repl_position')
+	let g:repl_position = 0
 endif
 
 if !exists('g:repl_stayatrepl_when_open')

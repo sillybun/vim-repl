@@ -8,6 +8,17 @@ function! s:REPLGetName()"{{{
 	endif
 endfunction}}}"
 
+function! s:REPLGetExitCommand()"{{{
+	let name = s:REPLGetName()
+	if has_key(g:repl_exit_commands, name)
+		return g:repl_exit_commands[name]
+	elseif has_key(g:repl_exit_commands, "default")
+		return g:repl_exit_commands["default"]
+	else
+		return "exit"
+	endif
+endfunction}}}"
+
 function! s:REPLGoToWindowForBufferName(name)"{{{
 	if bufwinnr(bufnr(a:name)) != -1
 		exe bufwinnr(bufnr(a:name)) . "wincmd w"
@@ -21,7 +32,8 @@ function! s:REPLClose()"{{{
 
 	if s:REPLIsVisible()
 		exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
-		exe "call term_sendkeys('" . s:REPLGetName() . "', \"quit()\\<Cr>\")"
+		exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
+		exe "call term_sendkeys('" . s:REPLGetName() . ''', "' . s:REPLGetExitCommand() . '\<Cr>")'
 	endif
 
 	exe bufwinnr(g:repl_target_n) . "wincmd w"
@@ -36,11 +48,32 @@ function! s:REPLHide()
 endfunction
 
 function! s:REPLOpen()"{{{
-	exe 'autocmd bufenter * if (winnr("$") == 1 && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
-	if g:repl_at_top
-		exe 'to term ++close ++rows=' . g:row_width . ' ' . s:REPLGetName()
+	" exe 'autocmd bufenter * if (winnr("$") == 1 && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
+	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
+	if g:repl_position == 0
+		if exists('g:repl_height')
+			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . s:REPLGetName()
+		else
+			exe 'bo term ++close ' . s:REPLGetName()
+		endif
+	elseif g:repl_position == 1
+		if exists('g:repl_height')
+			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . s:REPLGetName()
+		else
+			exe 'to term ++close ' . s:REPLGetName()
+		endif
+	elseif g:repl_position == 2
+		if exists('g:repl_width')
+			exe 'vert term ++close ++cols=' . float2nr(g:repl_width) . ' ' . s:REPLGetName()
+		else
+			exe 'vert term ++close ' . s:REPLGetName()
+		endif
 	else
-		exe 'bo term ++close ++rows=' . g:row_width . ' ' . s:REPLGetName()
+		if exists('g:repl_width')
+			exe 'vert rightb term ++close ++cols=' . float2nr(g:repl_width) . ' ' . s:REPLGetName()
+		else
+			exe 'vert rightb term ++close ' . s:REPLGetName()
+		endif
 	endif
 endfunction"}}}
 
@@ -80,11 +113,6 @@ function! s:SendChunkLines() range
 	endif
 endfunction
 
-
-let row_width = float2nr(g:repl_row_width)
-
-" silent! exe 'command! REPL :bo term ++close ++rows=' . row_width . ' python'
-
 let invoke_key = g:sendtorepl_invoke_key
 
 silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
@@ -92,4 +120,4 @@ silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range SendLineToREPL <line1>,<line2>call s:SendChunkLines()
 command! REPLToggle call s:REPLToggle()
-"kautocmd bufenter * if (winnr("$") == 1 && bufexists("!" . s:REPLGetName())) | q! | endif
+
