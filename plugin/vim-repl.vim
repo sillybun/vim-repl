@@ -112,6 +112,7 @@ function! s:SendChunkLines() range
 	if bufexists('!' . s:REPLGetName())
 		for line in getline(a:firstline, a:lastline)
 			exe "call term_sendkeys('" . s:REPLGetName() . ''', line . "\<Cr>")'
+			sleep 10m
 		endfor
 	endif
 endfunction
@@ -123,4 +124,3 @@ silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range SendLineToREPL <line1>,<line2>call s:SendChunkLines()
 command! REPLToggle call s:REPLToggle()
-
