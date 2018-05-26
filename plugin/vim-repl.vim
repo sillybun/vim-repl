@@ -1,5 +1,7 @@
 function! s:REPLGetName()"{{{
-	if has_key(g:repl_program, &filetype)
+	if &buftype == "terminal"
+		return bufname("%")[1:]
+	elseif has_key(g:repl_program, &filetype)
 		return g:repl_program[&filetype]
 	elseif has_key(g:repl_program, "default")
 		return g:repl_program["default"]
@@ -51,7 +53,6 @@ function! s:REPLHide()
 endfunction
 
 function! s:REPLOpen()"{{{
-	" exe 'autocmd bufenter * if (winnr("$") == 1 && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
 	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
 	if g:repl_position == 0
 		if exists('g:repl_height')
@@ -91,7 +92,6 @@ endfunction"}}}
 function! s:REPLToggle()"{{{
 	if s:REPLIsVisible()
 		call s:REPLClose()
-		" call s:REPLHide()
 	else
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
