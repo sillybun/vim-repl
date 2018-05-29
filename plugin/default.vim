@@ -6,7 +6,7 @@ if !exists("g:repl_program")
 endif
 
 if !exists('g:sendtorepl_invoke_key')
-	let g:sendtorepl_invoke_key = "ww"
+	let g:sendtorepl_invoke_key = "<leader>w"
 endif
 
 if !exists('g:repl_exit_commands')
