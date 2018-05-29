@@ -14,8 +14,8 @@ Use vim to open a file, run `:REPLToggle` to open the REPL environment.
 
 In order to support various types of file, you have to specify which program to run for certain filetype. The default only support python file, onde you run `:REPLToggle`, `python` will running in the termianl buffer.
 
-To communicate with REPL environment, select your code, press `ww`. And the code will be send to REPL and run automatically.
-Or you can just stay in normal mode and press `ww` and the code in the current line will be send REPL.
+To communicate with REPL environment, select your code, press `<leader>w`. And the code will be send to REPL and run automatically.
+Or you can just stay in normal mode and press `<leader>w` and the code in the current line will be send REPL.
 
 If the REPL is already open. `:REPLToggle` will close REPL.
 
@@ -72,10 +72,10 @@ it represents the width of repl windows. there is no default value.
 
 **g:sendtorepl_invoke_key**
 
-you can customize the key to send code to REPL environment. The default key is `ww`
+you can customize the key to send code to REPL environment. The default key is `<leader>w`
 
 ```
-let g:sendtorepl_invoke_key = "ww"
+let g:sendtorepl_invoke_key = "<leader>w"
 ```
 
 **repl_position**
