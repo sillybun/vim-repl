@@ -102,13 +102,13 @@ function! s:REPLToggle()"{{{
 	endif
 endfunction"}}}
 
-function! s:SendCurrentLine()
+function! s:SendCurrentLine() abort
 	if bufexists('!'. s:REPLGetName())
 		exe "call term_sendkeys('" . s:REPLGetName() . ''', getline(".") . "\<Cr>")'
 	endif
 endfunction
 
-function! s:SendChunkLines() range
+function! s:SendChunkLines() range abort
 	if bufexists('!' . s:REPLGetName())
 		let l:firstline = a:firstline
 		while(l:firstline <= a:lastline && strlen(getline(l:firstline)) == 0)
@@ -124,6 +124,7 @@ function! s:SendChunkLines() range
 			exe "call term_sendkeys('" . s:REPLGetName() . ''', l:deletespaceline . "\<Cr>")'
 			sleep 50m
 		endfor
+		exe "call term_sendkeys('" . s:REPLGetName() . ''', "\<Cr>")'
 	endif
 endfunction
 
