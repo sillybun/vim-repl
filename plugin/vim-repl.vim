@@ -110,17 +110,28 @@ endfunction
 
 function! s:SendChunkLines() range
 	if bufexists('!' . s:REPLGetName())
-		for line in getline(a:firstline, a:lastline)
-			exe "call term_sendkeys('" . s:REPLGetName() . ''', line . "\<Cr>")'
-			sleep 10m
+		let l:firstline = a:firstline
+		while(l:firstline <= a:lastline && strlen(getline(l:firstline)) == 0)
+			let l:firstline = l:firstline + 1
+		endwhile
+		let l:fl = getline(l:firstline)
+		let l:i = 0
+		while(l:i < strlen(l:fl) && l:fl[l:i] == ' ')
+			let l:i = l:i + 1
+		endwhile
+		for line in getline(l:firstline, a:lastline)
+			let l:deletespaceline = line[l:i:]
+			exe "call term_sendkeys('" . s:REPLGetName() . ''', l:deletespaceline . "\<Cr>")'
+			sleep 50m
 		endfor
 	endif
 endfunction
 
 let invoke_key = g:sendtorepl_invoke_key
 
-silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
+silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendCurrentLine<Cr>'
 silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range SendLineToREPL <line1>,<line2>call s:SendChunkLines()
+command! SendCurrentLine call s:SendCurrentLine()
 command! REPLToggle call s:REPLToggle()
