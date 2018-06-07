@@ -105,6 +105,7 @@ endfunction"}}}
 function! s:SendCurrentLine() abort
 	if bufexists('!'. s:REPLGetName())
 		exe "call term_sendkeys('" . s:REPLGetName() . ''', getline(".") . "\<Cr>")'
+		exe "call term_wait('" . s:REPLGetName() . ''',  50)'
 	endif
 endfunction
 
@@ -122,7 +123,8 @@ function! s:SendChunkLines() range abort
 		for line in getline(l:firstline, a:lastline)
 			let l:deletespaceline = line[l:i:]
 			exe "call term_sendkeys('" . s:REPLGetName() . ''', l:deletespaceline . "\<Cr>")'
-			sleep 50m
+			exe "call term_wait('" . s:REPLGetName() . ''', 50)'
+			" sleep 50m
 		endfor
 		exe "call term_sendkeys('" . s:REPLGetName() . ''', "\<Cr>")'
 	endif
