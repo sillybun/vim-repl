@@ -51,8 +51,8 @@ Use your plugin manager of choice.
 
 ### How to send code to REPL
 
-- In Normal Mode, press `ww`, code in the current line (including leading space and the end center) will be transmitted to REPL
-- In Visual Mode, press `ww`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
+- In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
+- In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
 ### How to change to REPL environment
 

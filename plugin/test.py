@@ -1,9 +1,13 @@
-1+2
+from typing import Type
 import numpy as np
 
+class A:
+    def __init__(self):
+        self.x = 0
+        self.y = 1
+        return
 
-11
-from matplotlib import pyplot as plt
+a = A()
 
-a = np.zeros(10)
-plt.plot(range(10), range(10))
+def f(a: A):
+    return 0
