@@ -60,7 +60,7 @@ You can change buffer between file and REPL environment the same as change betwe
 
 ## Setting
 
-you can bind the `REPLToggle` command to a certain key to make it more convince.
+you can bind the `REPLToggle` command to a certain key to make it more convenience.
 
 ```
 nnoremap <leader>r :REPLToggle<Cr>
