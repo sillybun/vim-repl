@@ -130,6 +130,19 @@ function! s:SendChunkLines() range abort
 	endif
 endfunction
 
+function! s:REPLDebug() abort
+    echo "REPL program"
+    echo g:repl_program
+    echo "REPL exit commands"
+    echo g:repl_exit_commands
+    echo "Current File Type:"
+    echo &filetype
+    echo "Current Type:"
+    echo s:REPLGetName()
+    echo "Current Exit Commands"
+    echo s:REPLGetExitCommand()
+endfunction
+
 let invoke_key = g:sendtorepl_invoke_key
 
 silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendCurrentLine<Cr>'
@@ -138,3 +151,4 @@ silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 command! -range SendLineToREPL <line1>,<line2>call s:SendChunkLines()
 command! SendCurrentLine call s:SendCurrentLine()
 command! REPLToggle call s:REPLToggle()
+command! REPLDebug call s:REPLDebug()
