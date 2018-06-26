@@ -7,7 +7,13 @@ class A:
         self.y = 1
         return
 
+    def t(self):
+        return
+
 a = A()
 
-def f(a: A):
+def f(a):
     return 0
+
+def g(a):
+    return 1
