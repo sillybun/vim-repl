@@ -1,5 +1,7 @@
 function! s:REPLGetName()"{{{
-	if &buftype ==# 'terminal'
+    if exists("b:REPL_OPEN_TERMINAL")
+        return b:REPL_OPEN_TERMINAL
+    elseif &buftype ==# 'terminal'
 		return bufname('%')[1:]
 	elseif has_key(g:repl_program, &filetype)
 		return g:repl_program[&filetype]
@@ -17,7 +19,7 @@ endfunction}}}"
 
 function! s:REPLGetShortName()"{{{
     let l:name = s:REPLGetName()
-    return s:StringAfter(l:name, '/')
+    return split(s:StringAfter(l:name, '/'), ' ')[0]
 endfunction}}}"
 
 function! s:REPLGetExitCommand()"{{{
@@ -43,31 +45,41 @@ endfunction"}}}
 function! s:REPLClose()"{{{
 
 	if s:REPLIsVisible()
-		exe "call term_sendkeys('" . s:REPLGetName() . ''', "\<C-W>\<C-C>")'
+		exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<C-W>\<C-C>")'
+        exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
 		if s:REPLIsVisible()
-			exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
-			exe "call term_sendkeys('" . s:REPLGetName() . "', \"\\<Cr>\")"
-			exe "call term_sendkeys('" . s:REPLGetName() . ''', "' . s:REPLGetExitCommand() . '\<Cr>")'
+			exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
+            exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+			exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
+            exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+			exe "call term_sendkeys('" . 'ZYTREPL' . ''', "' . s:REPLGetExitCommand() . '\<Cr>")'
 		endif
 	endif
 
 	exe bufwinnr(g:repl_target_n) . 'wincmd w'
-
+    if !s:REPLIsVisible()
+        unlet b:REPL_OPEN_TERMINAL
+    endif
 endfunction"}}}
 
 function! s:REPLSend(code)"{{{
-    exe "call term_sendkeys('" . s:REPLGetName() . ''', "' . a:code . '")'
+    exe "call term_sendkeys('" . 'ZYTREPL' . ''', "' . a:code . '")'
 endfunction}}}"
 
 function! s:REPLHide()
 	if s:REPLIsVisible()
-		call s:REPLGoToWindowForBufferName('!' . s:REPLGetName())
+		call s:REPLGoToWindowForBufferName('ZYTREPL')
 		hide!
 	endif
 endfunction
 
-function! s:REPLOpen()"{{{
-	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists("!' . s:REPLGetName() . '")) | q! | endif'
+function! s:REPLOpen(...)"{{{
+    if a:0 == 0
+        let b:REPL_OPEN_TERMINAL = s:REPLGetName()
+    else
+        let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
+    endif
+	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''ZYTREPL'')) | q! | endif'
 	if g:repl_position == 0
 		if exists('g:repl_height')
 			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . s:REPLGetName()
@@ -93,23 +105,24 @@ function! s:REPLOpen()"{{{
 			exe 'vert rightb term ++close ' . s:REPLGetName()
 		endif
 	endif
+    exe 'file ZYTREPL'
 endfunction"}}}
 
 function! s:REPLIsVisible()"{{{
-	if bufwinnr(bufnr("!" . s:REPLGetName())) != -1
+	if bufwinnr(bufnr('ZYTREPL')) != -1
 		return 1
 	else
 		return 0
 	endif
 endfunction"}}}
 
-function! s:REPLToggle()"{{{
+function! s:REPLToggle(...)"{{{
 	if s:REPLIsVisible()
 		call s:REPLClose()
 	else
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
-		call s:REPLOpen()
+        call call(function('s:REPLOpen'), a:000)
 	endif
 	if g:repl_stayatrepl_when_open == 0
 		exe bufwinnr(g:repl_target_n) . "wincmd w"
@@ -125,9 +138,9 @@ function! s:REPLToggle()"{{{
 endfunction"}}}
 
 function! s:SendCurrentLine() abort
-	if bufexists('!'. s:REPLGetName())
-		exe "call term_sendkeys('" . s:REPLGetName() . ''', getline(".") . "\<Cr>")'
-		exe "call term_wait('" . s:REPLGetName() . ''',  50)'
+	if bufexists('ZYTREPL')
+		exe "call term_sendkeys('" . 'ZYTREPL' . ''', getline(".") . "\<Cr>")'
+		exe "call term_wait('" . 'ZYTREPL' . ''',  50)'
 	endif
 endfunction
 
@@ -169,7 +182,7 @@ function! s:SendChunkLines() range abort
 		endwhile
         if s:REPLGetShortName() ==# 'python'
             for l:line in s:GetPythonClassCode(getline(l:firstline, a:lastline))
-                exe "call term_sendkeys('" . s:REPLGetName() . ''', l:line . "\<Cr>")'
+                exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:line . "\<Cr>")'
             endfor
         else
             let l:fl = getline(l:firstline)
@@ -179,11 +192,11 @@ function! s:SendChunkLines() range abort
             endwhile
             for line in getline(l:firstline, a:lastline)
                 let l:deletespaceline = line[l:i:]
-                exe "call term_sendkeys('" . s:REPLGetName() . ''', l:deletespaceline . "\<Cr>")'
-                exe "call term_wait('" . s:REPLGetName() . ''', 50)'
+                exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:deletespaceline . "\<Cr>")'
+                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
                 " sleep 50m
             endfor
-            exe "call term_sendkeys('" . s:REPLGetName() . ''', "\<Cr>")'
+            exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<Cr>")'
         endif
 	endif
 endfunction
@@ -208,5 +221,5 @@ silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range SendLineToREPL <line1>,<line2>call s:SendChunkLines()
 command! SendCurrentLine call s:SendCurrentLine()
-command! REPLToggle call s:REPLToggle()
+command! -nargs=* REPLToggle call s:REPLToggle(<f-args>)
 command! REPLDebug call s:REPLDebug()

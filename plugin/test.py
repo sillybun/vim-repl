@@ -1,5 +1,5 @@
 from typing import Type
-import numpy as np
+import jumpy as np
 
 class A:
     def __init__(self):
