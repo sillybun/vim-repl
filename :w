@@ -195,14 +195,13 @@ function! repl#SendChunkLines() range abort
                 exe 'call term_wait("ZYTREPL", 20)'
                 while 1
                     let l:tl = repl#GetTerminalLine()
-                    if !(l:tl ==# '>>>' || l:tl ==# '...' || l:tl ==# 'ipdb>' || l:tl ==# 'pdb>')
+                    if !(l:tl ==# '>>>' || l:tl ==# '...')
                         exe 'call term_wait("ZYTREPL", 20)'
                     else
                         break
                     endif
                 endwhile
             endfor
-            call term_sendkeys('ZYTREPL', "\<Cr>")
         else
             let l:fl = getline(l:firstline)
             let l:i = 0
@@ -213,6 +212,10 @@ function! repl#SendChunkLines() range abort
                 let l:deletespaceline = line[l:i:]
                 exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:deletespaceline . "\<Cr>")'
                 exe 'call term_wait("ZYTREPL", 50)'
+" python3 << EOF
+
+" EOF
+                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
                 " sleep 50m
             endfor
             exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<Cr>")'
