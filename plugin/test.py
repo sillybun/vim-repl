@@ -1,5 +1,5 @@
 from typing import Type
-import jumpy as np
+import numpy as np
 
 class A:
     def __init__(self):
@@ -17,3 +17,8 @@ def f(a):
 
 def g(a):
     return 1
+
+import time
+time.sleep(1)
+1+2
+time.sleep(1)

@@ -113,19 +113,23 @@ endfunction"}}}
 
 function! repl#REPLToggle(...)"{{{
 	if repl#REPLIsVisible()
+        let l:cursor_pos = getpos('.')
 		call repl#REPLClose()
 	else
+        let l:cursor_pos = getpos('.')
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
         call call(function('repl#REPLOpen'), a:000)
 	endif
 	if g:repl_stayatrepl_when_open == 0
-		exe bufwinnr(g:repl_target_n) . "wincmd w"
+		exe bufwinnr(g:repl_target_n) . 'wincmd w'
+        echo l:cursor_pos
+        call cursor(l:cursor_pos[1], l:cursor_pos[2])
         if exists('g:repl_predefine_' . repl#REPLGetShortName())
-            let command_dict = eval("g:repl_predefine_" . repl#REPLGetShortName())
-            for key in keys(command_dict)
-                if search(key) != 0
-                    call g:REPLSend(command_dict[key])
+            let l:command_dict = eval('g:repl_predefine_' . repl#REPLGetShortName())
+            for l:key in keys(l:command_dict)
+                if search(l:key) != 0
+                    call g:REPLSend(l:command_dict[l:key])
                 endif
             endfor
         endif
@@ -169,15 +173,35 @@ EOF
 return py3eval("newlines")
 endfunction
 
+function! repl#GetTerminalLine() abort
+    let l:tl = term_scrape('ZYTREPL', '.')
+python3 << EOF
+import vim
+ptl = vim.eval('l:tl')
+line = ''.join([cell['chars'] for cell in ptl]).rstrip()
+EOF
+return py3eval('line')
+endfunction
+
 function! repl#SendChunkLines() range abort
 	if bufexists('ZYTREPL')
 		let l:firstline = a:firstline
 		while(l:firstline <= a:lastline && strlen(getline(l:firstline)) == 0)
 			let l:firstline = l:firstline + 1
 		endwhile
-        if repl#REPLGetShortName() ==# 'python'
+        let l:sn = repl#REPLGetShortName()
+        if l:sn ==# 'python' || l:sn ==# 'python3' || l:sn ==# 'python2'
             for l:line in repl#GetPythonClassCode(getline(l:firstline, a:lastline))
                 exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:line . "\<Cr>")'
+                exe 'call term_wait("ZYTREPL", 20)'
+                while 1
+                    let l:tl = repl#GetTerminalLine()
+                    if !(l:tl ==# '>>>' || l:tl ==# '...')
+                        exe 'call term_wait("ZYTREPL", 20)'
+                    else
+                        break
+                    endif
+                endwhile
             endfor
         else
             let l:fl = getline(l:firstline)
@@ -188,6 +212,10 @@ function! repl#SendChunkLines() range abort
             for line in getline(l:firstline, a:lastline)
                 let l:deletespaceline = line[l:i:]
                 exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:deletespaceline . "\<Cr>")'
+                exe 'call term_wait("ZYTREPL", 50)'
+" python3 << EOF
+
+" EOF
                 exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
                 " sleep 50m
             endfor
