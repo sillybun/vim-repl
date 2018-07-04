@@ -1,2 +1,3 @@
-.mypy_cache
+*.mypy_cache*
+python/.mypy_cache
 __pycache__

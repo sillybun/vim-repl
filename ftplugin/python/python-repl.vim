@@ -34,8 +34,14 @@ endfunction
 function! s:REPLDebugMoveCursor() abort
     for i in range(repl#GetCurrentLineNumber(), 1, -1)
         let l:t = term_getline('ZYTREPL', i)
-        if stridx(l:t, '--->') == 0 || stridx(l:t, '---->') == 0
-            let l:linenumber = str2nr(l:t[5:])
+        if stridx(l:t, '>') == 0
+            let l:t = l:t[2:]
+            let l:i = stridx(l:t, '(')
+            let l:filefullpath = l:t[0:(l:i - 1)]
+            let l:linenumber = str2nr(l:t[(l:i+1):])
+            if l:filefullpath !=# expand('%:p') && l:filefullpath[0] ==# '/'
+                silent exe 'edit ' . l:filefullpath
+            endif
             if l:linenumber != line('.')
                 call cursor(l:linenumber, 1)
             endif
@@ -111,7 +117,7 @@ function! s:REPLDebugStopAtCurrentLine(...) abort "{{{
     endif
 endfunction}}}"
 
-function! s:REPLDebugIPDB() "{{{
+function! s:REPLDebugIPDB() abort "{{{
 	if repl#REPLIsVisible()
         return
 	else
