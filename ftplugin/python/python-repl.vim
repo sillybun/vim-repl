@@ -1,3 +1,9 @@
+if !exists('g:REPLPythonLoaded')
+    let g:REPLPythonLoaded = 1
+else
+    finish
+endif
+
 function! s:REPLDebugRun() abort "{{{
     if repl#REPLIsVisible()
         if repl#GetTerminalLine() != 'ipdb>'
@@ -141,9 +147,9 @@ function! s:REPLDebugIPDB() abort "{{{
     endwhile
 endfunction}}}"
 
-command! -nargs=* REPLDebugStopAtCurrentLine call s:REPLDebugStopAtCurrentLine(<f-args>)
-command! REPLPDBC call s:REPLDebugRun()
-command! REPLPDBN call s:REPLDebugN()
-command! REPLPDBS call s:REPLDebugS()
-command! REPLPDBU call s:REPLDebugU()
-command! REPLDebug call s:REPLDebugIPDB()
+command! -nargs=* REPLDebugStopAtCurrentLine silent call s:REPLDebugStopAtCurrentLine(<f-args>)
+command! REPLPDBC silent call s:REPLDebugRun()
+command! REPLPDBN silent call s:REPLDebugN()
+command! REPLPDBS silent call s:REPLDebugS()
+command! REPLPDBU silent call s:REPLDebugU()
+command! REPLDebug silent call s:REPLDebugIPDB()
