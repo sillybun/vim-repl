@@ -11,7 +11,83 @@ function! s:REPLDebugRun() abort "{{{
         call s:REPLDebugIPDB()
         call g:REPLSend('c')
     endif
+    while 1
+        call term_wait('ZYTREPL', 20)
+        let l:tl = repl#GetTerminalLine()
+        if l:tl ==# 'ipdb>'
+            break
+        endif
+    endwhile
+    call s:REPLDebugMoveCursor()
 endfunction}}}"
+
+function! s:REPLDebugWaitForInput() abort
+    while 1
+        call term_wait('ZYTREPL', 20)
+        let l:tl = repl#GetTerminalLine()
+        if l:tl ==# 'ipdb>'
+            break
+        endif
+    endwhile
+endfunction
+
+function! s:REPLDebugMoveCursor() abort
+    for i in range(repl#GetCurrentLineNumber(), 1, -1)
+        let l:t = term_getline('ZYTREPL', i)
+        if stridx(l:t, '--->') == 0 || stridx(l:t, '---->') == 0
+            let l:linenumber = str2nr(l:t[5:])
+            if l:linenumber != line('.')
+                call cursor(l:linenumber, 1)
+            endif
+            break
+        endif
+    endfor
+endfunction
+
+function! s:REPLDebugN() abort
+    if !repl#REPLIsVisible()
+        return
+    endif
+    if repl#GetTerminalLine() != 'ipdb>'
+        call term_sendkeys('ZYTREPL', "\<Cr>")
+        call s:REPLDebugWaitForInput()
+        call term_sendkeys('ZYTREPL', "n\<Cr>")
+    else
+        call term_sendkeys('ZYTREPL', "n\<Cr>")
+    endif
+    call s:REPLDebugWaitForInput()
+    call s:REPLDebugMoveCursor()
+endfunction
+
+function! s:REPLDebugU() abort
+    if !repl#REPLIsVisible()
+        return
+    endif
+    if repl#GetTerminalLine() != 'ipdb>'
+        call term_sendkeys('ZYTREPL', "\<Cr>")
+        call s:REPLDebugWaitForInput()
+        call term_sendkeys('ZYTREPL', "u\<Cr>")
+    else
+        call term_sendkeys('ZYTREPL', "u\<Cr>")
+    endif
+    call s:REPLDebugWaitForInput()
+    call s:REPLDebugMoveCursor()
+endfunction
+
+function! s:REPLDebugS() abort
+    if !repl#REPLIsVisible()
+        return
+    endif
+    if repl#GetTerminalLine() != 'ipdb>'
+        call term_sendkeys('ZYTREPL', "\<Cr>")
+        call s:REPLDebugWaitForInput()
+        call term_sendkeys('ZYTREPL', "s\<Cr>")
+    else
+        call term_sendkeys('ZYTREPL', "s\<Cr>")
+    endif
+    call s:REPLDebugWaitForInput()
+    call s:REPLDebugMoveCursor()
+endfunction
 
 function! s:REPLDebugStopAtCurrentLine(...) abort "{{{
     if repl#REPLIsVisible()
@@ -60,5 +136,8 @@ function! s:REPLDebugIPDB() "{{{
 endfunction}}}"
 
 command! -nargs=* REPLDebugStopAtCurrentLine call s:REPLDebugStopAtCurrentLine(<f-args>)
-command! REPLDebugRun call s:REPLDebugRun()
+command! REPLPDBC call s:REPLDebugRun()
+command! REPLPDBN call s:REPLDebugN()
+command! REPLPDBS call s:REPLDebugS()
+command! REPLPDBU call s:REPLDebugU()
 command! REPLDebug call s:REPLDebugIPDB()

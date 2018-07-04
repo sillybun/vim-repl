@@ -103,6 +103,7 @@ function! repl#REPLOpen(...)"{{{
     exe 'file ZYTREPL'
 endfunction"}}}
 
+
 function! repl#REPLIsVisible()"{{{
 	if bufwinnr(bufnr('ZYTREPL')) != -1
 		return 1
@@ -147,39 +148,51 @@ python3 << EOF
 import vim
 
 codes = vim.eval("a:lines")
-i = 0
-newlines = []
-while i != len(codes):
-    if codes[i].startswith("class "):
-        endrow = i + 1
-        peek = endrow
-        newlines.append(codes[i])
-        while(peek != len(codes)):
-            if len(codes[peek].strip()) == 0:
-                peek += 1
-            elif codes[peek][0] == ' ':
-                endrow = peek
-                newlines.append(codes[endrow])
-                peek += 1
-            else:
-                break
-        newlines.append("")
-        i = peek
-    else:
-        newlines.append(codes[i])
-        i += 1
+firstline = ''
+for t in codes:
+    if len(t) != 0:
+        firstline = t
+        break
+if firstline == '':
+    newlines = []
+else:
+    indentfirst = len(firstline) - len(firstline.lstrip())
+    i = 0
+    newlines = []
+    while i != len(codes):
+        if codes[i].startswith("class "):
+            endrow = i + 1
+            peek = endrow
+            newlines.append(codes[i])
+            while(peek != len(codes)):
+                if len(codes[peek].strip()) == 0:
+                    peek += 1
+                elif codes[peek][0] == ' ':
+                    endrow = peek
+                    newlines.append(codes[endrow][indentfirst:])
+                    peek += 1
+                else:
+                    break
+            newlines.append("")
+            i = peek
+        else:
+            newlines.append(codes[i][indentfirst:])
+            i += 1
 EOF
 return py3eval("newlines")
 endfunction
 
 function! repl#GetTerminalLine() abort
-    let l:tl = term_scrape('ZYTREPL', '.')
+    let l:tl = term_getline('ZYTREPL', '.')
 python3 << EOF
 import vim
-ptl = vim.eval('l:tl')
-line = ''.join([cell['chars'] for cell in ptl]).rstrip()
+line = vim.eval('l:tl').rstrip()
 EOF
 return py3eval('line')
+endfunction
+
+function! repl#GetCurrentLineNumber() abort
+    return term_getcursor('ZYTREPL')[0]
 endfunction
 
 function! repl#SendChunkLines() range abort
