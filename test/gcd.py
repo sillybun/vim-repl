@@ -5,3 +5,6 @@ def gcd(a, b):
         return b
     else:
         return gcd(b, a % b)
+
+if __name__ == "__main__":
+    gcd(10, 13)

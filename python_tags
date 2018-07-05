@@ -1,0 +1,16 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+a	./test/testnumpy.py	3;"	v
+f	./test/test.py	4;"	f
+gcd	./plugin/test.py	1;"	f
+gcd	./test/gcd.py	1;"	f
+gcd	./test/testgcd.py	1;"	i
+np	./test/testnumpy.py	1;"	i
+time	./test/test.py	9;"	i
+time	./test/testnumpy.py	6;"	i
+x	./test/test.py	1;"	v
+y	./test/test.py	2;"	v

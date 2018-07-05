@@ -1,0 +1,55 @@
+cscope 15 /Users/zhangyiteng/.vim/plugged/vim-repl/plugin -c 0000000262
+	@./test.py
+
+1 def 
+	$gcd
+ ( 
+a
+ , 
+b
+ ) :
+
+2 if 
+a
+ < 
+b
+ :
+
+3 return 
+gcd
+ ( 
+b
+ , 
+a
+ )
+
+4 elif 
+b
+ == 0 :
+
+5 return 
+a
+
+7 return 
+gcd
+ ( 
+b
+ , 
+a
+ % 
+b
+ ) 
+	}
+
+10 
+gcd
+ ( 12 , 20 )
+
+
+	@
+1
+.
+0
+1
+10
+./test.py

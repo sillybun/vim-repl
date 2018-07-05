@@ -1,0 +1,264 @@
+cscope 15 /Users/zhangyiteng/.vim/plugged/vim-repl -c 0000001217
+	@./test/pythonpdb.py
+
+1 for 
+i
+ in 
+range
+ ( 10 ) :
+
+2 for 
+j
+ in 
+range
+ ( 10 ) :
+
+3 
+print
+ ( 
+i
+ + 
+j
+ )
+
+
+	@./test/testgcd.py
+
+1 import 
+	~gcd
+
+3 
+print
+ ( 
+gcd
+ . 
+gcd
+ ( 12 , 20 ) )
+
+
+	@./test/gcd.py
+
+1 def 
+	$gcd
+ ( 
+a
+ , 
+b
+ ) :
+
+2 if 
+a
+ < 
+b
+ :
+
+3 return 
+gcd
+ ( 
+b
+ , 
+a
+ )
+
+4 elif 
+a
+ % 
+b
+ == 0 :
+
+5 return 
+b
+
+7 return 
+gcd
+ ( 
+b
+ , 
+a
+ % 
+b
+ ) 
+	}
+
+9 if 
+__name__
+ == "__main__" :
+
+10 
+gcd
+ ( 10 , 13 )
+
+
+	@./test/test.py
+
+1 
+x
+ = 1
+
+2 
+y
+ = 1
+
+3 
+x
+ + 
+y
+
+4 def 
+	$f
+ ( 
+a
+ ) :
+
+5 return 
+a
+ + 1 
+	}
+
+7 
+f
+ ( 
+x
+ )
+
+8 
+print
+ ( "hello world" )
+
+9 import 
+	~time
+ "watch the right side"
+
+12 
+list
+ ( 
+range
+ ( 10 ) )
+
+13 
+print
+ ( "hello world" )
+
+
+	@./test/testnumpy.py
+
+1 import 
+	~numpy
+ as 
+np
+
+3 
+a
+ = 
+np
+ . 
+zeros
+ ( 19 )
+
+4 
+print
+ ( 
+a
+ . 
+sum
+ ( ) )
+
+6 import 
+	~time
+
+7 
+time
+ . 
+sleep
+ ( 1 )
+
+8 
+time
+ . 
+sleep
+ ( 1 )
+
+9 
+time
+ . 
+sleep
+ ( 1 )
+
+10 
+time
+ . 
+sleep
+ ( 1 )
+
+11 
+time
+ . 
+sleep
+ ( 1 )
+
+12 
+time
+ . 
+sleep
+ ( 1 )
+
+
+	@./plugin/test.py
+
+1 def 
+	$gcd
+ ( 
+a
+ , 
+b
+ ) :
+
+2 if 
+a
+ < 
+b
+ :
+
+3 return 
+gcd
+ ( 
+b
+ , 
+a
+ )
+
+4 elif 
+b
+ == 0 :
+
+5 return 
+a
+
+7 return 
+gcd
+ ( 
+b
+ , 
+a
+ % 
+b
+ ) 
+	}
+
+10 
+gcd
+ ( 12 , 20 )
+
+
+	@
+1
+.
+0
+6
+104
+./test/pythonpdb.py
+./test/testgcd.py
+./test/gcd.py
+./test/test.py
+./test/testnumpy.py
+./plugin/test.py
