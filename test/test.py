@@ -4,10 +4,11 @@ x + y
 def f(a):
     return a + 1
 
-f(x)
-print("hello world")
+print("helloeworld")
 import time
 
 "watch the right side"
 list(range(10))
 print("hello world")
+time.sleep(1)
+time.sleep(1)

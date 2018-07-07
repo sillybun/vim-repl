@@ -195,29 +195,14 @@ function! repl#GetCurrentLineNumber() abort
     return term_getcursor('ZYTREPL')[0]
 endfunction
 
-function! repl#WaitHandler(channel) abort
-    if len(s:tasks) == s:taskprocess
-        return
-    endif
-    let l:tl = repl#GetTerminalLine()
-    if index(s:waitforsymbols, l:tl) == -1
-        call repl#WaitWH()
-    else
-        call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
-        let s:taskprocess = s:taskprocess + 1
-        call repl#WaitWH()
-    endif
-endfunction
-
-function! repl#WaitWH() abort
-    call job_start('sleep 0.02s', {'close_cb': 'repl#WaitHandler'})
-endfunction
-
-function! repl#Sends(tasks, symbols)
-    let s:tasks = a:tasks
-    let s:waitforsymbols = a:symbols
-    let s:taskprocess = 0
-    call repl#WaitHandler(0)
+function! repl#WaitFor(symbols) abort
+    while 1
+        call term_wait('ZYTREPL', 20)
+        let l:tl = repl#GetTerminalLine()
+        if
+            break
+        endif
+    endwhile
 endfunction
 
 function! repl#SendChunkLines() range abort
@@ -228,7 +213,19 @@ function! repl#SendChunkLines() range abort
 		endwhile
         let l:sn = repl#REPLGetShortName()
         if l:sn ==# 'python' || l:sn ==# 'python3' || l:sn ==# 'python2'
-            call repl#Sends(add(getline(l:firstline, a:lastline), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
+            for l:line in repl#GetPythonClassCode(getline(l:firstline, a:lastline))
+                exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:line . "\<Cr>")'
+                exe 'call term_wait("ZYTREPL", 20)'
+                while 1
+                    let l:tl = repl#GetTerminalLine()
+                    if !(l:tl ==# '>>>' || l:tl ==# '...' || l:tl ==# 'ipdb>' || l:tl ==# 'pdb>')
+                        exe 'call term_wait("ZYTREPL", 20)'
+                    else
+                        break
+                    endif
+                endwhile
+            endfor
+            call term_sendkeys('ZYTREPL', "\<Cr>")
         else
             let l:fl = getline(l:firstline)
             let l:i = 0
@@ -239,6 +236,7 @@ function! repl#SendChunkLines() range abort
                 let l:deletespaceline = line[l:i:]
                 exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:deletespaceline . "\<Cr>")'
                 exe 'call term_wait("ZYTREPL", 50)'
+                " sleep 50m
             endfor
             exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<Cr>")'
         endif
