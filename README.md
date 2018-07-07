@@ -10,7 +10,9 @@ Read–Eval–Print Loop (REPL), also known as an interactive toplevel or langua
 
 ## Details
 
-![usage](https://github.com/sillybun/vim-repl/blob/master/repl.gif)
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/repl.gif)
+
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/bigarray_new.gif)
 
 Use vim to open a file, run `:REPLToggle` to open the REPL environment.
 
