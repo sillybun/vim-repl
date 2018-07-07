@@ -133,3 +133,9 @@ Once user run `:REPLToggle` when the REPL environment is already open, this plug
 
 - send a interupt signal `<C-C>` to the program
 - if the program is not close, then send two `\n` and the `exit_command + \n` to the program.
+
+# Updates:
+
+## 2018.7.7
+
+- Use job feature in vim 8.0 to provide better performance.
