@@ -2,3 +2,6 @@
 __pycache__
 test/.mypy_cache
 test/__pycache__
+*.out
+*.files
+python_tags
