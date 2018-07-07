@@ -210,7 +210,7 @@ function! repl#WaitHandler(channel) abort
 endfunction
 
 function! repl#WaitWH() abort
-    call job_start('sleep 0.02s', {'close_cb': 'repl#WaitHandler'})
+    call job_start('sleep 0.01s', {'close_cb': 'repl#WaitHandler'})
 endfunction
 
 function! repl#Sends(tasks, symbols)
