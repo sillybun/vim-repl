@@ -12,6 +12,7 @@ endif
 if !exists('g:repl_exit_commands')
 	let g:repl_exit_commands = {
 				\	"python": "quit()",
+                \   "ptpython": "quit()",
 				\	"bash": "exit",
 				\	"zsh": "exit",
 				\	"default": "exit",

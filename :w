@@ -199,37 +199,25 @@ function! repl#WaitHandler(channel) abort
     if len(s:tasks) == s:taskprocess
         return
     endif
-    " let l:templinenumber = repl#GetCurrentLineNumber()
-    " if l:templinenumber == s:currentlinenumber
-    "     " echom l:templinenumber
-    "     call repl#WaitWH()
-    "     return
-    " endif
     let l:tl = repl#GetTerminalLine()
     if index(s:waitforsymbols, l:tl) == -1
-        " echom l:tl
         call repl#WaitWH()
-        return
     else
-        " let s:currentlinenumber = l:templinenumber
-        " echom "lastline" . s:currentlinenumber
-        " echom s:tasks[s:taskprocess]
+        let s:currentlinenumber = repl#GetCurrentLineNumber()
         call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
         let s:taskprocess = s:taskprocess + 1
         call repl#WaitWH()
-        return
     endif
 endfunction
 
 function! repl#WaitWH() abort
-    call job_start('sleep 0.03s', {'close_cb': 'repl#WaitHandler'})
+    call job_start('sleep 0.01s', {'close_cb': 'repl#WaitHandler'})
 endfunction
 
 function! repl#Sends(tasks, symbols)
     let s:tasks = a:tasks
     let s:waitforsymbols = a:symbols
     let s:taskprocess = 0
-    let s:currentlinenumber = -1
     call repl#WaitHandler(0)
 endfunction
 
