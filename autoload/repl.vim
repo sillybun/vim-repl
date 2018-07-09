@@ -1,8 +1,8 @@
 function! repl#AsList(value)
-    if type(value) == type([])
-        return value
+    if type(a:value) == type([])
+        return a:value
     else
-        return [value]
+        return [a:value]
     end
 endfunction
 
