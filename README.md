@@ -72,7 +72,7 @@ Take a typical python REPL environment as an example
 >>>
 ```
 
-Therefore, the input symbols for python includes `'>>>'` and `'...'`. It tells the plugin that it can continue send another line to the REPL environment. If you want async support for other language aside from python, you have to add entry for this language to `g:repl_input_symbols`
+Therefore, the input symbols for python includes `'>>>'` and `'...'`. They tell the plugin that it can continue send another line to the REPL environment if the current line of the REPL environment is either `'>>>'` or `'...'`. If you want async support for other language aside from python, you have to add entry for this language to `g:repl_input_symbols`
 
 The default value of `g:repl_input_symbols` is, the value of the dictionary can be either a list of string or a string:
 
