@@ -1,11 +1,3 @@
-function! repl#AsList(value)
-    if type(value) == type([])
-        return value
-    else
-        return [value]
-    end
-endfunction
-
 function! repl#REPLGetName()"{{{
     if exists("b:REPL_OPEN_TERMINAL")
         return b:REPL_OPEN_TERMINAL
@@ -207,11 +199,21 @@ function! repl#WaitHandler(channel) abort
     if len(s:tasks) == s:taskprocess
         return
     endif
+    " let l:templinenumber = repl#GetCurrentLineNumber()
+    " if l:templinenumber == s:currentlinenumber
+    "     " echom l:templinenumber
+    "     call repl#WaitWH()
+    "     return
+    " endif
     let l:tl = repl#GetTerminalLine()
     if index(s:waitforsymbols, l:tl) == -1
+        " echom l:tl
         call repl#WaitWH()
         return
     else
+        " let s:currentlinenumber = l:templinenumber
+        " echom "lastline" . s:currentlinenumber
+        " echom s:tasks[s:taskprocess]
         call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
         let s:taskprocess = s:taskprocess + 1
         call repl#WaitWH()
@@ -225,7 +227,7 @@ endfunction
 
 function! repl#Sends(tasks, symbols)
     let s:tasks = a:tasks
-    let s:waitforsymbols = repl#AsList(a:symbols)
+    let s:waitforsymbols = a:symbols
     let s:taskprocess = 0
     let s:currentlinenumber = -1
     call repl#WaitHandler(0)
@@ -246,7 +248,7 @@ function! repl#WAITFORSYMBOLS() abort
 endfunction
 
 function! repl#WaitFor(symbols)
-    let s:waitforsymbols = repl#AsList(a:symbols)
+    let s:waitforsymbols = a:symbols
     call repl#WaitForSymbolsHandler(0)
 endfunction
 
@@ -259,8 +261,6 @@ function! repl#SendChunkLines() range abort
         let l:sn = repl#REPLGetShortName()
         if l:sn =~ '.*python.*'
             call repl#Sends(add(getline(l:firstline, a:lastline), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
-        elseif has_key(g:repl_input_symbols, l:sn)
-            call repl#Sends(add(getline(l:firstline, a:lastline), ''), g:repl_input_symbols[l:sn])
         else
             let l:fl = getline(l:firstline)
             let l:i = 0

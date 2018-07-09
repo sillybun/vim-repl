@@ -19,6 +19,12 @@ if !exists('g:repl_exit_commands')
 				\	}
 end
 
+if !exists('g:repl_input_symbols')
+    let g:repl_input_symbols = {
+                \   'python': ['>>>', '>>>>', 'ipdb>', 'pdb', '...'],
+                \   }
+end
+
 if !exists('g:repl_position')
 	let g:repl_position = 0
 endif

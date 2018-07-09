@@ -58,6 +58,31 @@ Use your plugin manager of choice.
 - In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
 - In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
+Currently, asynchronous transmission is completed and it is supported for all language if you correctly set the input symbols of the corresponding language.
+Setting for python is already done by author.
+
+Take a typical python REPL environment as an example
+
+```
+>>> 1+1
+2
+>>> for i in range(3):
+...     print(i)
+...
+>>>
+```
+
+Therefore, the input symbols for python includes `'>>>'` and `'...'`. It tells the plugin that it can continue send another line to the REPL environment. If you want async support for other language aside from python, you have to add entry for this language to `g:repl_input_symbols`
+
+The default value of `g:repl_input_symbols` is, the value of the dictionary can be either a list of string or a string:
+
+```
+let g:repl_input_symbols = {
+            \   'python': ['>>>', '>>>>', 'ipdb>', 'pdb', '...'],
+            \   }
+```
+
+
 ### How to change to REPL environment
 
 You can change buffer between file and REPL environment the same as change between two vim buffer. press `<C-W><C-w>` will change between file and REPL environment. `<C-w><C-h,j,k,l>` also work the way it should be

@@ -17,25 +17,20 @@ function! s:REPLDebugRun() abort "{{{
         call s:REPLDebugIPDB()
         call g:REPLSend('c')
     endif
-    while 1
-        call term_wait('ZYTREPL', 20)
-        let l:tl = repl#GetTerminalLine()
-        if l:tl ==# 'ipdb>'
-            break
-        endif
-    endwhile
+    call s:REPLDebugWaitForInput()
     call s:REPLDebugMoveCursor()
 endfunction}}}"
 
 function! s:REPLDebugWaitForInput() abort
-    while 1
-        call term_wait('ZYTREPL', 20)
-        " call job_start('sleep 0.01')
-        let l:tl = repl#GetTerminalLine()
-        if l:tl ==# 'ipdb>'
-            break
-        endif
-    endwhile
+    call repl#WaitFor(['ipdb>'])
+    " while 1
+    "     call term_wait('ZYTREPL', 20)
+    "     " call job_start('sleep 0.01')
+    "     let l:tl = repl#GetTerminalLine()
+    "     if l:tl ==# 'ipdb>'
+    "         break
+    "     endif
+    " endwhile
 endfunction
 
 function! s:REPLDebugMoveCursor() abort
