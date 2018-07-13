@@ -23,14 +23,6 @@ endfunction}}}"
 
 function! s:REPLDebugWaitForInput() abort
     call repl#WaitFor(['ipdb>'])
-    " while 1
-    "     call term_wait('ZYTREPL', 20)
-    "     " call job_start('sleep 0.01')
-    "     let l:tl = repl#GetTerminalLine()
-    "     if l:tl ==# 'ipdb>'
-    "         break
-    "     endif
-    " endwhile
 endfunction
 
 function! s:REPLDebugMoveCursor() abort

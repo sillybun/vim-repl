@@ -27,11 +27,16 @@ endfunction}}}"
 
 function! repl#REPLGetShortName()"{{{
     let l:name = repl#REPLGetName()
-    return split(repl#StringAfter(l:name, '/'), ' ')[0]
+    let l:temp = split(repl#StringAfter(l:name, '/'), ' ')[0]
+    if l:temp =~ '.*python.*'
+        return 'python'
+    else
+        return l:temp
+    endif
 endfunction}}}"
 
 function! repl#REPLGetExitCommand()"{{{
-	let l:name = repl#REPLGetName()
+	let l:name = repl#REPLGetShortName()
 	if has_key(g:repl_exit_commands, l:name)
 		return g:repl_exit_commands[l:name]
 	elseif has_key(g:repl_exit_commands, 'default')
@@ -53,15 +58,20 @@ endfunction"}}}
 function! repl#REPLClose()"{{{
 
 	if repl#REPLIsVisible()
-		exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<C-W>\<C-C>")'
-        exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
-		if repl#REPLIsVisible()
-			exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
+        if index(split(repl#REPLGetName(), ' '), 'ipdb') != -1 || index(split(repl#REPLGetName(), ' '), 'pdb') != -1
+            call term_sendkeys('ZYTREPL', "\<C-W>\<C-C>")
+            call repl#Sends(['quit()'], ['ipdb>', 'pdb>'])
+        else
+            exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<C-W>\<C-C>")'
             exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
-			exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
-            exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
-			exe "call term_sendkeys('" . 'ZYTREPL' . ''', "' . repl#REPLGetExitCommand() . '\<Cr>")'
-            exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+            if repl#REPLIsVisible()
+                exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
+                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+                exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
+                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+                exe "call term_sendkeys('" . 'ZYTREPL' . ''', "' . repl#REPLGetExitCommand() . '\<Cr>")'
+                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+            endif
 		endif
 	endif
 
@@ -134,11 +144,14 @@ function! repl#REPLToggle(...)"{{{
 		exe bufwinnr(g:repl_target_n) . 'wincmd w'
         if exists('g:repl_predefine_' . repl#REPLGetShortName())
             let l:command_dict = eval('g:repl_predefine_' . repl#REPLGetShortName())
+            let l:precode = []
             for l:key in keys(l:command_dict)
                 if search(l:key) != 0
-                    call g:REPLSend(l:command_dict[l:key])
+                    " call g:REPLSend(l:command_dict[l:key])
+                    call add(l:precode, l:command_dict[l:key])
                 endif
             endfor
+            call repl#Sends(l:precode, ['>>>', '...', 'ipdb>', 'pdb>'])
         endif
         call cursor(l:cursor_pos[1], l:cursor_pos[2])
 	endif
@@ -203,24 +216,24 @@ function! repl#GetCurrentLineNumber() abort
     return term_getcursor('ZYTREPL')[0]
 endfunction
 
-function! repl#WaitHandler(channel) abort
+function! repl#WaitHandlerNotCall(channel) abort
     if len(s:tasks) == s:taskprocess
         return
     endif
     let l:tl = repl#GetTerminalLine()
     if index(s:waitforsymbols, l:tl) == -1
-        call repl#WaitWH()
+        call repl#WaitWHNotCall()
         return
     else
         call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
         let s:taskprocess = s:taskprocess + 1
-        call repl#WaitWH()
+        call repl#WaitWHNotCall()
         return
     endif
 endfunction
 
-function! repl#WaitWH() abort
-    call job_start('sleep 0.03s', {'close_cb': 'repl#WaitHandler'})
+function! repl#WaitWHNotCall() abort
+    call job_start('sleep 0.03s', {'close_cb': 'repl#WaitHandlerNotCall'})
 endfunction
 
 function! repl#Sends(tasks, symbols)
@@ -228,7 +241,7 @@ function! repl#Sends(tasks, symbols)
     let s:waitforsymbols = repl#AsList(a:symbols)
     let s:taskprocess = 0
     let s:currentlinenumber = -1
-    call repl#WaitHandler(0)
+    call repl#WaitHandlerNotCall(0)
 endfunction
 
 function! repl#WaitForSymbolsHandler(channel)
