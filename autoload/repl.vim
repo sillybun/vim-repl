@@ -28,7 +28,11 @@ endfunction}}}"
 function! repl#REPLGetShortName()"{{{
     let l:name = repl#REPLGetName()
     let l:temp = split(repl#StringAfter(l:name, '/'), ' ')[0]
-    if l:temp =~ '.*python.*'
+    if l:temp ==# 'ptpython'
+        return 'ptpython'
+    elseif l:temp ==# 'ipython'
+        return 'ipython'
+    elseif l:temp =~ '.*python.*'
         return 'python'
     else
         return l:temp
@@ -164,41 +168,63 @@ function! repl#SendCurrentLine() abort
 	endif
 endfunction
 
-function! repl#GetPythonClassCode(lines)
+
+function! repl#RemoveLeftSpace(lines)
+python3 << EOF
+import vim
+
+codes = vim.eval("a:lines")
+codes = [code.lstrip() for code in codes]
+EOF
+return py3eval("codes")
+endfunction
+
+function! repl#GetPythonCode(lines)
 python3 << EOF
 import vim
 
 codes = vim.eval("a:lines")
 firstline = ''
+firstlineno = 0
 for t in codes:
     if len(t) != 0:
         firstline = t
         break
+    else:
+        firstlineno += 1
+
+def getindent(line):
+    if line.strip() == '':
+        return 10000
+    else:
+        return len(line) - len(line.lstrip())
+
 if firstline == '':
     newlines = []
 else:
     indentfirst = len(firstline) - len(firstline.lstrip())
-    i = 0
     newlines = []
-    while i != len(codes):
-        if codes[i].startswith("class "):
-            endrow = i + 1
-            peek = endrow
+    if indentfirst != 0 and all(getindent(code) >= indentfirst for code in codes):
+        codes = [code[indentfirst:] if code.strip() != '' else '' for code in codes]
+    for i in range(firstlineno, len(codes)):
+        if len(codes[i].strip()) != 0:
+            if codes[i][0] != ' ':
+                if i != 0 and codes[i-1].startswith(" "):
+                    newlines.append("")
             newlines.append(codes[i])
-            while(peek != len(codes)):
-                if len(codes[peek].strip()) == 0:
-                    peek += 1
-                elif codes[peek][0] == ' ':
-                    endrow = peek
-                    newlines.append(codes[endrow][indentfirst:])
-                    peek += 1
-                else:
-                    break
-            newlines.append("")
-            i = peek
         else:
-            newlines.append(codes[i][indentfirst:])
-            i += 1
+            flag = False
+            for j in range(i+1, len(codes)):
+                if len(codes[j].strip()) == 0:
+                    continue
+                elif codes[j][0] == ' ':
+                    flag = False
+                    break
+                else:
+                    flag = True
+                    break
+            if flag:
+                newlines.append('')
 EOF
 return py3eval("newlines")
 endfunction
@@ -221,7 +247,13 @@ function! repl#WaitHandlerNotCall(channel) abort
         return
     endif
     let l:tl = repl#GetTerminalLine()
-    if index(s:waitforsymbols, l:tl) == -1
+    let l:flag = 0
+    for l:symbol in s:waitforsymbols
+        if match(l:tl, l:symbol) != -1
+            let l:flag = 1
+        endif
+    endfor
+    if l:flag == 0
         call repl#WaitWHNotCall()
         return
     else
@@ -270,8 +302,12 @@ function! repl#SendChunkLines() range abort
 			let l:firstline = l:firstline + 1
 		endwhile
         let l:sn = repl#REPLGetShortName()
-        if l:sn =~ '.*python.*'
-            call repl#Sends(add(getline(l:firstline, a:lastline), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
+        if l:sn ==# 'ptpython'
+            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), '')), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
+        elseif l:sn ==# 'ipython'
+            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), '')), ['>>>', '\.\.\.', 'ipdb>', 'pdb>', 'In'])
+        elseif l:sn =~ '.*python.*'
+            call repl#Sends(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:lastline), ''), g:repl_input_symbols[l:sn])
         else

@@ -1,15 +1,6 @@
-x = 1
-y = 1
-x + y
-def f(a):
-    return a + 1
+for i in range(3):
 
-print("helloeworld")
-import time
+    print(i)
 
-"watch the right side"
-list(range(10))
-print("hello world")
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
+print(i)
+
