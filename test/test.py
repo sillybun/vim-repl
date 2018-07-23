@@ -1,6 +1,5 @@
-for i in range(3):
+import time
 
-    print(i)
-
-print(i)
-
+time.sleep(1)
+time.sleep(1)
+time.sleep(1)

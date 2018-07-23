@@ -4,22 +4,36 @@ else
     finish
 endif
 
-function! s:REPLDebugRun() abort "{{{
+function! g:REPLDebugRunAsync(channel) abort
+    if s:iter_dra == 0 && repl#GetTerminalLine() == 'ipdb>'
+        call term_sendkeys('ZYTREPL', "c\<Cr>")
+        let s:iter_dra = s:iter_dra + 1
+    elseif s:iter_dra == 1 && repl#GetTerminalLine() == 'ipdb>'
+        call s:REPLDebugMoveCursor()
+        let s:iter_dra = s:iter_dra + 1
+        return
+    endif
+    call s:WAIT_REPLDebugRunAsync()
+endfunction
+
+function! s:WAIT_REPLDebugRunAsync() abort
+    call job_start('sleep 0.03s', {'close_cb': 'g:REPLDebugRunAsync'})
+endfunction
+
+function! s:REPLDebugRun() abort
     if repl#REPLIsVisible()
         if repl#GetTerminalLine() != 'ipdb>'
             call term_sendkeys('ZYTREPL', "\<Cr>")
             call term_wait('ZYTREPL', 50)
-            call term_sendkeys('ZYTREPL', "c\<Cr>")
-        else
-            call term_sendkeys('ZYTREPL', "c\<Cr>")
         endif
+        let s:iter_dra = 0
+        call s:WAIT_REPLDebugRunAsync()
     else
         call s:REPLDebugIPDB()
-        call g:REPLSend('c')
+        call term_wait('ZYTREPL', 50)
+        call s:REPLDebugRun()
     endif
-    call s:REPLDebugWaitForInput()
-    call s:REPLDebugMoveCursor()
-endfunction}}}"
+endfunction
 
 function! s:REPLDebugWaitForInput() abort
     call repl#WaitFor(['ipdb>'])
