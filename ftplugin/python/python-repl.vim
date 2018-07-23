@@ -103,7 +103,7 @@ function! s:REPLDebugS() abort
     call s:REPLDebugMoveCursor()
 endfunction
 
-function! s:REPLDebugStopAtCurrentLine(...) abort "{{{
+function! s:REPLDebugStopAtCurrentLine(...) abort
     if repl#REPLIsVisible()
         if a:0 == 0
             call g:REPLSend('tbreak ' . line('.'))
@@ -123,9 +123,9 @@ function! s:REPLDebugStopAtCurrentLine(...) abort "{{{
         call s:REPLDebugIPDB()
         call call(function('s:REPLDebugStopAtCurrentLine'), a:000)
     endif
-endfunction}}}"
+endfunction
 
-function! s:REPLDebugIPDB() abort "{{{
+function! s:REPLDebugIPDB() abort
 	if repl#REPLIsVisible()
         return
 	else
@@ -147,7 +147,7 @@ function! s:REPLDebugIPDB() abort "{{{
         endif
         let l:n = l:n + 1
     endwhile
-endfunction}}}"
+endfunction
 
 command! -nargs=* REPLDebugStopAtCurrentLine silent call s:REPLDebugStopAtCurrentLine(<f-args>)
 command! REPLPDBC silent call s:REPLDebugRun()

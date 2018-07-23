@@ -6,7 +6,7 @@ function! repl#AsList(value)
     end
 endfunction
 
-function! repl#REPLGetName()"{{{
+function! repl#REPLGetName()
     if exists("b:REPL_OPEN_TERMINAL")
         return b:REPL_OPEN_TERMINAL
     elseif &buftype ==# 'terminal'
@@ -18,14 +18,14 @@ function! repl#REPLGetName()"{{{
 	else
 		return 'bash'
 	endif
-endfunction}}}"
+endfunction
 
-function! repl#StringAfter(word, token)"{{{
+function! repl#StringAfter(word, token)
     let l:loc = strridx(a:word, a:token)
     return a:word[(l:loc+1):]
-endfunction}}}"
+endfunction
 
-function! repl#REPLGetShortName()"{{{
+function! repl#REPLGetShortName()
     let l:name = repl#REPLGetName()
     let l:temp = split(repl#StringAfter(l:name, '/'), ' ')[0]
     if l:temp ==# 'ptpython'
@@ -37,9 +37,9 @@ function! repl#REPLGetShortName()"{{{
     else
         return l:temp
     endif
-endfunction}}}"
+endfunction
 
-function! repl#REPLGetExitCommand()"{{{
+function! repl#REPLGetExitCommand()
 	let l:name = repl#REPLGetShortName()
 	if has_key(g:repl_exit_commands, l:name)
 		return g:repl_exit_commands[l:name]
@@ -48,19 +48,17 @@ function! repl#REPLGetExitCommand()"{{{
 	else
 		return 'exit'
 	endif
-endfunction}}}"
+endfunction
 
-function! repl#REPLGoToWindowForBufferName(name)"{{{
+function! repl#REPLGoToWindowForBufferName(name)
 	if bufwinnr(bufnr(a:name)) != -1
 		exe bufwinnr(bufnr(a:name)) . 'wincmd w'
 		return 1
 	else
 		return 0
 	endif
-endfunction"}}}
-
-function! repl#REPLClose()"{{{
-
+endfunction
+function! repl#REPLClose()
 	if repl#REPLIsVisible()
         if index(split(repl#REPLGetName(), ' '), 'ipdb') != -1 || index(split(repl#REPLGetName(), ' '), 'pdb') != -1
             call term_sendkeys('ZYTREPL', "\<C-W>\<C-C>")
@@ -81,7 +79,7 @@ function! repl#REPLClose()"{{{
 
 	exe bufwinnr(g:repl_target_n) . 'wincmd w'
     unlet b:REPL_OPEN_TERMINAL
-endfunction"}}}
+endfunction
 
 function! repl#REPLHide()
 	if repl#REPLIsVisible()
@@ -90,7 +88,7 @@ function! repl#REPLHide()
 	endif
 endfunction
 
-function! repl#REPLOpen(...)"{{{
+function! repl#REPLOpen(...)
     if a:0 == 0
         let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
     else
@@ -123,18 +121,18 @@ function! repl#REPLOpen(...)"{{{
 		endif
 	endif
     exe 'file ZYTREPL'
-endfunction"}}}
+endfunction
 
 
-function! repl#REPLIsVisible()"{{{
+function! repl#REPLIsVisible()
 	if bufwinnr(bufnr('ZYTREPL')) != -1
 		return 1
 	else
 		return 0
 	endif
-endfunction"}}}
+endfunction
 
-function! repl#REPLToggle(...)"{{{
+function! repl#REPLToggle(...)
 	if repl#REPLIsVisible()
         let l:cursor_pos = getpos('.')
 		call repl#REPLClose()
@@ -159,7 +157,7 @@ function! repl#REPLToggle(...)"{{{
         endif
         call cursor(l:cursor_pos[1], l:cursor_pos[2])
 	endif
-endfunction"}}}
+endfunction
 
 function! repl#SendCurrentLine() abort
 	if bufexists('ZYTREPL')
