@@ -227,7 +227,7 @@ def getindent(line):
         return len(line) - len(line.lstrip())
 
 def isnewline(line):
-    return not line.strip() and codes[i][0] != ' ' and not codes[i].strip() == "else:" and not codes[i].strip().startswith("elseif ") and not codes[i].strip().startswith("except ")
+    return line.strip() != "" and line[0] != ' ' and not line.strip() == "else:" and not line.strip().startswith("elseif ") and not line.strip().startswith("except ")
 
 if firstline == '':
     newlines = []

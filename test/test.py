@@ -10,3 +10,5 @@ if 0:
 else:
 
     pass
+
+a = 1
