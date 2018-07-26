@@ -87,6 +87,14 @@ let g:repl_input_symbols = {
 
 You can change buffer between file and REPL environment the same as change between two vim buffer. press `<C-W><C-w>` will change between file and REPL environment. `<C-w><C-h,j,k,l>` also work the way it should be
 
+### How to hide the REPL environment
+
+```
+:REPLHide
+```
+
+use `REPLUnhide` or `REPLToggle` to unveal the hidden terminal.
+
 ## Setting
 
 you can bind the `REPLToggle` command to a certain key to make it more convenience.
@@ -164,3 +172,7 @@ Once user run `:REPLToggle` when the REPL environment is already open, this plug
 ## 2018.7.7
 
 - Use job feature in vim 8.0 to provide better performance.
+
+## 2018.7.26
+
+- Add support for temporary hide the terminal window.

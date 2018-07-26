@@ -332,8 +332,8 @@ function! repl#SendChunkLines() range abort
         if l:sn ==# 'ptpython'
             call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), '')), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), '')), ['>>>', '\.\.\.', 'ipdb>', 'pdb>', 'In'])
-        elseif l:sn =~ '.*python.*'
+            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), '')), ['\.\.\.', 'In'])
+        elseif l:sn =~ 'python' || l:sn =~ 'python3'
             call repl#Sends(add(repl#GetPythonCode(getline(l:firstline, a:lastline)), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:lastline), ''), g:repl_input_symbols[l:sn])
