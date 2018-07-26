@@ -93,7 +93,7 @@ You can change buffer between file and REPL environment the same as change betwe
 :REPLHide
 ```
 
-use `REPLUnhide` or `REPLToggle` to unveal the hidden terminal.
+use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
 ## Setting
 
@@ -105,7 +105,7 @@ nnoremap <leader>r :REPLToggle<Cr>
 
 **g:repl_width**
 
-it represents the width of repl windows. there is no default value.
+it represents the width of REPL windows. there is no default value.
 
 **g:sendtorepl_invoke_key**
 
