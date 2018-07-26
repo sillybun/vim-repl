@@ -75,17 +75,34 @@ function! repl#REPLClose()
                 exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
             endif
 		endif
+    elseif repl#REPLIsHidden()
+        call repl#REPLUnhide()
+        call repl#REPLClose()
+        return
 	endif
-
-	exe bufwinnr(g:repl_target_n) . 'wincmd w'
+    exe bufwinnr(g:repl_target_n) . 'wincmd w'
     unlet b:REPL_OPEN_TERMINAL
 endfunction
 
 function! repl#REPLHide()
 	if repl#REPLIsVisible()
 		call repl#REPLGoToWindowForBufferName('ZYTREPL')
-		hide!
+        hide
 	endif
+endfunction
+
+function! repl#REPLUnhide()
+    if repl#REPLIsHidden()
+        if g:repl_position == 0
+            exe 'bo unhide'
+        elseif g:repl_position == 1
+            exe 'to unhide'
+        elseif g:repl_position == 2
+            exe 'vert unhide'
+        else
+            exe 'vert rightb unhide'
+        endif
+    endif
 endfunction
 
 function! repl#REPLOpen(...)
@@ -121,8 +138,18 @@ function! repl#REPLOpen(...)
 		endif
 	endif
     exe 'file ZYTREPL'
+    exe 'setlocal noswapfile'
 endfunction
 
+function! repl#REPLIsHidden()
+    if bufnr('ZYTREPL') == -1
+        return 0
+    elseif repl#REPLIsVisible() == 1
+        return 0
+    else
+        return 1
+    endif
+endfunction
 
 function! repl#REPLIsVisible()
 	if bufwinnr(bufnr('ZYTREPL')) != -1
@@ -136,26 +163,28 @@ function! repl#REPLToggle(...)
 	if repl#REPLIsVisible()
         let l:cursor_pos = getpos('.')
 		call repl#REPLClose()
+    elseif repl#REPLIsHidden()
+        call repl#REPLUnhide()
 	else
         let l:cursor_pos = getpos('.')
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
         call call(function('repl#REPLOpen'), a:000)
-	endif
-	if g:repl_stayatrepl_when_open == 0
-		exe bufwinnr(g:repl_target_n) . 'wincmd w'
-        if exists('g:repl_predefine_' . repl#REPLGetShortName())
-            let l:command_dict = eval('g:repl_predefine_' . repl#REPLGetShortName())
-            let l:precode = []
-            for l:key in keys(l:command_dict)
-                if search(l:key) != 0
-                    " call g:REPLSend(l:command_dict[l:key])
-                    call add(l:precode, l:command_dict[l:key])
-                endif
-            endfor
-            call repl#Sends(l:precode, ['>>>', '...', 'ipdb>', 'pdb>'])
+        if g:repl_stayatrepl_when_open == 0
+            exe bufwinnr(g:repl_target_n) . 'wincmd w'
+            if exists('g:repl_predefine_' . repl#REPLGetShortName())
+                let l:command_dict = eval('g:repl_predefine_' . repl#REPLGetShortName())
+                let l:precode = []
+                for l:key in keys(l:command_dict)
+                    if search(l:key) != 0
+                        " call g:REPLSend(l:command_dict[l:key])
+                        call add(l:precode, l:command_dict[l:key])
+                    endif
+                endfor
+                call repl#Sends(l:precode, ['>>>', '...', 'ipdb>', 'pdb>'])
+            endif
+            call cursor(l:cursor_pos[1], l:cursor_pos[2])
         endif
-        call cursor(l:cursor_pos[1], l:cursor_pos[2])
 	endif
 endfunction
 
