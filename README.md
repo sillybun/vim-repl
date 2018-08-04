@@ -27,16 +27,8 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 Use your plugin manager of choice.
 
-- [Pathogen](https://github.com/tpope/vim-pathogen)
-  - `git clone https://github.com/sillybun/vim-repl ~/.vim/bundle/vim-repl`
-- [Vundle](https://github.com/gmarik/vundle)
-  - Add `Bundle 'sillybun/vim-repl/'` to .vimrc
-  - Run `:BundleInstall`
-- [NeoBundle](https://github.com/Shougo/neobundle.vim)
-  - Add `NeoBundle 'sillybun/vim-repl/'` to .vimrc
-  - Run `:NeoBundleInstall`
 - [vim-plug](https://github.com/junegunn/vim-plug)
-  - Add `Plug 'sillybun/vim-repl/'` to .vimrc
+  - Add `Plug 'sillybun/vim-repl', {'do': './install.sh'}` to .vimrc
   - Run `:PlugInstall`
 
 ## Usage
