@@ -6,8 +6,18 @@ function! repl#AsList(value)
     end
 endfunction
 
+function! repl#StartWith(string, substring)
+    if strlen(a:string) <= strlen(a:substring)
+        return 0
+    elseif a:string[0:(strlen(a:substring)-1)] ==# a:substring
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
 function! repl#REPLGetName()
-    if exists("b:REPL_OPEN_TERMINAL")
+    if exists('b:REPL_OPEN_TERMINAL')
         return b:REPL_OPEN_TERMINAL
     elseif &buftype ==# 'terminal'
 		return bufname('%')[1:]
@@ -32,7 +42,7 @@ function! repl#REPLGetShortName()
         return 'ptpython'
     elseif l:temp ==# 'ipython'
         return 'ipython'
-    elseif l:temp =~ '.*python.*'
+    elseif l:temp =~# '.*python.*'
         return 'python'
     else
         return l:temp
@@ -196,14 +206,52 @@ function! repl#SendCurrentLine() abort
 endfunction
 
 
-function! repl#RemoveLeftSpace(lines)
+function! repl#RemoveLeftSpace(lines, repl_program)
 python3 << EOF
 import vim
+import afpython
+
+def getindent(line):
+    if line.strip() == '':
+        return 10000
+    else:
+        return len(line) - len(line.lstrip())
+
+def AutoStop(line):
+    line = line.lstrip()
+    if vim.eval("a:repl_program") == "ptpython":
+        if line.startswith("pass"):
+            return True
+        else:
+            return False
+    elif vim.eval("a:repl_program") == "ipython":
+        if line.startswith("pass") or line.startswith("return") or line.startswith("raise") or line.startswith("continue") or line.startswith("break"):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 
 codes = vim.eval("a:lines")
+oldcode = vim.eval("a:lines")
+
+for i in range(1, len(codes)):
+    lastcode = codes[i-1]
+    code = codes[i]
+    indentlevel, finishflag, finishtype = afpython.getpythonindent(oldcode[:(i+1)])
+    oldindentlevel, oldfinishflag, oldfinishtype = afpython.getpythonindent(oldcode[:i])
+    if not oldfinishflag:
+        continue
+    elif lastcode != '' and code != '':
+        if oldindentlevel == indentlevel + 1 and not AutoStop(codes[i-1]):
+            codes[i] = ''.join(["\b"] * 4) + code.lstrip()
+        elif oldindentlevel > indentlevel + 1:
+            codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(codes[i-1]))) + code.lstrip()
+
 codes = [code.lstrip() for code in codes]
 EOF
-return py3eval("codes")
+return py3eval('codes')
 endfunction
 
 function! repl#GetPythonCode(lines)
@@ -241,6 +289,7 @@ else:
             if isnewline(codes[i]):
                 if i != 0 and codes[i-1].startswith(" "):
                     newlines.append("")
+                    newlines.append("")
             newlines.append(codes[i])
         else:
             flag = False
@@ -258,8 +307,9 @@ else:
                     break
             if flag:
                 newlines.append('')
+                newlines.append('')
 EOF
-return py3eval("newlines")
+return py3eval('newlines')
 endfunction
 
 function! repl#GetTerminalLine() abort
@@ -306,6 +356,7 @@ function! repl#Sends(tasks, symbols)
     let s:waitforsymbols = repl#AsList(a:symbols)
     let s:taskprocess = 0
     let s:currentlinenumber = -1
+    let s:currentrepltype = repl#REPLGetShortName()
     call repl#WaitHandlerNotCall(0)
 endfunction
 
@@ -340,9 +391,9 @@ function! repl#SendLines(first, last) abort
 		endwhile
         let l:sn = repl#REPLGetShortName()
         if l:sn ==# 'ptpython'
-            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:last)), '')), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:last)), '')), ['\.\.\.', 'In'])
+            call repl#Sends(repl#RemoveLeftSpace(add(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), ''), 'ipython'), ['\.\.\.', 'In'])
         elseif l:sn =~ 'python' || l:sn =~ 'python3'
             call repl#Sends(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
@@ -365,6 +416,25 @@ endfunction
 
 function! repl#SendAll() abort
     call repl#SendLines(1, line('$'))
+endfunction
+
+function! repl#SendSession() abort
+    let l:begin_line_number = getline('.')
+    let l:end_line_number = getline('.')
+    for i in range(1, line('.'))
+        if getline(i) == "# BEGIN"
+            let l:begin_line_number = i
+        endif
+    endfor
+    for i in range(line('.'), line('$'))
+        if getline(i) == "# END"
+            let l:end_line_number = i
+            break
+        endif
+    endfor
+    if l:begin_line_number + 1 < l:end_line_number
+        call repl#SendLines(l:begin_line_number+1, l:end_line_number-1)
+    endif
 endfunction
 
 function! repl#REPLDebug() abort

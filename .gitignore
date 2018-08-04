@@ -5,3 +5,4 @@ test/__pycache__
 *.out
 *.files
 python_tags
+build
