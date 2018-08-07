@@ -1,6 +1,4 @@
 import numpy as np
-import dill
-from typing import Dict
 
 class myclass:
     def __init__(self):
@@ -11,10 +9,8 @@ x = myclass()
 
 y: int = 1
 
-z: Dict[str, int] = {"ZYT": 1993}
+z = {"ZYT": 1993}
 
 z["zyt"] = 1993
 
-dill.dump_session("UUUU.log")
-
-
+# CHECKPOINT 2871185

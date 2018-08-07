@@ -149,64 +149,10 @@ function! s:REPLDebugIPDB() abort
     endwhile
 endfunction
 
-function! s:REPLGetCheckID(line) abort
-    if repl#StartWith(a:line, '# CHECKPOINT')
-        if strlen(a:line) > strlen('# CHECKPOINT ')
-            let l:checkID = a:line[strlen('# CHECKPOINT '):]
-            if stridx(l:checkID, ' ') == -1
-                return l:checkID
-            endif
-        endif
-    endif
-    return ''
-endfunction
-
-function! s:RandomNumber() abort
-python3 << EOF
-import random
-randomnumber = random.randint(100000, 10000000)
-EOF
-return py3eval('randomnumber')
-endfunction
-
 function! s:REPLAddCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# CHECKPOINT')
-        if s:REPLGetCheckID(l:currentline) !=# ''
-            return
-        endif
-        let l:checkid = s:RandomNumber()
-        echom l:checkid
-        call setline('.', '# CHECKPOINT ' . l:checkid)
-    else
-        let l:checkid = s:RandomNumber()
-        call append(line('.'), '# CHECKPOINT ' . l:checkid)
-    endif
-endfunction
-
-function! s:REPLSaveCheckPoint() abort
-    let l:currentline = getline('.')
-    echom l:currentline
-    if repl#StartWith(l:currentline, '# CHECKPOINT')
-        if s:REPLGetCheckID(l:currentline) ==# ''
-            call s:REPLAddCheckPoint()
-        endif
-        let l:checkid = s:REPLGetCheckID(getline('.'))
-        echom l:checkid
-        if repl#REPLIsVisible()
-            call term_sendkeys('ZYTREPL', '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
-        endif
-    endif
-endfunction
-
-function! s:REPLLoadCheckPoint() abort
-    let l:currentline = getline('.')
-    if s:REPLGetCheckID(l:currentline) ==# ''
-        return
-    endif
-    let l:checkid = s:REPLGetCheckID(getline('.'))
-    if repl#REPLIsVisible()
-            call term_sendkeys('ZYTREPL', '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+    let l:currentline = getline(".")
+    if repl#StartWith(l:currentline, "# CHECKPOINT")
+        if 
     endif
 endfunction
 
@@ -216,6 +162,3 @@ command! REPLPDBN silent call s:REPLDebugN()
 command! REPLPDBS silent call s:REPLDebugS()
 command! REPLPDBU silent call s:REPLDebugU()
 command! REPLDebug silent call s:REPLDebugIPDB()
-command! REPLAddCheckPoint silent call s:REPLAddCheckPoint()
-command! REPLSaveCheckPoint call s:REPLSaveCheckPoint()
-command! REPLLoadCheckPoint silent call s:REPLLoadCheckPoint()
