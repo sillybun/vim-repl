@@ -176,7 +176,6 @@ function! s:REPLAddCheckPoint() abort
             return
         endif
         let l:checkid = s:RandomNumber()
-        echom l:checkid
         call setline('.', '# CHECKPOINT ' . l:checkid)
     else
         let l:checkid = s:RandomNumber()
@@ -186,15 +185,18 @@ endfunction
 
 function! s:REPLSaveCheckPoint() abort
     let l:currentline = getline('.')
-    echom l:currentline
     if repl#StartWith(l:currentline, '# CHECKPOINT')
         if s:REPLGetCheckID(l:currentline) ==# ''
             call s:REPLAddCheckPoint()
         endif
         let l:checkid = s:REPLGetCheckID(getline('.'))
-        echom l:checkid
         if repl#REPLIsVisible()
             call term_sendkeys('ZYTREPL', '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+            if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
+                call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
+            else
+                call append(line('.'), '# '. strftime('%Y-%m-%d'))
+            endif
         endif
     endif
 endfunction

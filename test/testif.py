@@ -5,3 +5,9 @@ if 1:
         pass
 else:
     pass
+
+def func():
+    if True:
+        return 1
+    for i in range(3):
+        return 0

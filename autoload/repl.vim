@@ -199,8 +199,82 @@ function! repl#REPLToggle(...)
 	endif
 endfunction
 
+function! repl#REPLGetCheckID(line) abort
+    if repl#StartWith(a:line, '# CHECKPOINT')
+        if strlen(a:line) > strlen('# CHECKPOINT ')
+            let l:checkID = a:line[strlen('# CHECKPOINT '):]
+            if stridx(l:checkID, ' ') == -1
+                return l:checkID
+            endif
+        endif
+    endif
+    return ''
+endfunction
+
+function! repl#RandomNumber() abort
+python3 << EOF
+import random
+randomnumber = random.randint(100000, 10000000)
+EOF
+return py3eval('randomnumber')
+endfunction
+
+function! repl#REPLAddCheckPoint() abort
+    let l:currentline = getline('.')
+    if repl#StartWith(l:currentline, '# CHECKPOINT')
+        if repl#REPLGetCheckID(l:currentline) !=# ''
+            return
+        endif
+        let l:checkid = repl#RandomNumber()
+        call setline('.', '# CHECKPOINT ' . l:checkid)
+    else
+        let l:checkid = repl#RandomNumber()
+        call append(line('.'), '# CHECKPOINT ' . l:checkid)
+    endif
+endfunction
+
+function! repl#REPLSaveCheckPoint() abort
+    let l:currentline = getline('.')
+    if repl#StartWith(l:currentline, '# CHECKPOINT')
+        if repl#REPLGetCheckID(l:currentline) ==# ''
+            call repl#REPLAddCheckPoint()
+        endif
+        let l:checkid = repl#REPLGetCheckID(getline('.'))
+        if repl#REPLIsVisible()
+            call term_sendkeys('ZYTREPL', '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+            if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
+                call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
+            else
+                call append(line('.'), '# '. strftime('%Y-%m-%d'))
+            endif
+        endif
+    endif
+endfunction
+
+function! repl#REPLLoadCheckPoint() abort
+    let l:currentline = getline('.')
+    if repl#REPLGetCheckID(l:currentline) ==# ''
+        return
+    endif
+    let l:checkid = repl#REPLGetCheckID(getline('.'))
+    if repl#REPLIsVisible()
+        call term_sendkeys('ZYTREPL', '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+    endif
+endfunction
+
 function! repl#SendCurrentLine() abort
 	if bufexists('ZYTREPL')
+        if repl#REPLGetShortName() =~# '.*python.*'
+            if repl#StartWith(getline('.'), '# CHECKPOINT')
+                if repl#REPLGetCheckID(getline('.')) !=# ''
+                    call repl#REPLLoadCheckPoint()
+                    return
+                else
+                    call repl#REPLSaveCheckPoint()
+                    return
+                endif
+            endif
+        endif
 		exe "call term_sendkeys('" . 'ZYTREPL' . ''', getline(".") . "\<Cr>")'
 		exe "call term_wait('" . 'ZYTREPL' . ''',  50)'
 	endif
@@ -237,22 +311,42 @@ def AutoStop(line):
 codes = vim.eval("a:lines")
 oldcode = vim.eval("a:lines")
 
+
 for i in range(1, len(codes)):
-    lastcode = codes[i-1]
-    code = codes[i]
+    lastcode = oldcode[i-1]
+    code = oldcode[i]
     indentlevel, finishflag, finishtype = afpython.getpythonindent(oldcode[:(i+1)])
     oldindentlevel, oldfinishflag, oldfinishtype = afpython.getpythonindent(oldcode[:i])
     if not oldfinishflag:
         continue
     elif lastcode != '' and code != '':
-        if oldindentlevel == indentlevel + 1 and not AutoStop(codes[i-1]):
+        if oldindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
             codes[i] = ''.join(["\b"] * 4) + code.lstrip()
         elif oldindentlevel > indentlevel + 1:
-            codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(codes[i-1]))) + code.lstrip()
+            codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
 
 codes = [code.lstrip() for code in codes]
 EOF
 return py3eval('codes')
+endfunction
+
+function! repl#RemovePythonComments(codes)
+python3 << EOF
+import vim
+import afpython
+
+codes = vim.eval("a:codes")
+newcodes = []
+
+for i in range(len(codes)):
+    if codes[i].lstrip().startswith("#"):
+        indentlevel, finishflag, finishtype = afpython.getpythonindent(codes[:(i+1)])
+        print(codes[i], finishflag, finishtype)
+        if finishflag:
+            continue
+    newcodes.append(codes[i])
+EOF
+return py3eval('newcodes')
 endfunction
 
 function! repl#GetPythonCode(lines)
@@ -392,10 +486,10 @@ function! repl#SendLines(first, last) abort
 		endwhile
         let l:sn = repl#REPLGetShortName()
         if l:sn ==# 'ptpython'
-            call repl#Sends(repl#RemoveLeftSpace(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#RemoveLeftSpace(add(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), ''), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            call repl#Sends(repl#RemoveLeftSpace(add(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), ''), 'ipython'), ['\.\.\.', 'In'])
-        elseif l:sn =~ 'python' || l:sn =~ 'python3'
+            call repl#Sends(repl#RemoveLeftSpace(add(add(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), ''), ''), 'ipython'), ['\.\.\.', 'In'])
+        elseif l:sn =~# 'python' || l:sn =~# 'python3'
             call repl#Sends(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:last), ''), g:repl_input_symbols[l:sn])

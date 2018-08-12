@@ -361,10 +361,13 @@ def getcurrentindent(buffer, linenumber: int) -> Tuple[int, bool]:
 
 
 def main():
-    source = """1 + 2\
-    3
+    source = """
+def func(a):
+    \"\"\"
+    # this is a test
+    \"\"\"
 """.split("\n")
-    print(getcurrentindent(source, 2))
+    print(getcurrentindent(source, 4))
 
 if __name__ == "__main__":
     main()
