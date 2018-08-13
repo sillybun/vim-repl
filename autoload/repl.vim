@@ -280,6 +280,110 @@ function! repl#SendCurrentLine() abort
 	endif
 endfunction
 
+function! repl#RemoveExtraEmptyLine(lines, repl_program)
+python3 << EOF
+import vim
+
+def GetBlockType(codeblock):
+    if not codeblock:
+        return "EMPTY"
+    elif codeblock[0].lstrip().startswith("if "):
+        return "IF"
+    elif codeblock[0].lstrip().startswith("for "):
+        return "FOR"
+    elif codeblock[0].lstrip().startswith("while "):
+        return "WHILE"
+    elif codeblock[0].lstrip().startswith("try "):
+        return "TRY"
+    elif codeblock[0].lstrip().startswith("def "):
+        return "FUNCTION"
+    elif codeblock[0].lstrip().startswith("class "):
+        return "FUNCTION"
+    elif codeblock[0].lstrip().startswith("with "):
+        return "WITH"
+    else:
+        return "UNK"
+
+codes = vim.eval("a:lines")
+repl_program = vim.eval("a:repl_program")
+
+codes_splited = []
+temp_codes_block = []
+
+for i in range(len(codes)):
+    if codes[i] == '':
+        if temp_codes_block:
+            codes_splited.append(temp_codes_block)
+            temp_codes_block = []
+        else:
+            continue
+    elif codes[i][0] != " " and GetBlockType([codes[i]]) != "UNK" and temp_codes_block:
+        codes_splited.append(temp_codes_block)
+        temp_codes_block = [codes[i]]
+    else:
+        temp_codes_block.append(codes[i])
+
+if temp_codes_block:
+    codes_splited.append(temp_codes_block)
+
+
+def GetBlockSpace(codeblock):
+    if repl_program == "ptpython":
+        bt = GetBlockType(codeblock)
+        if bt == "EMPTY":
+            return 0
+        elif bt == "IF":
+            return 1
+        elif bt == "FOR":
+            return 1
+        elif bt == "WHILE":
+            return 1
+        elif bt == "TRY":
+            return 1
+        elif bt == "FUNCTION":
+            return 2
+        elif bt == "CLASS":
+            return 1
+        elif bt == "WITH":
+            return 1
+        else:
+            return 0
+    elif repl_program == "ipython":
+        bt = GetBlockType(codeblock)
+        if bt == "EMPTY":
+            return 0
+        elif bt == "IF":
+            return 1
+        elif bt == "FOR":
+            return 1
+        elif bt == "WHILE":
+            return 1
+        elif bt == "TRY":
+            return 1
+        elif bt == "FUNCTION":
+            return 2
+        elif bt == "CLASS":
+            return 1
+        elif bt == "WITH":
+            return 1
+        else:
+            return 0
+    else:
+        if GetBlockType(codeblock) == "UNK":
+            return 0
+        else:
+            return 1
+
+final_codes = []
+
+for code_block in codes_splited:
+    final_codes += code_block
+    for i in range(GetBlockSpace(code_block)):
+        final_codes.append("")
+
+EOF
+return py3eval("final_codes")
+endfunction
 
 function! repl#RemoveLeftSpace(lines, repl_program)
 python3 << EOF
@@ -312,18 +416,19 @@ codes = vim.eval("a:lines")
 oldcode = vim.eval("a:lines")
 
 
-for i in range(1, len(codes)):
-    lastcode = oldcode[i-1]
-    code = oldcode[i]
-    indentlevel, finishflag, finishtype = afpython.getpythonindent(oldcode[:(i+1)])
-    oldindentlevel, oldfinishflag, oldfinishtype = afpython.getpythonindent(oldcode[:i])
-    if not oldfinishflag:
-        continue
-    elif lastcode != '' and code != '':
-        if oldindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
-            codes[i] = ''.join(["\b"] * 4) + code.lstrip()
-        elif oldindentlevel > indentlevel + 1:
-            codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
+if vim.eval("a:repl_program") == "ptpython" or vim.eval("a:repl_program") == "ipython":
+    for i in range(1, len(codes)):
+        lastcode = oldcode[i-1]
+        code = oldcode[i]
+        indentlevel, finishflag, finishtype = afpython.getpythonindent(oldcode[:(i+1)])
+        oldindentlevel, oldfinishflag, oldfinishtype = afpython.getpythonindent(oldcode[:i])
+        if not oldfinishflag:
+            continue
+        elif lastcode != '' and code != '':
+            if oldindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
+                codes[i] = ''.join(["\b"] * 4) + code.lstrip()
+            elif oldindentlevel > indentlevel + 1:
+                codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
 
 codes = [code.lstrip() for code in codes]
 EOF
@@ -341,7 +446,7 @@ newcodes = []
 for i in range(len(codes)):
     if codes[i].lstrip().startswith("#"):
         indentlevel, finishflag, finishtype = afpython.getpythonindent(codes[:(i+1)])
-        print(codes[i], finishflag, finishtype)
+        # print(codes[i], finishflag, finishtype)
         if finishflag:
             continue
     newcodes.append(codes[i])
@@ -486,11 +591,11 @@ function! repl#SendLines(first, last) abort
 		endwhile
         let l:sn = repl#REPLGetShortName()
         if l:sn ==# 'ptpython'
-            call repl#Sends(repl#RemoveLeftSpace(add(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), ''), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ptpython'), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            call repl#Sends(repl#RemoveLeftSpace(add(add(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), ''), ''), 'ipython'), ['\.\.\.', 'In'])
+            call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ipython'), 'ipython'), ['\.\.\.', 'In'])
         elseif l:sn =~# 'python' || l:sn =~# 'python3'
-            call repl#Sends(add(repl#GetPythonCode(getline(l:firstline, a:last)), ''), ['>>>', '...', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#RemoveExtraEmptyLine(repl#GetPythonCode(getline(l:firstline, a:last)), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:last), ''), g:repl_input_symbols[l:sn])
         else
