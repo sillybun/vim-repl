@@ -33,3 +33,6 @@ if !exists('g:repl_stayatrepl_when_open')
 	let g:repl_stayatrepl_when_open = 0
 endif
 
+if !exists('g:repl_checkpoint_notation')
+    let g:repl_checkpoint_notation = "CHECKPOINT"
+endif

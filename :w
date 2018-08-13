@@ -200,9 +200,9 @@ function! repl#REPLToggle(...)
 endfunction
 
 function! repl#REPLGetCheckID(line) abort
-    if repl#StartWith(a:line, '# '. g:repl_checkpoint_notation)
-        if strlen(a:line) > strlen('# '. g:repl_checkpoint_notation .' ')
-            let l:checkID = a:line[strlen('# '. g:repl_checkpoint_notation .' '):]
+    if repl#StartWith(a:line, '# CHECKPOINT')
+        if strlen(a:line) > strlen('# CHECKPOINT ')
+            let l:checkID = a:line[strlen('# CHECKPOINT '):]
             if stridx(l:checkID, ' ') == -1
                 return l:checkID
             endif
@@ -235,7 +235,7 @@ endfunction
 
 function! repl#REPLSaveCheckPoint() abort
     let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
+    if repl#StartWith(l:currentline, '# CHECKPOINT')
         if repl#REPLGetCheckID(l:currentline) ==# ''
             call repl#REPLAddCheckPoint()
         endif
@@ -265,7 +265,7 @@ endfunction
 function! repl#SendCurrentLine() abort
 	if bufexists('ZYTREPL')
         if repl#REPLGetShortName() =~# '.*python.*'
-            if repl#StartWith(getline('.'), '# ' . g:repl_checkpoint_notation)
+            if repl#StartWith(getline('.'), '# CHECKPOINT')
                 if repl#REPLGetCheckID(getline('.')) !=# ''
                     call repl#REPLLoadCheckPoint()
                     return

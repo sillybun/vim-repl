@@ -150,9 +150,9 @@ function! s:REPLDebugIPDB() abort
 endfunction
 
 function! s:REPLGetCheckID(line) abort
-    if repl#StartWith(a:line, '# CHECKPOINT')
-        if strlen(a:line) > strlen('# CHECKPOINT ')
-            let l:checkID = a:line[strlen('# CHECKPOINT '):]
+    if repl#StartWith(a:line, '# ' . g:repl_checkpoint_notation)
+        if strlen(a:line) > strlen('# '. g:repl_checkpoint_notation .' ')
+            let l:checkID = a:line[strlen('# '. g:repl_checkpoint_notation .' '):]
             if stridx(l:checkID, ' ') == -1
                 return l:checkID
             endif
@@ -171,21 +171,21 @@ endfunction
 
 function! s:REPLAddCheckPoint() abort
     let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# CHECKPOINT')
+    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
         if s:REPLGetCheckID(l:currentline) !=# ''
             return
         endif
         let l:checkid = s:RandomNumber()
-        call setline('.', '# CHECKPOINT ' . l:checkid)
+        call setline('.', '# '. g:repl_checkpoint_notation .' ' . l:checkid)
     else
         let l:checkid = s:RandomNumber()
-        call append(line('.'), '# CHECKPOINT ' . l:checkid)
+        call append(line('.'), '# '. g:repl_checkpoint_notation .' ' . l:checkid)
     endif
 endfunction
 
 function! s:REPLSaveCheckPoint() abort
     let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# CHECKPOINT')
+    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
         if s:REPLGetCheckID(l:currentline) ==# ''
             call s:REPLAddCheckPoint()
         endif
