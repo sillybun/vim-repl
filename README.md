@@ -143,7 +143,7 @@ let g:repl_program = {
 
 **repl_exit_command**
 
-It controls the command to exit different repl program correctly.
+It controls the command to exit different repl program correctly. (Notice: exitcommand depends on repl program not filetype of the current file, so if you want to specify exit command for program like 'ipython', please add `"ipython": "quit()"` in the dictionary)
 
 ```
 let g:repl_exit_commands = {

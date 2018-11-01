@@ -15,6 +15,7 @@ if !exists('g:repl_exit_commands')
                 \   "ptpython": "quit()",
 				\	"bash": "exit",
 				\	"zsh": "exit",
+                \   "R": "q()",
 				\	"default": "exit",
 				\	}
 end
