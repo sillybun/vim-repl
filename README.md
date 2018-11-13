@@ -31,6 +31,11 @@ Use your plugin manager of choice.
   - Add `Plug 'sillybun/vim-repl', {'do': './install.sh'}` to .vimrc
   - Run `:PlugInstall`
 
+- [Vundle](https://github.com/gmarik/vundle)
+  - Add `Bundle 'https://github.com/sillybun/vim-repl'` to .vimrc
+  - Run `:BundleInstall`
+  - And change to the plugin directory and run in shell `./install.sh`
+
 ## Usage
 
 ### How to open REPL
