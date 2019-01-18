@@ -437,7 +437,7 @@ if vim.eval("a:repl_program") == "ptpython" or vim.eval("a:repl_program") == "ip
 
 codes = [code.lstrip() for code in codes]
 EOF
-" echom string(py3eval('codes'))
+echom string(py3eval('codes'))
 return py3eval('codes')
 endfunction
 
@@ -531,12 +531,12 @@ function! repl#GetCurrentLineNumber() abort
 endfunction
 
 function! repl#WaitHandlerNotCall(channel) abort
-    if len(g:tasks) == g:taskprocess
+    if len(s:tasks) == s:taskprocess
         return
     endif
     let l:tl = repl#GetTerminalLine()
     let l:flag = 0
-    for l:symbol in g:waitforsymbols
+    for l:symbol in s:waitforsymbols
         if match(l:tl, l:symbol) != -1
             let l:flag = 1
         endif
@@ -545,8 +545,8 @@ function! repl#WaitHandlerNotCall(channel) abort
         call repl#WaitWHNotCall()
         return
     else
-        call term_sendkeys('ZYTREPL', g:tasks[g:taskprocess] . "\<Cr>")
-        let g:taskprocess = g:taskprocess + 1
+        call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
+        let s:taskprocess = s:taskprocess + 1
         call repl#WaitWHNotCall()
         return
     endif
@@ -558,13 +558,6 @@ endfunction
 
 function! repl#CheckInputState()
     let l:tl = repl#GetTerminalLine()
-    if g:currentrepltype ==# 'ipython' && g:taskprocess != 0 && g:tasks[g:taskprocess-1] == ''
-        if match(l:tl, 'In') != -1
-            return 1
-        else
-            return 0
-        endif
-    endif
     for l:symbol in g:waitforsymbols
         if match(l:tl, l:symbol) != -1
             return 1
@@ -579,11 +572,10 @@ function! repl#Sends(tasks, symbols)
     let g:taskprocess = 0
     let g:currentlinenumber = -1
     let g:currentrepltype = repl#REPLGetShortName()
-    " echom len(g:tasks)
-    let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+    let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:tasksprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     let g:term_send_task_index = 0
-    " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
-    call repl#WaitHandlerNotCall(0)
+    call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
+    " call repl#WaitHandlerNotCall(0)
 endfunction
 
 function! repl#WaitForSymbolsHandler(channel)
