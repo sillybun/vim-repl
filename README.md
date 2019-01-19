@@ -27,14 +27,20 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 Use your plugin manager of choice.
 
-- [vim-plug](https://github.com/junegunn/vim-plug)
+- [vim-plug](https://github.com/junegunn/vim-plug) (*****recommended**)
   - Add `Plug 'sillybun/vim-repl', {'do': './install.sh'}` to .vimrc
+  - Add `Plug 'sillybun/vim-async', {'do': './install.sh'}` to .vimrc
+  - Add `Plug 'sillybun/zytutil'` to .vimrc
   - Run `:PlugInstall`
 
 - [Vundle](https://github.com/gmarik/vundle)
   - Add `Bundle 'https://github.com/sillybun/vim-repl'` to .vimrc
+  - Add `Bundle 'sillybun/vim-async'` to .vimrc
+  - Add `Bundle 'sillybun/zytutil'` to .vimrc
   - Run `:BundleInstall`
-  - And change to the plugin directory and run in shell `./install.sh`
+  - And change to the plugin directory of vim-repl and run in shell `./install.sh`
+  - And change to the plugin directory of vim-async and run in shell `./install.sh`
+
 
 ## Usage
 
