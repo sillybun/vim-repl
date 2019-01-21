@@ -581,8 +581,9 @@ function! repl#Sends(tasks, symbols)
     let g:currentrepltype = repl#REPLGetShortName()
     " echom len(g:tasks)
     let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
-    let g:term_send_task_index = 0
-    call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
+    " let g:term_send_task_index = 0
+    " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
+    call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     " call repl#WaitHandlerNotCall(0)
 endfunction
 
