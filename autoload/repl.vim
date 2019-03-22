@@ -290,7 +290,10 @@ def GetBlockType(codeblock):
     elif codeblock[0].lstrip().startswith("if "):
         return "IF"
     elif codeblock[0].lstrip().startswith("for "):
-        return "FOR"
+        if codeblock[-1].strip().endswith("pass"):
+            return "FOR-PASS"
+        else:
+            return "FOR"
     elif codeblock[0].lstrip().startswith("while "):
         return "WHILE"
     elif codeblock[0].lstrip().startswith("try "):
@@ -336,6 +339,8 @@ def GetBlockSpace(codeblock):
             return 1
         elif bt == "FOR":
             return 1
+        elif bt == "FOR-PASS":
+            return 1
         elif bt == "WHILE":
             return 1
         elif bt == "TRY":
@@ -356,6 +361,8 @@ def GetBlockSpace(codeblock):
             return 1
         elif bt == "FOR":
             return 1
+        elif bt == "FOR-PASS":
+            return 2
         elif bt == "WHILE":
             return 1
         elif bt == "TRY":
@@ -381,6 +388,7 @@ for code_block in codes_splited:
     for i in range(GetBlockSpace(code_block)):
         final_codes.append("")
 
+print(final_codes)
 EOF
 return py3eval("final_codes")
 endfunction
@@ -495,6 +503,20 @@ else:
                 if i != 0 and codes[i-1].startswith(" "):
                     newlines.append("")
                     newlines.append("")
+                    temp = i - 1
+                    temp_last = i - 1
+                    while temp_last >= 0:
+                        if len(codes[temp_last].strip()) > 0:
+                            break
+                        temp_last = temp_last - 1
+                    while temp >= 0:
+                        if len(codes[temp]) > 0 and codes[temp][0] != ' ':
+                            break
+                        temp = temp - 1
+                    if codes[temp].startswith("def "):
+                        newlines.append("")
+                        #if codes[temp].startswith("for ") and codes[temp_last].endswith("pass"):
+                        #newlines.append("")
             newlines.append(codes[i])
         else:
             flag = False
@@ -511,8 +533,23 @@ else:
                         flag = False
                     break
             if flag:
+                temp = i - 1
+                temp_last = i - 1
+                while temp_last >= 0:
+                    if len(codes[temp_last].strip()) > 0:
+                        break
+                    temp_last = temp_last - 1
+                while temp >= 0:
+                    if len(codes[temp]) > 0 and codes[temp][0] != ' ':
+                        break
+                    temp = temp - 1
+                if codes[temp].startswith("def "):
+                    newlines.append("")
+                #if codes[temp].startswith("for ") and codes[temp_last].endswith("pass"):
+                    #newlines.append("")
                 newlines.append('')
                 newlines.append('')
+# print(newlines)
 EOF
 return py3eval('newlines')
 endfunction
@@ -558,7 +595,7 @@ endfunction
 
 function! repl#CheckInputState()
     let l:tl = repl#GetTerminalLine()
-    if g:currentrepltype ==# 'ipython' && g:taskprocess != 0 && g:tasks[g:taskprocess-1] == ''
+    if g:currentrepltype ==# 'ipython' && g:taskprocess != 0 && g:tasks[g:taskprocess-1] ==# '' && g:tasks[g:taskprocess] !=# ''
         if match(l:tl, 'In') != -1
             return 1
         else
