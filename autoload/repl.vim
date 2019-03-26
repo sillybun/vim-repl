@@ -388,7 +388,7 @@ for code_block in codes_splited:
     for i in range(GetBlockSpace(code_block)):
         final_codes.append("")
 
-print(final_codes)
+# print(final_codes)
 EOF
 return py3eval("final_codes")
 endfunction
