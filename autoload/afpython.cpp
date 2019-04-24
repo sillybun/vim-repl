@@ -262,6 +262,7 @@ NUMBERCASE:
                 case ',':
                 case ' ':
                 case '\t':
+                case ':':
                     break;
                 default:
                     conditionstack.clear();

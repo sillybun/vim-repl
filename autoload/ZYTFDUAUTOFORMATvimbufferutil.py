@@ -61,6 +61,7 @@ class AddBufferContent:
 
 
 def getcurrentindent(buffer, linenumber: int) -> Tuple[int, bool]:
+    # intentlevel, finishflag, unfinishedtype
     import afpython
     lines = [buffer[row] for row in range(linenumber)]
     return afpython.getpythonindent(lines)
@@ -361,12 +362,19 @@ def getcurrentindent(buffer, linenumber: int) -> Tuple[int, bool]:
 
 
 def main():
+    # source = """
+# def func(a):
+    # \"\"\"
+    # # this is a test
+    # \"\"\"
+# """.split("\n")
     source = """
-def func(a):
-    \"\"\"
-    # this is a test
-    \"\"\"
-""".split("\n")
+if right == len(temp_train) or len(temp_train[right][0]) != len(temp_train[left][0]):
+    to_be_return.append((torch.stack(tuple(x[0] for x in temp_train[left:right])), torch.Tensor(
+        list(x[1] for x in temp_train[left:right]))))
+    left = right
+""".split("\n)
+
     print(getcurrentindent(source, 4))
 
 if __name__ == "__main__":
