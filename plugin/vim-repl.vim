@@ -10,6 +10,9 @@ endfunction
 silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendCurrentLine<Cr>'
 silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
+let g:REPLVIM_PATH = expand('<sfile>:p')
+let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
+
 command! -range SendLineToREPL <line1>,<line2>call repl#SendChunkLines()
 command! SendCurrentLine call repl#SendCurrentLine()
 command! -nargs=* REPLSend call g:REPLSend(<f-args>)

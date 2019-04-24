@@ -396,7 +396,13 @@ endfunction
 function! repl#RemoveLeftSpace(lines, repl_program)
 python3 << EOF
 import vim
+import sys
+
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+
 import afpython
+
+#print(afpython.__file__)
 
 def getindent(line):
     if line.strip() == '':
@@ -439,6 +445,27 @@ if vim.eval("a:repl_program") == "ptpython" or vim.eval("a:repl_program") == "ip
             continue
         elif lastcode != '' and code != '':
             if oldindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
+                # for situations:
+                # if True:
+                #     print(1)
+                # print(2)
+                if i > 1:
+                    # Avoid the situation
+                    # if True:
+                    #     f(1,
+                    #         2)
+                    #     g()
+                    #print(oldcode[:(i-1)])
+                    #print(afpython.getpythonindent(oldcode[:(i-1)]))
+                    old2indentlevel, old2finishflag, old2finishtype = afpython.getpythonindent(oldcode[:(i-1)])
+                    if not old2finishflag:
+                        continue
+                        #print("hello")
+                        #print(i)
+                        #print(oldcode[:i+1])
+                        #print(indentlevel, finishflag, finishtype)
+                        #print(oldindentlevel, oldfinishflag, oldfinishtype)
+                        #print(old2indentlevel, old2finishflag, old2finishtype)
                 codes[i] = ''.join(["\b"] * 4) + code.lstrip()
             elif oldindentlevel > indentlevel + 1:
                 codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
@@ -452,6 +479,10 @@ endfunction
 function! repl#RemovePythonComments(codes)
 python3 << EOF
 import vim
+
+import sys
+
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import afpython
 
 codes = vim.eval("a:codes")
