@@ -298,7 +298,8 @@ function! repl#SendCurrentLine() abort
                     call repl#REPLSaveCheckPoint()
                     return
                 endif
-            elseif repl#StartWithAny(trim(getline('.')), ['def ', 'class '])
+            elseif exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
+            " elseif repl#StartWithAny(trim(getline('.')), ['def ', 'class '])
                 call repl#SendWholeBlock()
                 return
             endif
