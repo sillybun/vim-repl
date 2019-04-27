@@ -6,6 +6,22 @@ function! repl#AsList(value)
     end
 endfunction
 
+function! repl#RStrip(string)
+    return substitute(a:string, '\s*$', '', '')
+endfunction
+
+function! repl#LStrip(string)
+    return substitute(a:string, '^\s*', '', '')
+endfunction
+
+function! repl#GetIndent(string)
+    if trim(a:string) ==# ''
+        return 9999
+    else
+        return len(a:string) - len(repl#LStrip(a:string))
+    endif
+endfunction
+
 function! repl#StartWith(string, substring)
     if strlen(a:string) < strlen(a:substring)
         return 0
@@ -14,6 +30,15 @@ function! repl#StartWith(string, substring)
     else
         return 0
     endif
+endfunction
+
+function! repl#StartWithAny(string, substringlist)
+    for l:substring in a:substringlist
+        if repl#StartWith(a:string, l:substring)
+            return 1
+        endif
+    endfor
+    return 0
 endfunction
 
 function! repl#REPLGetName()
@@ -273,6 +298,9 @@ function! repl#SendCurrentLine() abort
                     call repl#REPLSaveCheckPoint()
                     return
                 endif
+            elseif repl#StartWithAny(trim(getline('.')), ['def ', 'class '])
+                call repl#SendWholeBlock()
+                return
             endif
         endif
 		exe "call term_sendkeys('" . 'ZYTREPL' . ''', getline(".") . "\<Cr>")'
@@ -444,31 +472,28 @@ if vim.eval("a:repl_program") == "ptpython" or vim.eval("a:repl_program") == "ip
                 codes[i] = ''.join(["\b"] * ((old2indentlevel - oldindentlevel) * 4 - 4 * AutoStop(oldcode[i-2]))) + code.lstrip()
             continue
         elif lastcode != '' and code != '':
-            if oldindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
-                # for situations:
-                # if True:
-                #     print(1)
-                # print(2)
-                if i > 1:
-                    # Avoid the situation
-                    # if True:
-                    #     f(1,
-                    #         2)
-                    #     g()
-                    #print(oldcode[:(i-1)])
-                    #print(afpython.getpythonindent(oldcode[:(i-1)]))
-                    old2indentlevel, old2finishflag, old2finishtype = afpython.getpythonindent(oldcode[:(i-1)])
-                    if not old2finishflag:
-                        continue
-                        #print("hello")
-                        #print(i)
-                        #print(oldcode[:i+1])
-                        #print(indentlevel, finishflag, finishtype)
-                        #print(oldindentlevel, oldfinishflag, oldfinishtype)
-                        #print(old2indentlevel, old2finishflag, old2finishtype)
+            # Avoid the situation
+            # if True:
+            #     f(1,               ---- i-2
+            #         2)             ---- i-1
+            #     g()                ---- i
+            # But need to conside:
+            # if True:
+            #     f(1,
+            #         2)
+            # else:
+            #     print(1)
+            sourceindex = i - 1
+            while sourceindex >= 1:
+                if afpython.getpythonindent(oldcode[:sourceindex])[1] == False:
+                    sourceindex = sourceindex - 1
+                else:
+                    break
+            sourceindentlevel, sourcefinishflag, sourcefinishtype = afpython.getpythonindent(oldcode[:(sourceindex + 1)])
+            if sourceindentlevel == indentlevel + 1 and not AutoStop(oldcode[i-1]):
                 codes[i] = ''.join(["\b"] * 4) + code.lstrip()
-            elif oldindentlevel > indentlevel + 1:
-                codes[i] = ''.join(["\b"] * ((oldindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
+            elif sourceindentlevel > indentlevel + 1:
+                codes[i] = ''.join(["\b"] * ((sourceindentlevel - indentlevel) * 4 - 4 * AutoStop(oldcode[i-1]))) + code.lstrip()
 
 codes = [code.lstrip() for code in codes]
 EOF
@@ -714,8 +739,8 @@ function! repl#SendAll() abort
 endfunction
 
 function! repl#SendSession() abort
-    let l:begin_line_number = getline('.')
-    let l:end_line_number = getline('.')
+    let l:begin_line_number = line('.')
+    let l:end_line_number = line('.')
     for i in range(1, line('.'))
         if getline(i) == "# BEGIN"
             let l:begin_line_number = i
@@ -730,6 +755,20 @@ function! repl#SendSession() abort
     if l:begin_line_number + 1 < l:end_line_number
         call repl#SendLines(l:begin_line_number+1, l:end_line_number-1)
     endif
+endfunction
+
+function! repl#SendWholeBlock() abort
+    let l:begin_line = getline('.')
+    let l:begin_line_number = line('.')
+    let l:begin_indent = repl#GetIndent(l:begin_line)
+    let l:end_line_number = line('$')
+    for i in range(line('.') + 1, line('$'))
+        if repl#GetIndent(getline(i)) <= l:begin_indent
+            let l:end_line_number = i - 1
+            break
+        endif
+    endfor
+    call repl#SendLines(l:begin_line_number, l:end_line_number)
 endfunction
 
 function! repl#REPLDebug() abort
