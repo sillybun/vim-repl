@@ -174,7 +174,7 @@ Once user run `:REPLToggle` when the REPL environment is already open, this plug
 let g:repl_auto_sends = ['def ', 'class ']
 ```
 
-If `g:repl_auto_sends` is defined, once user what to send a line starts with any pattern contained in the list. Whole block will be send automatically.
+If `g:repl_auto_sends` is defined, once user sends a line starts with any pattern contained in the list, whole block will be send automatically.
 
 # Updates:
 
