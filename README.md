@@ -180,7 +180,7 @@ If `g:repl_auto_sends` is defined, once user what to send a line starts with any
 
 ## 2019.4.27
 
-- Async feature is provided by ![vim-async](https://github.com/sillybun/vim-async)
+- Async feature is provided by [vim-async](https://github.com/sillybun/vim-async)
 
 ## 2018.7.7
 
