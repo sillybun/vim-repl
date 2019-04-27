@@ -178,6 +178,10 @@ If `g:repl_auto_sends` is defined, once user what to send a line starts with any
 
 # Updates:
 
+## 2019.4.27
+
+- Async feature is provided by ![vim-async](https://github.com/sillybun/vim-async)
+
 ## 2018.7.7
 
 - Use job feature in vim 8.0 to provide better performance.
