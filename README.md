@@ -170,6 +170,12 @@ Once user run `:REPLToggle` when the REPL environment is already open, this plug
 - send a interupt signal `<C-C>` to the program
 - if the program is not close, then send two `\n` and the `exit_command + \n` to the program.
 
+```
+let g:repl_auto_sends = ['def ', 'class ']
+```
+
+If `g:repl_auto_sends` is defined, once user what to send a line starts with any pattern contained in the list. Whole block will be send automatically.
+
 # Updates:
 
 ## 2018.7.7
