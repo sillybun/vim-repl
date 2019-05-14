@@ -184,6 +184,10 @@ If `g:repl_cursor_down` is 1, once user send code blocks using visual selection,
 
 # Updates:
 
+## 2019.5.14
+
+- `g:repl_cursor_down` is provided.
+
 ## 2019.4.27
 
 - Async feature is provided by [vim-async](https://github.com/sillybun/vim-async)
