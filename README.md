@@ -176,6 +176,12 @@ let g:repl_auto_sends = ['def ', 'class ']
 
 If `g:repl_auto_sends` is defined, once user sends a line starts with any pattern contained in the list, whole block will be send automatically.
 
+```
+let g:repl_cursor_down = 0
+```
+
+If `g:repl_cursor_down` is 1, once user send code blocks using visual selection, the cursor will move to the next line of the last line of the code blocks.
+
 # Updates:
 
 ## 2019.4.27

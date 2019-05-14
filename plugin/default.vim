@@ -9,6 +9,10 @@ if !exists('g:sendtorepl_invoke_key')
 	let g:sendtorepl_invoke_key = "<leader>w"
 endif
 
+if !exists('g:repl_cursor_down')
+    let g:repl_cursor_down = 0
+endif
+
 if !exists('g:repl_exit_commands')
 	let g:repl_exit_commands = {
 				\	"python": "quit()",

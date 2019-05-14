@@ -299,7 +299,6 @@ function! repl#SendCurrentLine() abort
                     return
                 endif
             elseif exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
-            " elseif repl#StartWithAny(trim(getline('.')), ['def ', 'class '])
                 call repl#SendWholeBlock()
                 return
             endif
@@ -430,8 +429,6 @@ import sys
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 
 import afpython
-
-#print(afpython.__file__)
 
 def getindent(line):
     if line.strip() == '':
@@ -702,6 +699,9 @@ endfunction
 
 function! repl#SendChunkLines() range abort
     call repl#SendLines(a:firstline, a:lastline)
+    if g:repl_cursor_down
+        call cursor(a:lastline+1, 0)
+    endif
 endfunction
 
 function! repl#SendLines(first, last) abort
