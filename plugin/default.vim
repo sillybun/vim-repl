@@ -1,8 +1,15 @@
+let g:REPLVIM_PATH = expand('<sfile>:p')
+let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
+
 if !exists("g:repl_program")
 	let g:repl_program = {
 				\	"python": "python",
 				\	"default": "bash"
 				\	}
+endif
+
+if !has_key(g:repl_program, 'perl')
+    let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin/perl/psh'
 endif
 
 if !exists('g:sendtorepl_invoke_key')
@@ -22,7 +29,7 @@ if !exists('g:repl_exit_commands')
                 \   "R": "q()",
 				\	"default": "exit",
 				\	}
-end
+endif
 
 if !exists('g:repl_input_symbols')
     let g:repl_input_symbols = {
