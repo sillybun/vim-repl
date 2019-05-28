@@ -208,6 +208,10 @@ let g:repl_position = 3
 
 # Updates:
 
+## 2019.5.28
+
+- Support REPL environment for Windows.
+
 ## 2019.5.14
 
 - `g:repl_cursor_down` is provided.
