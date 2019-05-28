@@ -213,7 +213,6 @@ function! repl#REPLToggle(...)
                 let l:precode = []
                 for l:key in keys(l:command_dict)
                     if search(l:key) != 0
-                        " call g:REPLSend(l:command_dict[l:key])
                         call add(l:precode, l:command_dict[l:key])
                     endif
                 endfor
@@ -428,7 +427,11 @@ import sys
 
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 
-import afpython
+try:
+    import afpython
+except Exception:
+    import replpython as afpython
+
 
 def getindent(line):
     if line.strip() == '':
@@ -506,7 +509,10 @@ import vim
 import sys
 
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
-import afpython
+try:
+    import afpython
+except Exception:
+    import replpython as afpython
 
 codes = vim.eval("a:codes")
 newcodes = []
