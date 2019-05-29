@@ -793,4 +793,9 @@ function! repl#REPLDebug() abort
     echo repl#REPLGetName()
     echo "Current Exit Commands"
     echo repl#REPLGetExitCommand()
+    if has('win32') || !exists('g:has_async_engine')
+        echo 'Use Build-in Async Engine'
+    else
+        echo 'Use Vim-Async Engine'
+    endif
 endfunction
