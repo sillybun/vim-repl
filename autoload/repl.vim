@@ -671,17 +671,21 @@ function! repl#CheckInputState()
 endfunction
 
 function! repl#Sends(tasks, symbols)
-    let g:tasks = a:tasks
-    let g:waitforsymbols = repl#AsList(a:symbols)
-    let g:taskprocess = 0
-    let g:currentlinenumber = -1
-    let g:currentrepltype = repl#REPLGetShortName()
-    " echom len(g:tasks)
-    let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
-    " let g:term_send_task_index = 0
-    " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
-    call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
-    " call repl#WaitHandlerNotCall(0)
+    if has('win32') || !exists('g:has_async_engine')
+        call replforwin32#Sends(a:tasks, a:symbols)
+    else
+        let g:tasks = a:tasks
+        let g:waitforsymbols = repl#AsList(a:symbols)
+        let g:taskprocess = 0
+        let g:currentlinenumber = -1
+        let g:currentrepltype = repl#REPLGetShortName()
+        " echom len(g:tasks)
+        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        " let g:term_send_task_index = 0
+        " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
+        call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
+        " call repl#WaitHandlerNotCall(0)
+    endif
 endfunction
 
 function! repl#WaitForSymbolsHandler(channel)
