@@ -206,7 +206,6 @@ function! repl#REPLToggle(...)
 		let g:repl_target_f = @%
         call call(function('repl#REPLOpen'), a:000)
         exe 'setlocal nonu'
-        exe 'imap <ScrollWheelUp> 1'
         if g:repl_stayatrepl_when_open == 0
             exe bufwinnr(g:repl_target_n) . 'wincmd w'
             if exists('g:repl_predefine_' . repl#REPLGetShortName())
