@@ -206,6 +206,7 @@ function! repl#REPLToggle(...)
 		let g:repl_target_f = @%
         call call(function('repl#REPLOpen'), a:000)
         exe 'setlocal nonu'
+        exe 'imap <ScrollWheelUp> 1'
         if g:repl_stayatrepl_when_open == 0
             exe bufwinnr(g:repl_target_n) . 'wincmd w'
             if exists('g:repl_predefine_' . repl#REPLGetShortName())
@@ -625,32 +626,6 @@ endfunction
 
 function! repl#GetCurrentLineNumber() abort
     return term_getcursor('ZYTREPL')[0]
-endfunction
-
-function! repl#WaitHandlerNotCall(channel) abort
-    if len(g:tasks) == g:taskprocess
-        return
-    endif
-    let l:tl = repl#GetTerminalLine()
-    let l:flag = 0
-    for l:symbol in g:waitforsymbols
-        if match(l:tl, l:symbol) != -1
-            let l:flag = 1
-        endif
-    endfor
-    if l:flag == 0
-        call repl#WaitWHNotCall()
-        return
-    else
-        call term_sendkeys('ZYTREPL', g:tasks[g:taskprocess] . "\<Cr>")
-        let g:taskprocess = g:taskprocess + 1
-        call repl#WaitWHNotCall()
-        return
-    endif
-endfunction
-
-function! repl#WaitWHNotCall() abort
-    call job_start('sleep 0.03s', {'close_cb': 'repl#WaitHandlerNotCall'})
 endfunction
 
 function! repl#CheckInputState()

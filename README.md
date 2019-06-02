@@ -222,6 +222,16 @@ autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr>
 autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 let g:repl_checkpoint_notation = "CP"
 let g:repl_position = 3
+
+
+tnoremap <C-h> <C-w><C-h>
+tnoremap <C-j> <C-w><C-j>
+tnoremap <C-k> <C-w><C-k>
+tnoremap <C-l> <C-w><C-l>
+tnoremap <C-n> <C-w>N
+tnoremap <Esc> <C-w>N
+tnoremap <ScrollWheelUp> <C-w>Nk
+tnoremap <ScrollWheelDown> <C-w>Nj
 ```
 
 # Updates:
