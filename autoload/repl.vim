@@ -757,15 +757,17 @@ function! repl#SendWholeBlock() abort
 endfunction
 
 function! repl#REPLDebug() abort
-    echo "REPL program"
+    let l:os = substitute(system('uname'), "\n", "", "")
+    echo 'Operation System: ' . l:os
+    echo 'REPL program'
     echo g:repl_program
-    echo "REPL exit commands"
+    echo 'REPL exit commands'
     echo g:repl_exit_commands
-    echo "Current File Type:"
+    echo 'Current File Type:'
     echo &filetype
-    echo "Current Type:"
+    echo 'Current Type:'
     echo repl#REPLGetName()
-    echo "Current Exit Commands"
+    echo 'Current Exit Commands'
     echo repl#REPLGetExitCommand()
     if has('win32') || !exists('g:has_async_engine')
         echo 'Use Build-in Async Engine'
