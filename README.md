@@ -229,7 +229,6 @@ tnoremap <C-j> <C-w><C-j>
 tnoremap <C-k> <C-w><C-k>
 tnoremap <C-l> <C-w><C-l>
 tnoremap <C-n> <C-w>N
-tnoremap <Esc> <C-w>N
 tnoremap <ScrollWheelUp> <C-w>Nk
 tnoremap <ScrollWheelDown> <C-w>Nj
 ```

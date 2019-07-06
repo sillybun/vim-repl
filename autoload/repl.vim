@@ -727,12 +727,12 @@ function! repl#SendSession() abort
     let l:begin_line_number = line('.')
     let l:end_line_number = line('.')
     for i in range(1, line('.'))
-        if getline(i) == "# BEGIN"
+        if getline(i) == '# BEGIN'
             let l:begin_line_number = i
         endif
     endfor
     for i in range(line('.'), line('$'))
-        if getline(i) == "# END"
+        if getline(i) == '# END'
             let l:end_line_number = i
             break
         endif

@@ -27,6 +27,7 @@ if !exists('g:repl_exit_commands')
 				\	"bash": "exit",
 				\	"zsh": "exit",
                 \   "R": "q()",
+                \   'lua': 'os.exit()',
 				\	"default": "exit",
 				\	}
 endif
