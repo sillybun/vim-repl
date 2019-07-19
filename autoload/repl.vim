@@ -759,6 +759,7 @@ endfunction
 function! repl#REPLDebug() abort
     let l:os = substitute(system('uname'), "\n", "", "")
     echo 'Operation System: ' . l:os
+    echo 'Support python3: ' . has('python3')
     echo 'REPL program'
     echo g:repl_program
     echo 'REPL exit commands'
