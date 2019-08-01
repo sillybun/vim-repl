@@ -9,7 +9,15 @@ if !exists("g:repl_program")
 endif
 
 if !has_key(g:repl_program, 'perl')
+  if executable('perlconsole')
+    let g:repl_program.perl = 'perlconsole'
+  elseif executable('reply')
+    let g:repl_program.perl = 'reply'
+  elseif executable('re.pl')
+    let g:repl_program.perl = 're.pl'
+  else
     let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin/perl/psh'
+  endif
 endif
 
 if !exists('g:sendtorepl_invoke_key')

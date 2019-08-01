@@ -16,7 +16,8 @@ Read–Eval–Print Loop (REPL), also known as an interactive toplevel or langua
 
 Use vim to open a file, run `:REPLToggle` to open the REPL environment.
 
-In order to support various types of file, you have to specify which program to run for certain filetype. The default only support python file, onde you run `:REPLToggle`, `python` will running in the termianl buffer.
+By default, Python and Perl are supported. If you run `:REPLToggle` in a `python` file, you will get `python` in the terminal buffer. In a `perl` file, vim-repl will try to use `perlconsole`, `reply` and `re.pl` (in that order); so one of them should be installed.
+In order to support more languages, you will have to specify which program to run for each specific filetype.
 
 To communicate with REPL environment, select your code, press `<leader>w`. And the code will be send to REPL and run automatically.
 Or you can just stay in normal mode and press `<leader>w` and the code in the current line will be send REPL.
@@ -52,10 +53,10 @@ However, the following intalling setting use C++ to boost the plugin.
   - Run `:PlugInstall`
 
 - [Vundle](https://github.com/gmarik/vundle)
-  - Add `Bundle 'https://github.com/sillybun/vim-repl'` to .vimrc
-  - Add `Bundle 'sillybun/vim-async'` to .vimrc
-  - Add `Bundle 'sillybun/zytutil'` to .vimrc
-  - Run `:BundleInstall`
+  - Add `Plugin 'sillybun/vim-repl'` to .vimrc
+  - Add `Plugin 'sillybun/vim-async'` to .vimrc
+  - Add `Plugin 'sillybun/zytutil'` to .vimrc
+  - Run `:PluginInstall`
   - And change to the plugin directory of vim-repl and run in shell `./install.sh`
   - And change to the plugin directory of vim-async and run in shell `./install.sh`
 
