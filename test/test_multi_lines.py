@@ -1,6 +1,16 @@
 def train(self):
     if 1:
         2
-    print("After %d training steps, validation top 1 accuracy using average model is %g " %
-          (i, sum(mean_acc) / len(mean_acc)))
+    f(1,
+            2)
     mean_acc = list()
+    return 1
+
+def f(a, b, c):
+    return a + b + c
+
+if 1:
+    f(1,
+            2,
+                    3)
+    print("hello")

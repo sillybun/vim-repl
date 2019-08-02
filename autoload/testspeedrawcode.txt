@@ -1,0 +1,285 @@
+class MINIST:
+    def __init__(self):
+        self.HIDDEN_NODE = 100
+        self.LEARNING_RATE_BASE = 1e-3
+        self.LEARNING_RATE_DECAY = 0.99
+        self.REGULARIZATION_RATE = 0.00005
+        self.TRAINING_STEPS = 300000
+        self.MOVING_AVERAGE_DECAY = 0.99
+        self.global_step = tf.Variable(0, trainable=False)
+        self.data = generate_graph.GCN_Graph()
+        self.EMBEDDING_LENGTH = self.data.EMBEDDING_LENGTH
+        self.DEPTH = 2
+        self.LSTM_SIZE = self.EMBEDDING_LENGTH
+        self.MODEL_SAVE_PATH = "./saved_model/"
+        self.MODEL_NAME = "model"
+
+    def generate_training_variable(self):
+        self.gcn_weights = [tf.Variable(tf.truncated_normal([self.EMBEDDING_LENGTH, self.EMBEDDING_LENGTH], stddev=math.sqrt(
+            2 / self.EMBEDDING_LENGTH))) for i in range(self.DEPTH)]
+        self.gcn_biases = [tf.Variable(tf.constant(
+            0.1, shape = [self.EMBEDDING_LENGTH])) for i in range(self.DEPTH)]
+        self.weights1 = tf.Variable(tf.truncated_normal(
+            [self.EMBEDDING_LENGTH, self.HIDDEN_NODE], stddev=math.sqrt(2 / self.EMBEDDING_LENGTH)))
+        self.biases1 = tf.Variable(tf.constant(0.1, shape=[self.HIDDEN_NODE]))
+        self.weights2 = tf.Variable(tf.truncated_normal(
+            [self.HIDDEN_NODE, 2], stddev = math.sqrt(2 / self.HIDDEN_NODE)))
+        self.biases2 = tf.Variable(tf.constant(0.1, shape=[2]))
+
+    def generate_loss(self):
+        with tf.name_scope("loss"):
+            self.softmax_layer = tf.nn.softmax(self.layer2[:, 0])
+
+            # self.top_values = tf.contrib.framework.sort(self.softmax_layer, direction="DESCENDING")
+            # self.top_indices = tf.contrib.framework.argsort(self.softmax_layer, direction="DESCENDING")
+            # self.r = tf.cast(tf.range(2, tf.shape(self.top_values)[0] + 2), dtype=tf.float32)
+            # self.r = tf.log(self.r) / math.log(2)
+            # self.top_values = self.top_values / self.r
+            # self.loss = -tf.reduce_sum(tf.gather(self.labels,
+            #                                      self.top_indices)[:, 0] * self.top_values)
+
+            self.loss = tf.losses.sigmoid_cross_entropy(
+                self.labels[:, 0], logits=self.softmax_layer, label_smoothing=0.1)
+
+            # self.loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.labels, logits=self.layer2))
+            # self.loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.argmax(self._y, 1), logits=self.layer2)
+            self.regularizer = tf.contrib.layers.l2_regularizer(self.REGULARIZATION_RATE)
+            for i in range(self.DEPTH):
+                self.loss = self.loss + self.regularizer(self.gcn_weights[i])
+            self.loss = self.loss + self.regularizer(self.weights1)
+            self.loss = self.loss + self.regularizer(self.weights2)
+
+    def generate_moving_average(self):
+        self.variable_average = tf.train.ExponentialMovingAverage(
+            self.MOVING_AVERAGE_DECAY, self.global_step)
+        self.variable_average_op = self.variable_average.apply(
+            tf.trainable_variables())
+
+    def build_nn(self):
+        with tf.name_scope("input"):
+            self.DAD = tf.placeholder(
+                tf.float32, [None, None], name = "normlized_adjacency_matrix")
+            self.Feature = tf.placeholder(
+                tf.float32, [None, self.EMBEDDING_LENGTH], name = "feature_matrix")
+            self.labels = tf.placeholder(tf.float32, [None, 2], name="labels")
+            self.word_num = tf.placeholder(tf.int32, name="number_of_words")
+            self.rnn_input = tf.placeholder(tf.float32, [
+                                            None, None, self.EMBEDDING_LENGTH], name="rnn_input")
+            self.rnn_seq_length = tf.placeholder(tf.float32, [None], name="rnn_seq_length")
+
+        self.RNN_BATCH_SIZE = tf.shape(self.rnn_input)[0]
+
+        self.rnn_cell = tf.nn.rnn_cell.LSTMCell(
+            self.LSTM_SIZE, state_is_tuple = True, dtype = tf.float32)
+
+        self.rnn_initial_state = self.rnn_cell.zero_state(
+            self.RNN_BATCH_SIZE, dtype = tf.float32)
+
+        state = self.rnn_initial_state
+
+        # for i in range(self.SEQ_LENGTH):
+        #     output, state = self.rnn_cell(self.rnn_input[:, i, :], state)
+
+        outputs, state = tf.nn.dynamic_rnn(self.rnn_cell, self.rnn_input,
+                                       sequence_length=self.rnn_seq_length, initial_state=self.rnn_initial_state)
+
+        # self.Feature[self.word_num + 1: self.word_num + tf.constant(self.RNN_BATCH_SIZE), :] = self.Feature[self.word_num + 1: self.word_num + tf.constant(self.RNN_BATCH_SIZE), :] + state
+
+        self.generate_training_variable()
+        self.generate_moving_average()
+        self.layers = list()
+
+        self.Final_Feature = tf.concat([self.Feature, state[1]], 0)
+
+        previous_tensor = self.Final_Feature
+
+        with tf.name_scope("GCN"):
+            for i in range(self.DEPTH):
+                layer = tf.nn.relu(tf.matmul(self.DAD, tf.matmul(
+                    previous_tensor, self.gcn_weights[i]) + self.gcn_biases[i]))
+                self.layers.append(layer)
+                previous_tensor = layer
+
+        previous_tensor = previous_tensor[0:self.word_num, :]
+
+        with tf.name_scope("FC"):
+            self.layer1 = tf.nn.relu(
+                tf.matmul(previous_tensor, self.weights1) + self.biases1)
+            self.layer2 = tf.matmul(self.layer1, self.weights2) + self.biases2
+
+        self.generate_loss()
+        self.generate_accuracy()
+        # self.saver = tf.train.Saver()
+
+        writer = tf.summary.FileWriter("./tensorflow_graph/", tf.get_default_graph())
+        writer.close()
+
+    def generate_train_op(self):
+        self.learning_rate = tf.train.exponential_decay(learning_rate=self.LEARNING_RATE_BASE, global_step=self.global_step,
+                                                        decay_steps = self.data.get_decay_steps(), decay_rate = self.LEARNING_RATE_DECAY)
+        self.train_step = tf.train.MomentumOptimizer(
+            self.learning_rate, momentum = 0.9).minimize(self.loss, global_step = self.global_step)
+        self.train_op = tf.group(self.train_step, self.variable_average_op)
+
+    def generate_accuracy(self):
+        previous_tensor = self.Final_Feature
+
+        for i in range(self.DEPTH):
+            # layer = tf.nn.relu(tf.matmul(self.DAD, tf.matmul(
+            #     previous_tensor, self.variable_average.average(self.gcn_weights[i])) + self.variable_average.average(self.gcn_biases[i])))
+            layer = tf.nn.relu(tf.matmul(self.DAD, tf.matmul(
+                previous_tensor, self.gcn_weights[i]) + self.gcn_biases[i]))
+            previous_tensor = layer
+
+        previous_tensor = previous_tensor[0:self.word_num, :]
+
+        layer1 = tf.nn.relu(tf.matmul(previous_tensor, self.weights1) + self.biases1)
+        layer2 = tf.matmul(layer1, self.weights2) + self.biases2
+
+        # softmax_layer = tf.nn.softmax(layer2[:, 0])
+        # top_values = tf.contrib.framework.sort(layer2[:, 0], direction="DESCENDING")
+        top_indices = tf.contrib.framework.argsort(
+                layer2[:, 0], direction="DESCENDING")
+
+        self.sorted_labels = tf.gather(self.labels, top_indices)[:, 0]
+        self.top_accuracy = list()
+        for k in range(1, 11):
+            self.top_accuracy.append(tf.reduce_mean(self.sorted_labels[0:k]))
+
+        # correct_prediction = tf.equal(tf.argmax(layer2, 1), tf.argmax(self.labels, 1))
+        # self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        self.saver = tf.train.Saver()
+
+    def generate_answer(self, fd, description_words, termname_len):
+
+        if fd[self.word_num] == 0:
+            return ""
+
+        previous_tensor = self.Final_Feature
+
+        for i in range(self.DEPTH):
+            layer = tf.nn.relu(tf.matmul(self.DAD, tf.matmul(
+                previous_tensor, self.gcn_weights[i]) + self.gcn_biases[i]))
+            # layer = tf.nn.relu(tf.matmul(self.DAD, tf.matmul(
+            #     previous_tensor, self.variable_average.average(self.gcn_weights[i])) + self.variable_average.average(self.gcn_biases[i])))
+            previous_tensor = layer
+
+        previous_tensor = previous_tensor[0:self.word_num, :]
+
+        layer1 = tf.nn.relu(tf.matmul(previous_tensor, self.weights1) + self.biases1)
+        layer2 = tf.matmul(layer1, self.weights2) + self.biases2
+
+        # layer1 = tf.nn.relu(tf.matmul(previous_tensor, self.variable_average.average(
+        #     self.weights1)) + self.variable_average.average(self.biases1))
+        # layer2 = tf.matmul(layer1, self.variable_average.average(
+        #     self.weights2)) + self.variable_average.average(self.biases2)
+
+        # softmax_layer = tf.nn.softmax(layer2[:, 0])
+        # top_values = tf.contrib.framework.sort(layer2[:, 0], direction="DESCENDING")
+        top_indices = tf.contrib.framework.argsort(
+                layer2[:, 0], direction = "DESCENDING")
+
+        ti = self.sess.run(top_indices, feed_dict=fd)
+        result = [description_words[ti[i]] for i in range(min(termname_len, len(ti)))]
+        return result
+
+
+
+    def train(self):
+        self.generate_train_op()
+        test_feed = list()
+        for test in self.data.test:
+            test_feed.append({self.DAD: test[0], self.labels: test[2],
+                self.Feature: test[1], self.word_num: test[4], self.rnn_input: test[5], self.rnn_seq_length: test[6]})
+        # self.sess = tf.InteractiveSession()
+        # self.sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+        self.sess = tf.Session()
+        self.sess.run(tf.global_variables_initializer())
+        for i in range(self.TRAINING_STEPS):
+            dad, feature, labels, n, m, rnn_input, rnn_seq_length = self.data.get_next_batch()
+            self.sess.run(self.train_op, feed_dict={
+                self.DAD: dad, self.labels: labels, self.Feature: feature, self.word_num: m, self.rnn_input: rnn_input, self.rnn_seq_length: rnn_seq_length})
+            if i % 1000 == 0:
+                mean_acc = list()
+                for vf in test_feed:
+                    if vf[self.word_num] == 0:
+                        mean_acc.append(0)
+                    else:
+                        mean_acc.append(self.sess.run(self.top_accuracy[0], vf))
+                print("After %d training steps, validation top 1 accuracy using average model is %g " %
+                      (i, sum(mean_acc) / len(mean_acc)))
+                mean_acc = list()
+                for vf in test_feed:
+                    if vf[self.word_num] == 0:
+                        mean_acc.append(0)
+                    else:
+                        mean_acc.append(self.sess.run(self.top_accuracy[1], vf))
+                print("After %d training steps, validation top 2 accuracy using average model is %g " %
+                      (i, sum(mean_acc) / len(mean_acc)))
+                mean_acc = list()
+                for vf in test_feed:
+                    if vf[self.word_num] == 0:
+                        mean_acc.append(0)
+                    else:
+                        mean_acc.append(self.sess.run(self.top_accuracy[2], vf))
+                print("After %d training steps, validation top 3 accuracy using average model is %g " %
+                      (i, sum(mean_acc) / len(mean_acc)))
+                # mean_acc = list()
+                # for vf in test_feed:
+                #     mean_acc.append(self.sess.run(self.accuracy, vf))
+                # print("After %d training steps, test accuracy using average model is %g " % (i, sum(mean_acc)/len(mean_acc)))
+            if i % 2000 == 0:
+                self.saver.save(self.sess, os.path.join(self.MODEL_SAVE_PATH,
+                                                        self.MODEL_NAME), global_step=self.global_step)
+        self.saver.save(self.sess, os.path.join(self.MODEL_SAVE_PATH,
+                                                self.MODEL_NAME), global_step=self.global_step)
+        topk_accuracy = np.zeros(10)
+        for k in range(10):
+            mean_acc = list()
+            for vf in test_feed:
+                mean_acc.append(self.sess.run(self.top_accuracy[k], vf))
+            topk_accuracy[k] = sum(mean_acc) / len(mean_acc)
+        print(topk_accuracy)
+
+    def load_model(self):
+        variables_to_restore = self.variable_average.variables_to_restore()
+        self.saver = tf.train.Saver(variables_to_restore)
+        self.sess = tf.Session()
+        self.ckpt = tf.train.get_checkpoint_state(self.MODEL_SAVE_PATH)
+        if self.ckpt and self.ckpt.model_checkpoint_path:
+            self.saver.restore(self.sess, self.ckpt.model_checkpoint_path)
+            self.global_step = self.ckpt.model_checkpoint_path.split("/")[-1].split("-")[-1]
+
+    def generate_answer_for_test(self):
+        output_file = open("./test_answer.txt", "w")
+        BLEUs = list()
+        buffers = list()
+        for i, index in enumerate(self.data.test_label):
+            test = self.data.graphs[index]
+            test_feed = {self.DAD: test[0], self.labels: test[2],
+                    self.Feature: test[1], self.word_num: test[4], self.rnn_input: test[5], self.rnn_seq_length: test[6]}
+            description_words = self.data.discriptions_words[index]
+            termname_len = len(self.data.TERM_NAME[index])
+            result = self.generate_answer(test_feed, description_words, termname_len)
+            content = (self.data.TEXT_CONTENT[index][:-1]).split("\t")
+            buffers.append("> " + str(content[1:]) + "\n")
+            buffers.append("= " + content[0] + "\n")
+            buffers.append("< " + str(result) + "\n")
+            buffers.append(str(self.BLEU1(result, self.data.TERM_NAME[index])) + "\n")
+            BLEUs.append(self.BLEU1(result, self.data.TERM_NAME[index]))
+            if i % 100 == 0:
+                print("{} has been completed".format(i / len(self.data.test_label)))
+        buffers.append("\n")
+        buffers.append("total bleu " + str(sum(BLEUs) /
+                                           len(self.data.test_label)) + "\n")
+        output_file.writelines(buffers)
+        output_file.close()
+
+    def BLEU1(self, s1, s2):
+        BP = min(1, math.exp(1 - len(s2) / len(s1)))
+        c1 = 0
+        c2 = 0
+        for word in set(s1):
+            c1 = c1 + min(s1.count(word), s2.count(word))
+            c2 = c2 + s1.count(word)
+        return BP * (c1 / c2)

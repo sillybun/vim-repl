@@ -1,3 +1,6 @@
 if "1".startswith("longlonglong long lon\
-        test"):
+            test"):
+    print("hello")
+
+if "1".startswith("longlonglong long lon test"):
     print("hello")

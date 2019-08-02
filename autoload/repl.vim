@@ -527,11 +527,26 @@ EOF
 return py3eval('newcodes')
 endfunction
 
+function! repl#ToREPLPythonCode(lines, pythonprogram)
+python3 << EOF
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+import formatpythoncode
+codes = vim.eval("a:lines")
+pythonprogram = vim.eval("a:pythonprogram")
+
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram)
+EOF
+return py3eval('newcodes')
+endfunction
+
+
+
 function! repl#GetPythonCode(lines)
 python3 << EOF
 import vim
 
 codes = vim.eval("a:lines")
+
 firstline = ''
 firstlineno = 0
 for t in codes:
@@ -698,7 +713,8 @@ function! repl#SendLines(first, last) abort
         if l:sn ==# 'ptpython'
             call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ptpython'), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ipython'), 'ipython'), ['\.\.\.', 'In'])
+            " call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ipython'), 'ipython'), ['\.\.\.', 'In'])
+            call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'ipython'), ['\.\.\.', 'In'])
         elseif l:sn =~# 'python' || l:sn =~# 'python3'
             call repl#Sends(repl#RemoveExtraEmptyLine(repl#GetPythonCode(getline(l:firstline, a:last)), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)

@@ -491,7 +491,7 @@ def getpythonindent_multiline(codes):
             finishflag = False
             unfinishedtype = conditionstack.top().tokentype
         else:
-            lastrownumber = rownumber
+            lastrownumber = len(codes) - 1
             while lastrownumber >= 0 and len(codes[lastrownumber]) == 0:
                 lastrownumber -= 1
             lastrow = codes[lastrownumber]
@@ -500,10 +500,3 @@ def getpythonindent_multiline(codes):
             unfinishedtype = -1
         multi_indent.append((indentlevel, finishflag, unfinishedtype))
     return multi_indent
-
-def main():
-    code = ["if a:", "    b = 1", "else:", "    b = 2"]
-    print(getpythonindent_multiline(code))
-
-if __name__ == "__main__":
-    main()
