@@ -25,7 +25,7 @@ class UnfinishType:
 class pythoncodes:
     def __init__(self, replprogram = "ipython", flag_mergefinishline = False):
         self.rawcontents = list()
-        self.replprogram = "ipython"
+        self.replprogram = replprogram
         self.flag_mergefinishline = flag_mergefinishline
 
     # @profile
@@ -162,7 +162,7 @@ class pythoncodes:
                     return False
             else:
                 return False
-        if self.replprogram == "ipython" or self.replprogram == "ptpython":
+        if self.replprogram == "ipython":
             for i in range(len(self.blocks)):
                 temp = list()
                 block = self.blocks[i][0]
@@ -228,17 +228,77 @@ class pythoncodes:
                     else:
                         temp += [""]
                 # print(temp)
+                self.blocks[i] = (temp, self.blocks[i][1])
+        elif self.replprogram == "ptpython":
+            for i in range(len(self.blocks)):
+                temp = list()
+                block = self.blocks[i][0]
+                # print(block)
+                lastline = 0
+                for j in range(len(block)):
+                    if j == 0:
+                        currentindent = -1
+                        temp.append(block[j].strip())
+                        continue
+                    elif self.isstartofline(self.blocks[i][1][j]):
+                        lastline = j
+                        p = j - 1
+                        while not self.isstartofline(self.blocks[i][1][p]):
+                            p -= 1
+                        previousindent = self.codeindent[self.blocks[i][1][p]][0]
+                        currentindent = self.codeindent[self.blocks[i][1][j]][0]
+                        # print(j, previousindent, currentindent)
+                        if previousindent > currentindent:
+                            temp.append(''.join(["\b" * (previousindent - currentindent - 4 * AutoStop(block[p]))]) + block[j].strip())
+                        else:
+                            temp.append(block[j].strip())
+                    else:
+                        if self.codeindent[self.blocks[i][1][j-1]][2] in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+                            temp.append(block[j])
+                        else:
+                            temp.append(block[j].strip())
+                if self.blocks[i][0][0].startswith('def '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('class '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('for '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('while '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('try '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('if '):
+                    temp += [""]
+                # print(temp)
+
+                self.blocks[i] = (temp, self.blocks[i][1])
+        elif self.replprogram == "python":
+            for i in range(len(self.blocks)):
+                temp = list()
+                temp = self.blocks[i][0]
+                if self.blocks[i][0][0].startswith('def '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('class '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('for '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('while '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('try '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('if '):
+                    temp += [""]
+                # print(temp)
 
                 self.blocks[i] = (temp, self.blocks[i][1])
 
 
     def generatecodes(self):
         self.addbackspace()
-        if self.replprogram == "ipython":
-            newcode = list()
-            for i in range(len(self.blocks)):
-                newcode += self.blocks[i][0]
-            return newcode
+        newcode = list()
+        for i in range(len(self.blocks)):
+            newcode += self.blocks[i][0]
+        return newcode
 
 # @profile
 def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False):
@@ -346,6 +406,11 @@ def f(a, b):
  'return 1', '', '']
         assert format_to_repl(code) == newcode
 
+    def test8(self):
+        code = ["def f(a, b):", "    if a:", "        return", "    else:", "        b = 2"]
+        newcode = ["def f(a, b):", "if a:", "return", "\b\b\b\belse:", "b = 2", ""]
+        assert format_to_repl(code, pythonprogram = "ptpython") == newcode
+
     def test(self):
         self.test1()
         self.test2()
@@ -354,6 +419,7 @@ def f(a, b):
         self.test5()
         self.test6()
         self.test7()
+        self.test8()
         print("All test unit are successfully passed!")
 
 def test_speed():

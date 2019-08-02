@@ -711,12 +711,12 @@ function! repl#SendLines(first, last) abort
 		endwhile
         let l:sn = repl#REPLGetShortName()
         if l:sn ==# 'ptpython'
-            call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ptpython'), 'ptpython'), ['>>>', '\.\.\.', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'ptpython'), ['\.\.\.', '>>>', 'ipdb>', 'pdb>'])
         elseif l:sn ==# 'ipython'
-            " call repl#Sends(repl#RemoveLeftSpace(repl#RemoveExtraEmptyLine(repl#RemovePythonComments(repl#GetPythonCode(getline(l:firstline, a:last))), 'ipython'), 'ipython'), ['\.\.\.', 'In'])
             call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'ipython'), ['\.\.\.', 'In'])
         elseif l:sn =~# 'python' || l:sn =~# 'python3'
-            call repl#Sends(repl#RemoveExtraEmptyLine(repl#GetPythonCode(getline(l:firstline, a:last)), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
+            " call repl#Sends(repl#RemoveExtraEmptyLine(repl#GetPythonCode(getline(l:firstline, a:last)), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
+            call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:last), ''), g:repl_input_symbols[l:sn])
         else
