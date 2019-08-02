@@ -4,5 +4,8 @@ test/.mypy_cache
 test/__pycache__
 *.out
 *.files
+:w
+:q
+*.lprof
 python_tags
 build
