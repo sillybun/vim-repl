@@ -198,38 +198,37 @@ class pythoncodes:
                             else:
                                 temp.append(block[j].strip())
                 if i == len(self.blocks) - 1 and self.codeindent[self.blocks[i][1][-1]][1] == False:
-                    pass
-                else:
-                    if self.blocks[i][0][0].startswith('def '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
-                    elif self.blocks[i][0][0].startswith('class '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
-                    elif self.blocks[i][0][0].startswith('for '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
-                    elif self.blocks[i][0][0].startswith('while '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
-                    elif self.blocks[i][0][0].startswith('try '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
-                    elif self.blocks[i][0][0].startswith('if '):
-                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
-                            temp += ["", ""]
-                        else:
-                            temp += [""]
+                    continue
+                if self.blocks[i][0][0].startswith('def '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
+                elif self.blocks[i][0][0].startswith('class '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
+                elif self.blocks[i][0][0].startswith('for '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
+                elif self.blocks[i][0][0].startswith('while '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
+                elif self.blocks[i][0][0].startswith('try '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
+                elif self.blocks[i][0][0].startswith('if '):
+                    if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                        temp += ["", ""]
+                    else:
+                        temp += [""]
                 # print(temp)
                 self.blocks[i] = (temp, self.blocks[i][1])
         elif self.replprogram == "ptpython":
@@ -284,21 +283,18 @@ class pythoncodes:
                     continue
                 temp = list()
                 temp = self.blocks[i][0]
-                if i == len(self.blocks) - 1 and self.codeindent[self.blocks[i][1][-1]][1] == False:
-                    pass
-                else:
-                    if self.blocks[i][0][0].startswith('def '):
-                        temp += [""]
-                    elif self.blocks[i][0][0].startswith('class '):
-                        temp += [""]
-                    elif self.blocks[i][0][0].startswith('for '):
-                        temp += [""]
-                    elif self.blocks[i][0][0].startswith('while '):
-                        temp += [""]
-                    elif self.blocks[i][0][0].startswith('try '):
-                        temp += [""]
-                    elif self.blocks[i][0][0].startswith('if '):
-                        temp += [""]
+                if self.blocks[i][0][0].startswith('def '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('class '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('for '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('while '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('try '):
+                    temp += [""]
+                elif self.blocks[i][0][0].startswith('if '):
+                    temp += [""]
                 # print(temp)
 
                 self.blocks[i] = (temp, self.blocks[i][1])

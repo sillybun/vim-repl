@@ -1,6 +1,6 @@
 def f():
     if i % 1000 == 0:
-    mean_acc = list()
+        mean_acc = list()
     for vf in test_feed:
         if vf[self.word_num] == 0:
             mean_acc.append(0)
