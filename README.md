@@ -47,7 +47,7 @@ You can also use the minimum intalling setting:
 However, the following intalling setting use C++ to boost the plugin.
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
-  - Add `Plug 'sillybun/vim-repl', {'do': './install.sh'}` to .vimrc
+  - Add `Plug 'sillybun/vim-repl' to .vimrc
   - Add `Plug 'sillybun/vim-async', {'do': './install.sh'}` to .vimrc
   - Add `Plug 'sillybun/zytutil'` to .vimrc
   - Run `:PlugInstall`
@@ -57,7 +57,6 @@ However, the following intalling setting use C++ to boost the plugin.
   - Add `Plugin 'sillybun/vim-async'` to .vimrc
   - Add `Plugin 'sillybun/zytutil'` to .vimrc
   - Run `:PluginInstall`
-  - And change to the plugin directory of vim-repl and run in shell `./install.sh`
   - And change to the plugin directory of vim-async and run in shell `./install.sh`
 
 
@@ -253,6 +252,7 @@ tnoremap <ScrollWheelDown> <C-w>Nj
 ## 2019.08.03
 
 - Rewrite the program to format python codes using python language
+- Abandon using C++ to handle python code
 - `g:repl_python_automerge` is provided.
 
 ## 2019.5.28
