@@ -260,6 +260,7 @@ tnoremap <ScrollWheelDown> <C-w>Nj
 - `g:repl_python_automerge` is provided.
 - `g:repl_console_name` is provided
 - Support both `python` and `python3`
+- Remove Checkpoint function
 
 ## 2019.5.28
 
