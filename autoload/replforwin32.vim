@@ -13,7 +13,7 @@ function! replforwin32#WaitHandlerNotCall(channel) abort
         call replforwin32#WaitWHNotCall()
         return
     else
-        call term_sendkeys('ZYTREPL', s:tasks[s:taskprocess] . "\<Cr>")
+        call term_sendkeys(g:repl_console_name, s:tasks[s:taskprocess] . "\<Cr>")
         let s:taskprocess = s:taskprocess + 1
         call replforwin32#WaitWHNotCall()
         return

@@ -32,6 +32,10 @@ if !exists('g:repl_python_automerge')
     let g:repl_python_automerge = 0
 endif
 
+if !exists('g:repl_console_name')
+    let g:repl_console_name = 'ZYTREPL'
+endif
+
 if !exists('g:repl_exit_commands')
 	let g:repl_exit_commands = {
 				\	"python": "quit()",

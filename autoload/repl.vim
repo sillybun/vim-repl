@@ -96,18 +96,18 @@ endfunction
 function! repl#REPLClose()
 	if repl#REPLIsVisible()
         if index(split(repl#REPLGetName(), ' '), 'ipdb') != -1 || index(split(repl#REPLGetName(), ' '), 'pdb') != -1
-            call term_sendkeys('ZYTREPL', "\<C-W>\<C-C>")
+            call term_sendkeys(g:repl_console_name, "\<C-W>\<C-C>")
             call repl#Sends(['quit()'], ['ipdb>', 'pdb>'])
         else
-            exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<C-W>\<C-C>")'
-            exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+            exe "call term_sendkeys('" . g:repl_console_name . ''', "\<C-W>\<C-C>")'
+            exe "call term_wait('" . g:repl_console_name . ''', 50)'
             if repl#REPLIsVisible()
-                exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
-                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
-                exe "call term_sendkeys('" . 'ZYTREPL' . "', \"\\<Cr>\")"
-                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
-                exe "call term_sendkeys('" . 'ZYTREPL' . ''', "' . repl#REPLGetExitCommand() . '\<Cr>")'
-                exe "call term_wait('" . 'ZYTREPL' . ''', 50)'
+                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\<Cr>\")"
+                exe "call term_wait('" . g:repl_console_name . ''', 50)'
+                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\<Cr>\")"
+                exe "call term_wait('" . g:repl_console_name . ''', 50)'
+                exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\<Cr>")'
+                exe "call term_wait('" . g:repl_console_name . ''', 50)'
             endif
 		endif
     elseif repl#REPLIsHidden()
@@ -121,7 +121,7 @@ endfunction
 
 function! repl#REPLHide()
 	if repl#REPLIsVisible()
-		call repl#REPLGoToWindowForBufferName('ZYTREPL')
+		call repl#REPLGoToWindowForBufferName(g:repl_console_name)
         hide
 	endif
 endfunction
@@ -146,7 +146,7 @@ function! repl#REPLOpen(...)
     else
         let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
-	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''ZYTREPL'')) | q! | endif'
+	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . g:repl_console_name . ''')) | q! | endif'
 	if g:repl_position == 0
 		if exists('g:repl_height')
 			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetName()
@@ -172,12 +172,12 @@ function! repl#REPLOpen(...)
 			exe 'vert rightb term ++close ' . repl#REPLGetName()
 		endif
 	endif
-    exe 'file ZYTREPL'
+    exe 'file ' . g:repl_console_name
     exe 'setlocal noswapfile'
 endfunction
 
 function! repl#REPLIsHidden()
-    if bufnr('ZYTREPL') == -1
+    if bufnr(g:repl_console_name) == -1
         return 0
     elseif repl#REPLIsVisible() == 1
         return 0
@@ -187,7 +187,7 @@ function! repl#REPLIsHidden()
 endfunction
 
 function! repl#REPLIsVisible()
-	if bufwinnr(bufnr('ZYTREPL')) != -1
+	if bufwinnr(bufnr(g:repl_console_name)) != -1
 		return 1
 	else
 		return 0
@@ -265,7 +265,7 @@ function! repl#REPLSaveCheckPoint() abort
         endif
         let l:checkid = repl#REPLGetCheckID(getline('.'))
         if repl#REPLIsVisible()
-            call term_sendkeys('ZYTREPL', '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+            call term_sendkeys(g:repl_console_name, '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
             if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
                 call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
             else
@@ -282,12 +282,12 @@ function! repl#REPLLoadCheckPoint() abort
     endif
     let l:checkid = repl#REPLGetCheckID(getline('.'))
     if repl#REPLIsVisible()
-        call term_sendkeys('ZYTREPL', '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+        call term_sendkeys(g:repl_console_name, '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
     endif
 endfunction
 
 function! repl#SendCurrentLine() abort
-	if bufexists('ZYTREPL')
+	if bufexists(g:repl_console_name)
         if repl#REPLGetShortName() =~# '.*python.*'
             if repl#StartWith(getline('.'), '# ' . g:repl_checkpoint_notation)
                 if repl#REPLGetCheckID(getline('.')) !=# ''
@@ -302,8 +302,8 @@ function! repl#SendCurrentLine() abort
                 return
             endif
         endif
-		exe "call term_sendkeys('" . 'ZYTREPL' . ''', getline(".") . "\<Cr>")'
-		exe "call term_wait('" . 'ZYTREPL' . ''',  50)'
+		exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\<Cr>")'
+		exe "call term_wait('" . g:repl_console_name . ''',  50)'
 	endif
 endfunction
 
@@ -322,7 +322,7 @@ return py3eval('newcodes')
 endfunction
 
 function! repl#GetTerminalLine() abort
-    let l:tl = term_getline('ZYTREPL', '.')
+    let l:tl = term_getline(g:repl_console_name, '.')
 python3 << EOF
 import vim
 line = vim.eval('l:tl').rstrip()
@@ -331,7 +331,7 @@ return py3eval('line')
 endfunction
 
 function! repl#GetCurrentLineNumber() abort
-    return term_getcursor('ZYTREPL')[0]
+    return term_getcursor(g:repl_console_name)[0]
 endfunction
 
 function! repl#CheckInputState()
@@ -364,7 +364,7 @@ function! repl#Sends(tasks, symbols)
         let g:currentlinenumber = -1
         let g:currentrepltype = repl#REPLGetShortName()
         " echom len(g:tasks)
-        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("ZYTREPL", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
         " let g:term_send_task_index = 0
         " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
         call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
@@ -399,7 +399,7 @@ function! repl#SendChunkLines() range abort
 endfunction
 
 function! repl#SendLines(first, last) abort
-	if bufexists('ZYTREPL')
+	if bufexists(g:repl_console_name)
 		let l:firstline = a:first
 		while(l:firstline <= a:last && strlen(getline(l:firstline)) == 0)
 			let l:firstline = l:firstline + 1
@@ -421,10 +421,10 @@ function! repl#SendLines(first, last) abort
             endwhile
             for line in getline(l:firstline, a:last)
                 let l:deletespaceline = line[l:i:]
-                exe "call term_sendkeys('" . 'ZYTREPL' . ''', l:deletespaceline . "\<Cr>")'
-                exe 'call term_wait("ZYTREPL", 50)'
+                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\<Cr>")'
+                exe 'call term_wait("' . g:repl_console_name . '", 50)'
             endfor
-            exe "call term_sendkeys('" . 'ZYTREPL' . ''', "\<Cr>")'
+            exe "call term_sendkeys('" . g:repl_console_name . ''', "\<Cr>")'
         endif
 	endif
 endfunction

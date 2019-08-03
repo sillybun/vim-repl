@@ -212,6 +212,12 @@ a = 1+\
 
 , then `a = 1+2+3` will be sent to the repl environment instead of three lines.
 
+```
+let g:repl_console_name = 'ZYTREPL'
+```
+
+Name of REPL environment.
+
 # My Configuation for Vim-Repl
 
 ```
@@ -252,6 +258,7 @@ tnoremap <ScrollWheelDown> <C-w>Nj
 - Rewrite the program to format python codes using python language
 - Abandon using C++ to handle python code
 - `g:repl_python_automerge` is provided.
+- `g:repl_console_name` is provided
 
 ## 2019.5.28
 

@@ -5,22 +5,22 @@ else
 endif
 
 function! s:REPLDebugRunAsync() abort
-    let l:code = ["wait repl#GetTerminalLine() == 'ipdb>'", 'call term_sendkeys("ZYTREPL", "c\<Cr>")', "wait repl#GetTerminalLine() == 'ipdb>'", 'call g:REPLDebugMoveCursor()']
+    let l:code = ["wait repl#GetTerminalLine() == 'ipdb>'", 'call term_sendkeys("' . g:repl_console_name . '", "c\<Cr>")', "wait repl#GetTerminalLine() == 'ipdb>'", 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, 'REPLDebugRunAsync')
 endfunction
 
 function! s:REPLDebugRun() abort
     if repl#REPLIsVisible()
         if repl#GetTerminalLine() != 'ipdb>'
-            call term_sendkeys('ZYTREPL', "\<Cr>")
-            call term_wait('ZYTREPL', 50)
+            call term_sendkeys(g:repl_console_name, "\<Cr>")
+            call term_wait(g:repl_console_name, 50)
         endif
         call s:REPLDebugRunAsync()
         " let s:iter_dra = 0
         " call s:WAIT_REPLDebugRunAsync()
     else
         call s:REPLDebugIPDB()
-        call term_wait('ZYTREPL', 50)
+        call term_wait(g:repl_console_name, 50)
         call s:REPLDebugRun()
     endif
 endfunction
@@ -31,7 +31,7 @@ endfunction
 
 function! g:REPLDebugMoveCursor() abort
     for i in range(repl#GetCurrentLineNumber(), 1, -1)
-        let l:t = term_getline('ZYTREPL', i)
+        let l:t = term_getline(g:repl_console_name, i)
         if stridx(l:t, '>') == 0
             let l:t = l:t[2:]
             let l:i = stridx(l:t, '(')
@@ -52,7 +52,7 @@ function! s:REPLDebugN() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("ZYTREPL", "\<Cr>")', 'endif', 'call term_sendkeys("ZYTREPL", "n\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "n\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugN")
 endfunction
 
@@ -60,7 +60,7 @@ function! s:REPLDebugU() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("ZYTREPL", "\<Cr>")', 'endif', 'call term_sendkeys("ZYTREPL", "u\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "u\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugU")
     " if repl#GetTerminalLine() != 'ipdb>'
     "     call term_sendkeys('ZYTREPL', "\<Cr>")
@@ -77,7 +77,7 @@ function! s:REPLDebugS() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("ZYTREPL", "\<Cr>")', 'endif', 'call term_sendkeys("ZYTREPL", "s\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "s\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugS")
     " if repl#GetTerminalLine() != 'ipdb>'
     "     call term_sendkeys('ZYTREPL', "\<Cr>")
@@ -99,7 +99,7 @@ function! s:REPLDebugStopAtCurrentLine(...) abort
             call g:REPLSend('tbreak ' . line('.') . ', ' . l:condition)
         endif
         while 1
-            call term_wait('ZYTREPL', 20)
+            call term_wait(g:repl_console_name, 20)
             let l:tl = repl#GetTerminalLine()
             if l:tl ==# 'ipdb>'
                 break
@@ -123,12 +123,12 @@ function! s:REPLDebugIPDB() abort
 	if g:repl_stayatrepl_when_open == 0
 		exe bufwinnr(g:repl_target_n) . 'wincmd w'
 	endif
-    call term_wait('ZYTREPL', 20)
+    call term_wait(g:repl_console_name, 20)
     let l:n = 0
     while l:n < 50
         let l:tl = repl#GetTerminalLine()
         if !(l:tl ==# 'ipdb>')
-            call term_wait('ZYTREPL', 20)
+            call term_wait(g:repl_console_name, 20)
         else
             break
         endif
@@ -178,7 +178,7 @@ function! s:REPLSaveCheckPoint() abort
         endif
         let l:checkid = s:REPLGetCheckID(getline('.'))
         if repl#REPLIsVisible()
-            call term_sendkeys('ZYTREPL', '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+            call term_sendkeys(g:repl_console_name, '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
             if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
                 call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
             else
@@ -195,7 +195,7 @@ function! s:REPLLoadCheckPoint() abort
     endif
     let l:checkid = s:REPLGetCheckID(getline('.'))
     if repl#REPLIsVisible()
-            call term_sendkeys('ZYTREPL', '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
+            call term_sendkeys(g:repl_console_name, '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
     endif
 endfunction
 
