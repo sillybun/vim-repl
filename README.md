@@ -259,6 +259,7 @@ tnoremap <ScrollWheelDown> <C-w>Nj
 - Abandon using C++ to handle python code
 - `g:repl_python_automerge` is provided.
 - `g:repl_console_name` is provided
+- Support both `python` and `python3`
 
 ## 2019.5.28
 
