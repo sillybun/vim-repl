@@ -223,81 +223,18 @@ function! repl#REPLToggle(...)
 	endif
 endfunction
 
-function! repl#REPLGetCheckID(line) abort
-    if repl#StartWith(a:line, '# '. g:repl_checkpoint_notation)
-        if strlen(a:line) > strlen('# '. g:repl_checkpoint_notation .' ')
-            let l:checkID = a:line[strlen('# '. g:repl_checkpoint_notation .' '):]
-            if stridx(l:checkID, ' ') == -1
-                return l:checkID
-            endif
-        endif
-    endif
-    return ''
-endfunction
-
-function! repl#RandomNumber() abort
-python3 << EOF
-import random
-randomnumber = random.randint(100000, 10000000)
-EOF
-return py3eval('randomnumber')
-endfunction
-
-function! repl#REPLAddCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
-        if repl#REPLGetCheckID(l:currentline) !=# ''
-            return
-        endif
-        let l:checkid = repl#RandomNumber()
-        call setline('.', '# ' . g:repl_checkpoint_notation . ' ' . l:checkid)
-    else
-        let l:checkid = repl#RandomNumber()
-        call append(line('.'), '# ' . g:repl_checkpoint_notation . ' ' . l:checkid)
-    endif
-endfunction
-
-function! repl#REPLSaveCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
-        if repl#REPLGetCheckID(l:currentline) ==# ''
-            call repl#REPLAddCheckPoint()
-        endif
-        let l:checkid = repl#REPLGetCheckID(getline('.'))
-        if repl#REPLIsVisible()
-            call term_sendkeys(g:repl_console_name, '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
-            if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
-                call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
-            else
-                call append(line('.'), '# '. strftime('%Y-%m-%d'))
-            endif
-        endif
-    endif
-endfunction
-
-function! repl#REPLLoadCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#REPLGetCheckID(l:currentline) ==# ''
-        return
-    endif
-    let l:checkid = repl#REPLGetCheckID(getline('.'))
-    if repl#REPLIsVisible()
-        call term_sendkeys(g:repl_console_name, '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
-    endif
-endfunction
-
 function! repl#SendCurrentLine() abort
 	if bufexists(g:repl_console_name)
         if repl#REPLGetShortName() =~# '.*python.*'
-            if repl#StartWith(getline('.'), '# ' . g:repl_checkpoint_notation)
-                if repl#REPLGetCheckID(getline('.')) !=# ''
-                    call repl#REPLLoadCheckPoint()
-                    return
-                else
-                    call repl#REPLSaveCheckPoint()
-                    return
-                endif
-            elseif exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
+            " if repl#StartWith(getline('.'), '# ' . g:repl_checkpoint_notation)
+            "     if repl#REPLGetCheckID(getline('.')) !=# ''
+            "         call repl#REPLLoadCheckPoint()
+            "         return
+            "     else
+            "         call repl#REPLSaveCheckPoint()
+            "         return
+            "     endif
+            if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
                 call repl#SendWholeBlock()
                 return
             endif
@@ -308,26 +245,48 @@ function! repl#SendCurrentLine() abort
 endfunction
 
 function! repl#ToREPLPythonCode(lines, pythonprogram)
+    if has('python3')
+
 python3 << EOF
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
 mergeunfinishline = vim.eval("g:repl_python_automerge")
-
 newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline)
-
 EOF
-return py3eval('newcodes')
+        return py3eval('newcodes')
+
+    elseif has('python')
+
+python << EOF
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+import formatpythoncode
+codes = vim.eval("a:lines")
+pythonprogram = vim.eval("a:pythonprogram")
+mergeunfinishline = vim.eval("g:repl_python_automerge")
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline)
+EOF
+
+        return pyeval('newcodes')
+    endif
 endfunction
 
 function! repl#GetTerminalLine() abort
     let l:tl = term_getline(g:repl_console_name, '.')
+    if has('python3')
 python3 << EOF
 import vim
 line = vim.eval('l:tl').rstrip()
 EOF
 return py3eval('line')
+    elseif has('python')
+python << EOF
+import vim
+line = vim.eval('l:tl').rstrip()
+EOF
+return pyeval('line')
+    endif
 endfunction
 
 function! repl#GetCurrentLineNumber() abort
@@ -365,10 +324,7 @@ function! repl#Sends(tasks, symbols)
         let g:currentrepltype = repl#REPLGetShortName()
         " echom len(g:tasks)
         let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
-        " let g:term_send_task_index = 0
-        " call job_start("echo 'g:term_send_task'", {'close_cb': 'AsyncFuncRun'})
         call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
-        " call repl#WaitHandlerNotCall(0)
     endif
 endfunction
 

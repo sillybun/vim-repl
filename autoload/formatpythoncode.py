@@ -30,7 +30,6 @@ class pythoncodes:
 
     # @profile
     def getcode(self, code):
-        # 仅仅保留非空行
         self.rawcontents = [line for line in code if len(line.strip()) != 0]
         self.removecomments()
         if self.flag_mergefinishline:
@@ -135,7 +134,6 @@ class pythoncodes:
             return self.codeindent[index-1][1]
 
     def canbestartofblock(self, index):
-        # 判断第index行有没有可能是一个block的开始
         if not self.isstartofline(index):
             return False
         line = self.rawcontents[index].strip()

@@ -112,7 +112,6 @@ def getpythonindent(codes):
                 if character == '@':
                     continue
                 elif character == '#':
-                    # 这说明遇到了注释, 忽略后续的内容.
                     break
                 elif character == '(':
                     conditionstack.push(LEFT_PARAENTHESE, rownumber)
@@ -134,7 +133,6 @@ def getpythonindent(codes):
                     conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 else:
-                    # 其他情况, 说明程序出现了问题, 也许是程序的错误, 所以记录下来.
                     # print("############################")
                     # print("Error found: {}".format(line))
                     # print("############################")
@@ -163,7 +161,6 @@ def getpythonindent(codes):
                     conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")
@@ -194,7 +191,6 @@ def getpythonindent(codes):
                     conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")
@@ -229,7 +225,6 @@ def getpythonindent(codes):
                         conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")
@@ -328,7 +323,6 @@ def getpythonindent_multiline(codes):
                 if character == '@':
                     continue
                 elif character == '#':
-                    # 这说明遇到了注释, 忽略后续的内容.
                     break
                 elif character == '(':
                     conditionstack.push(LEFT_PARAENTHESE, rownumber)
@@ -350,7 +344,6 @@ def getpythonindent_multiline(codes):
                     conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 else:
-                    # 其他情况, 说明程序出现了问题, 也许是程序的错误, 所以记录下来.
                     # print("############################")
                     # print("Error found: {}".format(line))
                     # print("############################")
@@ -379,7 +372,6 @@ def getpythonindent_multiline(codes):
                     conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")
@@ -410,7 +402,6 @@ def getpythonindent_multiline(codes):
                     conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")
@@ -445,7 +436,6 @@ def getpythonindent_multiline(codes):
                         conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
                     continue
                 elif character == "#":
-                    # 这是注释
                     break
                 else:
                     # print("############################")

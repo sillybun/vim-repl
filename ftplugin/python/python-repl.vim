@@ -136,69 +136,6 @@ function! s:REPLDebugIPDB() abort
     endwhile
 endfunction
 
-function! s:REPLGetCheckID(line) abort
-    if repl#StartWith(a:line, '# ' . g:repl_checkpoint_notation)
-        if strlen(a:line) > strlen('# '. g:repl_checkpoint_notation .' ')
-            let l:checkID = a:line[strlen('# '. g:repl_checkpoint_notation .' '):]
-            if stridx(l:checkID, ' ') == -1
-                return l:checkID
-            endif
-        endif
-    endif
-    return ''
-endfunction
-
-function! s:RandomNumber() abort
-python3 << EOF
-import random
-randomnumber = random.randint(100000, 10000000)
-EOF
-return py3eval('randomnumber')
-endfunction
-
-function! s:REPLAddCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
-        if s:REPLGetCheckID(l:currentline) !=# ''
-            return
-        endif
-        let l:checkid = s:RandomNumber()
-        call setline('.', '# '. g:repl_checkpoint_notation .' ' . l:checkid)
-    else
-        let l:checkid = s:RandomNumber()
-        call append(line('.'), '# '. g:repl_checkpoint_notation .' ' . l:checkid)
-    endif
-endfunction
-
-function! s:REPLSaveCheckPoint() abort
-    let l:currentline = getline('.')
-    if repl#StartWith(l:currentline, '# ' . g:repl_checkpoint_notation)
-        if s:REPLGetCheckID(l:currentline) ==# ''
-            call s:REPLAddCheckPoint()
-        endif
-        let l:checkid = s:REPLGetCheckID(getline('.'))
-        if repl#REPLIsVisible()
-            call term_sendkeys(g:repl_console_name, '__import__("dill").dump_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
-            if matchstr(getline(line('.') + 1), '# \d\d\d\d-\d\d\?-\d\d?') !=# ''
-                call setline(line('.') + 1, '# ' . strftime('%Y-%m-%d'))
-            else
-                call append(line('.'), '# '. strftime('%Y-%m-%d'))
-            endif
-        endif
-    endif
-endfunction
-
-function! s:REPLLoadCheckPoint() abort
-    let l:currentline = getline('.')
-    if s:REPLGetCheckID(l:currentline) ==# ''
-        return
-    endif
-    let l:checkid = s:REPLGetCheckID(getline('.'))
-    if repl#REPLIsVisible()
-            call term_sendkeys(g:repl_console_name, '__import__("dill").load_session("CHECKPOINT_' . l:checkid .  '.data")' . "\<Cr>")
-    endif
-endfunction
-
 command! -nargs=* REPLDebugStopAtCurrentLine silent call s:REPLDebugStopAtCurrentLine(<f-args>)
 command! REPLPDBC silent call s:REPLDebugRun()
 command! REPLPDBN silent call s:REPLDebugN()
