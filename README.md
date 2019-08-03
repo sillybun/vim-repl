@@ -347,7 +347,7 @@ However, the following intalling setting use C++ to boost the plugin.
 - In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
 Currently, asynchronous transmission is completed and it is supported for all language if you correctly set the input symbols of the corresponding language.
-Setting for python is already done by author.
+Setting for python is already done by author. Supported command shell for python include `python`, `ipython` and `ptpython`.
 
 Take a typical python REPL environment as an example
 
