@@ -47,7 +47,7 @@ You can also use the minimum intalling setting:
 However, the following intalling setting use C++ to boost the plugin.
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
-  - Add `Plug 'sillybun/vim-repl' to .vimrc
+  - Add `Plug 'sillybun/vim-repl'` to .vimrc
   - Add `Plug 'sillybun/vim-async', {'do': './install.sh'}` to .vimrc
   - Add `Plug 'sillybun/zytutil'` to .vimrc
   - Run `:PlugInstall`
