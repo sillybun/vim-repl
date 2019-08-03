@@ -32,7 +32,7 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 ## Installation
 
-Use your plugin manager of choice.
+This plugin support all platforms (Windows, MacOS, Linux) and vim with `python` or `python3` support is needed. Use your plugin manager of choice.
 
 For Windows Users:
 
@@ -72,15 +72,19 @@ However, the following intalling setting use C++ to boost the plugin.
 :REPLToggle
 ```
 
+
 ### How to exit REPL
 
 ```
 :REPLToggle
 ```
 
+> If you bind `<lead>r` to `:REPLToggle` by `nnoremap <leader>r :REPLToggle`, you only need to press `<leader>r` to open or close REPL.
+
 ### How to send code to REPL
 
 - In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
+- In Normal Mode, move the cursor to the begin of a block and press `<leader>w` and the whole block will be sent to REPL
 - In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
 Currently, asynchronous transmission is completed and it is supported for all language if you correctly set the input symbols of the corresponding language.
@@ -486,34 +490,25 @@ Name of REPL environment.
 # My Configuation for Vim-Repl
 
 ```
-Plug 'sillybun/vim-repl', {'do': './install.sh'}
+Plug 'sillybun/vim-repl'
 let g:repl_program = {
             \   'python': 'ipython',
             \   'default': 'zsh',
             \   'r': 'R',
+            \   'lua': 'lua',
             \   }
 let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
             \   'matplotlib': 'from matplotlib import pyplot as plt'
             \   }
-let g:repl_checkpoint_position = '~/.temp/'
-let g:repl_auto_sends = ['class ', 'def ']
+let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ']
 let g:repl_cursor_down = 1
+let g:repl_python_automerge = 1
 nnoremap <leader>r :REPLToggle<Cr>
 autocmd Filetype python nnoremap <F12> <Esc>:REPLDebugStopAtCurrentLine<Cr>
 autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr>
 autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
-let g:repl_checkpoint_notation = "CP"
 let g:repl_position = 3
-
-
-tnoremap <C-h> <C-w><C-h>
-tnoremap <C-j> <C-w><C-j>
-tnoremap <C-k> <C-w><C-k>
-tnoremap <C-l> <C-w><C-l>
-tnoremap <C-n> <C-w>N
-tnoremap <ScrollWheelUp> <C-w>Nk
-tnoremap <ScrollWheelDown> <C-w>Nj
 ```
 
 # Updates:
