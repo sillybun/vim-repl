@@ -9,3 +9,4 @@ test/__pycache__
 *.lprof
 python_tags
 build
+.old.py
