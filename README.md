@@ -32,7 +32,6 @@ For Windows Users:
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
-  - Add `Plug 'sillybun/zytutil'` to .vimrc
   - Run `:PlugInstall`
 
 For MacOS and Linux Users:
@@ -41,7 +40,6 @@ You can also use the minimum intalling setting:
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
-  - Add `Plug 'sillybun/zytutil'` to .vimrc
   - Run `:PlugInstall`
 
 However, the following intalling setting use C++ to boost the plugin.
