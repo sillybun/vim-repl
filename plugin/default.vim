@@ -28,6 +28,10 @@ if !exists('g:repl_cursor_down')
     let g:repl_cursor_down = 0
 endif
 
+if !exists('g:repl_python_automerge')
+    let g:repl_python_automerge = 0
+endif
+
 if !exists('g:repl_exit_commands')
 	let g:repl_exit_commands = {
 				\	"python": "quit()",

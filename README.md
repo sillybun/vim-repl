@@ -199,7 +199,21 @@ If `g:repl_auto_sends` is defined, once user sends a line starts with any patter
 let g:repl_cursor_down = 0
 ```
 
-If `g:repl_cursor_down` is 1, once user send code blocks using visual selection, the cursor will move to the next line of the last line of the code blocks.
+If `g:repl_cursor_down` is 1, once user sends code blocks using visual selection, the cursor will move to the next line of the last line of the code blocks.
+
+```
+let g:repl_python_automerge = 0
+```
+
+If `g:repl_python_automerge` is 1, once user sends code which is seperated into multilines, they are combined into one line automatically. For example, if the code is:
+
+```
+a = 1+\
+    2+\
+    3
+```
+
+, then `a = 1+2+3` will be sent to the repl environment instead of three lines.
 
 # My Configuation for Vim-Repl
 
@@ -235,6 +249,11 @@ tnoremap <ScrollWheelDown> <C-w>Nj
 ```
 
 # Updates:
+
+## 2019.08.03
+
+- Rewrite the program to format python codes using python language
+- `g:repl_python_automerge` is provided.
 
 ## 2019.5.28
 

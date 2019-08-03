@@ -77,19 +77,45 @@ class pythoncodes:
         self.rawcontents = newrawcontents
 
     def mergeunfinishline(self):
-        for i in range(len(self.rawcontents)):
-            indentlevel, finishflag, unfinishtype = replpython.getpythonindent(self.rawcontents[:i])
-            if not finishflag:
-                if unfinishtype in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
-                    templine = self.rawcontents[i - 1] + self.rawcontents[i]
-                    self.rawcontents = self.rawcontents[:i-1] + [templine] + self.rawcontents[i+1:]
-                    self.mergeunfinishline()
-                    return self
+        tempcodeindent = replpython.getpythonindent_multiline(self.rawcontents)
+        newrawcontents = list()
+        i = 0
+        while i < len(tempcodeindent):
+            tempcodeline = ""
+            j = i
+            while True:
+                tobeadded = self.rawcontents[j]
+                Flag_NeedMerge = not tempcodeindent[j][1]
+                if j != i and tempcodeindent[j-1][2] not in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+                    tobeadded = tobeadded.lstrip()
+                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING}:
+                    tobeadded = tobeadded.rstrip()
+                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING} and self.rawcontents[j][-1] == "\\":
+                    tobeadded = tobeadded[:-1]
+                    Flag_NeedMerge = True
+                tempcodeline += tobeadded
+                if Flag_NeedMerge:
+                    j = j + 1
                 else:
-                    templine = self.rawcontents[i - 1] + self.rawcontents[i].lstrip()
-                    self.rawcontents = self.rawcontents[:i-1] + [templine] + self.rawcontents[i+1:]
-                    self.mergeunfinishline()
-                    return self
+                    i = j + 1
+                    break
+            newrawcontents.append(tempcodeline)
+        self.rawcontents = newrawcontents
+
+
+        # for i in range(len(self.rawcontents)):
+        #     indentlevel, finishflag, unfinishtype = replpython.getpythonindent(self.rawcontents[:i])
+        #     if not finishflag:
+        #         if unfinishtype in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+        #             templine = self.rawcontents[i - 1] + self.rawcontents[i]
+        #             self.rawcontents = self.rawcontents[:i-1] + [templine] + self.rawcontents[i+1:]
+        #             self.mergeunfinishline()
+        #             return self
+        #         else:
+        #             templine = self.rawcontents[i - 1] + self.rawcontents[i].lstrip()
+        #             self.rawcontents = self.rawcontents[:i-1] + [templine] + self.rawcontents[i+1:]
+        #             self.mergeunfinishline()
+        #             return self
         return self
 
     def getindentlevel(self, line):
