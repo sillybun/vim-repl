@@ -1,12 +1,5 @@
 import numpy as np
-
 a = np.zeros(19)
+b = np.ones(10)
 print(a.sum())
-
-import time
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
+print(b.sum())

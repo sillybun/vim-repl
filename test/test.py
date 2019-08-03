@@ -1,17 +1,7 @@
-import time
+def f(a, b):
+    c = 0
+    for i in range(len(a)):
+        c = a[i] * b[i]
+    return c
 
-time.sleep(1)
-time.sleep(1)
-time.sleep(1)
-
-# BEGIN
-__import__('pdb').set_trace()
-if 0:
-    1+1
-else:
-    1 + 2
-
-
-a = 1
-
-# END
+f(range(4), range(3))
