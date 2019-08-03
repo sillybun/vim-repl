@@ -226,14 +226,6 @@ endfunction
 function! repl#SendCurrentLine() abort
 	if bufexists(g:repl_console_name)
         if repl#REPLGetShortName() =~# '.*python.*'
-            " if repl#StartWith(getline('.'), '# ' . g:repl_checkpoint_notation)
-            "     if repl#REPLGetCheckID(getline('.')) !=# ''
-            "         call repl#REPLLoadCheckPoint()
-            "         return
-            "     else
-            "         call repl#REPLSaveCheckPoint()
-            "         return
-            "     endif
             if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
                 call repl#SendWholeBlock()
                 return
