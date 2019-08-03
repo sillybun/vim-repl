@@ -660,6 +660,9 @@ function! repl#CheckInputState()
 endfunction
 
 function! repl#Sends(tasks, symbols)
+    if len(a:tasks) == 0
+        return
+    end
     if has('win32') || !exists('g:has_async_engine')
         call replforwin32#Sends(a:tasks, a:symbols)
     else
