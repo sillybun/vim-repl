@@ -11,3 +11,4 @@ python_tags
 build
 .old.py
 deprecated
+.DS_Store
