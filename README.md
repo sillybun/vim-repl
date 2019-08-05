@@ -19,7 +19,7 @@ In order to support more languages, you will have to specify which program to ru
 
 There are three ways to send codes to REPL environment, the first way: stay in normal mode and press `<leader>w` and the whole line of the cursor will be sent to REPL.
 
-![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage1.gif)
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage-1.gif)
 
 The second way is that in normal mode, move the cursor to the first line of one block (start of a function: `def functionname(argv):`, start of a for/while loop, start of a if-else statement) and press `<leader>w`, the whole block will be sent to REPL automatically.
 
@@ -138,7 +138,7 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 
 To debug python code, move the cursor to certain line and press `<F12>`, and ipdb will be run and the program will be stopped at that line. Press `<F10>` will run a single line and Press `<F11>` will also run a single line but will jump into functions.
 
-![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debugpython.gif)
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug-python.gif)
 
 ## Setting
 
