@@ -30,11 +30,18 @@ function! s:REPLDebugWaitForInput() abort
 endfunction
 
 function! g:REPLDebugMoveCursor() abort
-    for i in range(repl#GetCurrentLineNumber(), 1, -1)
-        let l:t = term_getline(g:repl_console_name, i)
+    for l:currentlinenumber in range(repl#GetCurrentLineNumber(), 1, -1)
+        let l:t = term_getline(g:repl_console_name, l:currentlinenumber)
         if stridx(l:t, '>') == 0
             let l:t = l:t[2:]
             let l:i = stridx(l:t, '(')
+            let l:j = l:currentlinenumber
+            while l:i == -1
+                let l:j = l:j + 1
+                let l:nextline = term_getline(g:repl_console_name, l:j)
+                let l:t = l:t . l:nextline
+                let l:i = stridx(l:t, '(')
+            endwhile
             let l:filefullpath = l:t[0:(l:i - 1)]
             let l:linenumber = str2nr(l:t[(l:i+1):])
             if l:filefullpath !=# expand('%:p') && l:filefullpath[0] ==# '/'
@@ -62,15 +69,6 @@ function! s:REPLDebugU() abort
     endif
     let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "u\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugU")
-    " if repl#GetTerminalLine() != 'ipdb>'
-    "     call term_sendkeys('ZYTREPL', "\<Cr>")
-    "     call s:REPLDebugWaitForInput()
-    "     call term_sendkeys('ZYTREPL', "u\<Cr>")
-    " else
-    "     call term_sendkeys('ZYTREPL', "u\<Cr>")
-    " endif
-    " call s:REPLDebugWaitForInput()
-    " call s:REPLDebugMoveCursor()
 endfunction
 
 function! s:REPLDebugS() abort
