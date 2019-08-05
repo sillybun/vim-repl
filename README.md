@@ -124,6 +124,22 @@ You can change buffer between file and REPL environment the same as change betwe
 
 use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
+### How to debug python script?
+
+> Debug function need the support of vim-async and zytutil. Since I have to use a small program in C++ to delay some time, this function can only work on MacOS and Linux.
+
+I suggest the following key binding:
+
+```
+autocmd Filetype python nnoremap <F12> <Esc>:REPLDebugStopAtCurrentLine<Cr>
+autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr>
+autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
+```
+
+To debug python code, move the cursor to certain line and press `<F12>`, and ipdb will be run and the program will be stopped at that line. Press `<F10>` will run a single line and Press `<F11>` will also run a single line but will jump into functions.
+
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug_python.gif)
+
 ## Setting
 
 you can bind the `REPLToggle` command to a certain key to make it more convenience.
