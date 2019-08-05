@@ -138,7 +138,7 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 
 To debug python code, move the cursor to certain line and press `<F12>`, and ipdb will be run and the program will be stopped at that line. Press `<F10>` will run a single line and Press `<F11>` will also run a single line but will jump into functions.
 
-![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug_python.gif)
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debugpython.gif)
 
 ## Setting
 
