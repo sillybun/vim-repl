@@ -240,6 +240,8 @@ function! repl#ToREPLPythonCode(lines, pythonprogram)
     if has('python3')
 
 python3 << EOF
+import vim
+import sys
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
@@ -252,6 +254,8 @@ EOF
     elseif has('python')
 
 python << EOF
+import vim
+import sys
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
