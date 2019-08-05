@@ -27,7 +27,7 @@ The second way is that in normal mode, move the cursor to the first line of one 
 
 The third way is to select some lines in visual mode and press `<leader>w`, the seleted code will be sent to REPL.
 
-![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage3.gif)
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage-3.gif)
 If the REPL is already open. `:REPLToggle` will close REPL.
 
 ## Installation
