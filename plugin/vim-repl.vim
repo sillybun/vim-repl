@@ -7,6 +7,10 @@ function! g:REPLSend(...)
     endfor
 endfunction
 
+function! g:REPLTEST(channel) abort
+    echom "nice to meet you"
+endfunction
+
 silent! exe 'nnoremap <silent> ' . invoke_key . ' :SendCurrentLine<Cr>'
 silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
