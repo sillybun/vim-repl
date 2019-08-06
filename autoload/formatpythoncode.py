@@ -181,7 +181,7 @@ class pythoncodes:
                 else:
                     return False
             elif self.replprogram == "ipython":
-                if self.version == "7":
+                if self.version[0] == "7" and self.version != "7.0":
                     return False
                 if line.startswith("pass") or line.startswith("return") or line.startswith("raise") or line.startswith("continue") or line.startswith("break"):
                     return True

@@ -9,8 +9,8 @@ if !exists("g:repl_program")
 endif
 
 if g:repl_program['python'] == 'ipython' && !exists("g:repl_ipython_version")
-    let temp = system('ipython --version')[0]
-    let g:repl_ipython_version = str2nr(temp)
+    let temp = system('ipython --version')
+    let g:repl_ipython_version = temp[0:2]
 endif
 
 if !has_key(g:repl_program, 'perl')
@@ -35,6 +35,10 @@ endif
 
 if !exists('g:repl_python_automerge')
     let g:repl_python_automerge = 0
+endif
+
+if !exists('g:repl_nopython_engine')
+    let g:repl_nopython_engine = 0
 endif
 
 if !exists('g:repl_console_name')
