@@ -2,7 +2,7 @@ let invoke_key = g:sendtorepl_invoke_key
 
 function! g:REPLSend(...)
     for l:code in a:000
-        exe "call term_sendkeys('" . g:repl_console_name . ''', "' . l:code . '\<Cr>")'
+        exe "call term_sendkeys('" . g:repl_console_name . ''', "' . l:code . '\n")'
 		exe "call term_wait('" . g:repl_console_name . ''',  50)'
     endfor
 endfunction

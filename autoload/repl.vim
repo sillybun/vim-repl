@@ -102,11 +102,11 @@ function! repl#REPLClose()
             exe "call term_sendkeys('" . g:repl_console_name . ''', "\<C-W>\<C-C>")'
             exe "call term_wait('" . g:repl_console_name . ''', 50)'
             if repl#REPLIsVisible()
-                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\<Cr>\")"
+                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\<Cr>\")"
+                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\<Cr>")'
+                exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\n")'
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
             endif
 		endif
@@ -231,7 +231,7 @@ function! repl#SendCurrentLine() abort
                 return
             endif
         endif
-		exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\<Cr>")'
+		exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\n")'
 		exe "call term_wait('" . g:repl_console_name . ''',  50)'
 	endif
 endfunction
@@ -326,7 +326,7 @@ function! repl#Sends(tasks, symbols)
         let g:currentlinenumber = -1
         let g:currentrepltype = repl#REPLGetShortName()
         " echom len(g:tasks)
-        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\<Cr>")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
         call AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     endif
 endfunction
@@ -380,10 +380,10 @@ function! repl#SendLines(first, last) abort
             endwhile
             for line in getline(l:firstline, a:last)
                 let l:deletespaceline = line[l:i:]
-                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\<Cr>")'
+                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
                 exe 'call term_wait("' . g:repl_console_name . '", 50)'
             endfor
-            exe "call term_sendkeys('" . g:repl_console_name . ''', "\<Cr>")'
+            exe "call term_sendkeys('" . g:repl_console_name . ''', "\n")'
         endif
 	endif
 endfunction
