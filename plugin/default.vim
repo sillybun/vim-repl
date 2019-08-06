@@ -8,6 +8,11 @@ if !exists("g:repl_program")
 				\	}
 endif
 
+if g:repl_program['python'] == 'ipython' && !exists("g:repl_ipython_version")
+    let temp = system('ipython --version')[0]
+    let g:repl_ipython_version = str2nr(temp)
+endif
+
 if !has_key(g:repl_program, 'perl')
   if executable('perlconsole')
     let g:repl_program.perl = 'perlconsole'

@@ -237,6 +237,11 @@ function! repl#SendCurrentLine() abort
 endfunction
 
 function! repl#ToREPLPythonCode(lines, pythonprogram)
+    if exists('g:repl_ipython_version')
+        let l:version = g:repl_ipython_version
+    else
+        let l:version = -1
+    endif
     if has('python3')
 
 python3 << EOF
@@ -246,8 +251,9 @@ sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
-mergeunfinishline = vim.eval("g:repl_python_automerge")
-newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline)
+mergeunfinishline = int(vim.eval("g:repl_python_automerge"))
+version = vim.eval("l:version")
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
 EOF
         return py3eval('newcodes')
 
@@ -260,8 +266,9 @@ sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
-mergeunfinishline = vim.eval("g:repl_python_automerge")
-newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline)
+mergeunfinishline = int(vim.eval("g:repl_python_automerge"))
+version = vim.eval("l:version")
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
 EOF
 
         return pyeval('newcodes')

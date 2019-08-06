@@ -23,16 +23,17 @@ class UnfinishType:
     DICTVALUE = 9 # {1:2}
 
 class pythoncodes:
-    def __init__(self, replprogram = "ipython", flag_mergefinishline = False):
+    def __init__(self, replprogram = "ipython", flag_mergefinishline = False, version=""):
         self.rawcontents = list()
         self.replprogram = replprogram
         self.flag_mergefinishline = flag_mergefinishline
+        self.version = version
 
     # @profile
     def getcode(self, code):
         self.rawcontents = [line for line in code if len(line.strip()) != 0]
         self.removecomments()
-        if self.flag_mergefinishline:
+        if self.flag_mergefinishline == 1:
             self.mergeunfinishline()
         self.analysepythonindent()
         self.seperateintoblocks()
@@ -180,6 +181,8 @@ class pythoncodes:
                 else:
                     return False
             elif self.replprogram == "ipython":
+                if self.version == "7":
+                    return False
                 if line.startswith("pass") or line.startswith("return") or line.startswith("raise") or line.startswith("continue") or line.startswith("break"):
                     return True
                 else:
@@ -217,7 +220,7 @@ class pythoncodes:
                         if self.codeindent[self.blocks[i][1][j-1]][2] in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
                             temp.append(block[j])
                         else:
-                            if self.isstartofline(self.blocks[i][1][j - 1]):
+                            if self.version == "6" and self.isstartofline(self.blocks[i][1][j - 1]):
                                 temp.append(''.join(["\b" * lastback]) + block[j].strip())
                             else:
                                 temp.append(block[j].strip())
@@ -336,8 +339,9 @@ class pythoncodes:
         return newcode
 
 # @profile
-def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False):
-    pc = pythoncodes(replprogram = pythonprogram, flag_mergefinishline = mergeunfinishline)
+def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False, version=""):
+    # print(codes, pythonprogram, mergeunfinishline, version)
+    pc = pythoncodes(replprogram = pythonprogram, flag_mergefinishline = mergeunfinishline, version = version)
     pc.getcode(codes)
     return pc.generatecodes()
 
@@ -444,7 +448,12 @@ def f(a, b):
     def test8(self):
         code = ["def f(a, b):", "    if a:", "        return", "    else:", "        b = 2"]
         newcode = ["def f(a, b):", "if a:", "return", "\b\b\b\belse:", "b = 2", ""]
-        assert format_to_repl(code, pythonprogram = "ptpython") == newcode
+        assert format_to_repl(code, pythonprogram="ptpython") == newcode
+
+    def test9(self):
+        code = ["def f(a, b):", "    if a:", "        return", "    else:", "        b = 2"]
+        newcode = ["def f(a, b):", "if a:", "return", "\b\b\b\belse:", "b = 2", ""]
+        assert format_to_repl(code, pythonprogram="ipython", version="7") == newcode
 
     def test(self):
         self.test1()
@@ -455,6 +464,7 @@ def f(a, b):
         self.test6()
         self.test7()
         self.test8()
+        self.test9()
         print("All test unit are successfully passed!")
 
 def test_speed():
