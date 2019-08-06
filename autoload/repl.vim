@@ -432,16 +432,28 @@ function! repl#REPLDebug() abort
     let l:os = substitute(system('uname'), "\n", "", "")
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
-    echo 'REPL program'
+    echo 'Support python: ' . has('python')
+    if has('python3')
+python3 << EOF
+import sys
+print(sys.version)
+EOF
+    elseif has('python')
+python << EOF
+import sys
+print sys.version
+EOF
+    endif
+    echo 'REPL program:'
     echo g:repl_program
-    echo 'REPL exit commands'
+    if g:repl_program['python'] == 'ipython'
+        echo "ipython version: " . system('ipython --version')
+    endif
+    echo 'REPL exit commands:'
     echo g:repl_exit_commands
-    echo 'Current File Type:'
-    echo &filetype
-    echo 'Current Type:'
-    echo repl#REPLGetName()
-    echo 'Current Exit Commands'
-    echo repl#REPLGetExitCommand()
+    echo 'Current File Type: ' . &filetype
+    echo 'Current Type: ' . repl#REPLGetName()
+    echo 'Current Exit Commands: ' . repl#REPLGetExitCommand()
     if has('win32') || !exists('g:has_async_engine')
         echo 'Use Build-in Async Engine'
     else
