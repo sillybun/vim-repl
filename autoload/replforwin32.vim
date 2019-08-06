@@ -43,7 +43,7 @@ function! replforwin32#WaitForSymbolsHandler(channel)
 endfunction
 
 function! replforwin32#WAITFORSYMBOLS() abort
-    call job_start('sleep 0.03s', {'close_cb': 'replforwin32#WaitForSymbolsHandler'})
+    call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitForSymbolsHandler'})
 endfunction
 
 function! replforwin32#WaitFor(symbols)
