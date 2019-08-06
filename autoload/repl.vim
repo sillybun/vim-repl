@@ -225,6 +225,7 @@ endfunction
 
 function! repl#SendCurrentLine() abort
 	if bufexists(g:repl_console_name)
+        let l:cursor_pos = getpos('.')
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
                 call repl#SendWholeBlock()
@@ -233,6 +234,9 @@ function! repl#SendCurrentLine() abort
         endif
 		exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\n")'
 		exe "call term_wait('" . g:repl_console_name . ''',  50)'
+        if g:repl_cursor_down
+            call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
+        endif
 	endif
 endfunction
 
