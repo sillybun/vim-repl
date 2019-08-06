@@ -21,7 +21,7 @@ function! replforwin32#WaitHandlerNotCall(channel) abort
 endfunction
 
 function! replforwin32#WaitWHNotCall() abort
-    call job_start('sleep 0.03s', {'close_cb': 'replforwin32#WaitHandlerNotCall'})
+    call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitHandlerNotCall'})
 endfunction
 
 function! replforwin32#Sends(tasks, symbols)
