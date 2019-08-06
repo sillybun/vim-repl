@@ -283,7 +283,11 @@ let g:repl_position = 3
 
 # Updates:
 
-## 2019.08.03
+## 2019.8.6
+
+- Add support for ipython version >= 7
+
+## 2019.8.3
 
 - Rewrite the program to format python codes using python language
 - Abandon using C++ to handle python code
