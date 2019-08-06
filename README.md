@@ -285,6 +285,11 @@ let g:repl_position = 3
 
 # Updates:
 
+## 2019.8.7
+
+- Fix bug for windows
+- 'g:repl_cursor_down' will also affect SendCurrentLine
+
 ## 2019.8.6
 
 - Add support for ipython version >= 7
