@@ -21,7 +21,8 @@ function! replforwin32#WaitHandlerNotCall(channel) abort
 endfunction
 
 function! replforwin32#WaitWHNotCall() abort
-    call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitHandlerNotCall'})
+    " call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitHandlerNotCall'})
+    call timer_start(30, 'replforwin32#WaitHandlerNotCall')
 endfunction
 
 function! replforwin32#Sends(tasks, symbols)
@@ -44,7 +45,8 @@ endfunction
 
 
 function! replforwin32#WAITFORSYMBOLS() abort
-    call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitForSymbolsHandler'})
+    " call job_start('sleep 0.03', {'close_cb': 'replforwin32#WaitForSymbolsHandler'})
+    call timer_start(30, 'replforwin32#WaitForSymbolsHandler')
 endfunction
 
 function! replforwin32#WaitFor(symbols)
