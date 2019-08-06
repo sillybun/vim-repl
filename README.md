@@ -189,9 +189,21 @@ It controls which program will be run for certain filetype. If there is no entry
 
 ```
 let g:repl_program = {
-			\	"python": "python",
-			\	"default": "bash"
+			\	'python': 'python',
+			\	'default': 'bash'
 			\	}
+```
+
+Since, ipython 7 and ipython 6 have a big difference, I have to treat them seperately and have to detect the version of ipython by `ipython --version` which will cause a obvious lagging. You have better to specify which version of ipython is used by setting:
+
+```
+let g:repl_ipython_version = '6'
+```
+
+or
+
+```
+let g:repl_ipython_version = '7'
 ```
 
 **repl_exit_command**
@@ -200,10 +212,10 @@ It controls the command to exit different repl program correctly. (Notice: exitc
 
 ```
 let g:repl_exit_commands = {
-			\	"python": "quit()",
-			\	"bash": "exit",
-			\	"zsh": "exit",
-			\	"default": "exit",
+			\	'python': 'quit()',
+			\	'bash': 'exit',
+			\	'zsh': 'exit',
+			\	'default': 'exit',
 			\	}
 ```
 
@@ -258,10 +270,10 @@ let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
             \   'matplotlib': 'from matplotlib import pyplot as plt'
             \   }
-" let g:repl_checkpoint_position = '~/.temp/'
 let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ']
 let g:repl_cursor_down = 1
 let g:repl_python_automerge = 1
+let g:repl_ipython_version = '7'
 nnoremap <leader>r :REPLToggle<Cr>
 autocmd Filetype python nnoremap <F12> <Esc>:REPLDebugStopAtCurrentLine<Cr>
 autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr>
