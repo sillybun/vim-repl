@@ -433,6 +433,9 @@ function! repl#REPLDebug() abort
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
     echo 'Support python: ' . has('python')
+    if ! has('python3') && ! has('python')
+        echoerr "vim not supported with python or python3"
+    endif
     if has('python3')
 python3 << EOF
 import sys
@@ -448,6 +451,10 @@ EOF
     echo g:repl_program
     if g:repl_program['python'] == 'ipython'
         echo "ipython version: " . system('ipython --version')
+        echo "setted ipython version" . g:repl_ipython_version
+        if g:repl_ipython_version == '7.0'
+            echoerr "This plugin cannot work on ipython 7.01. Please use ipython >= 7.1.1"
+        endif
     endif
     echo 'REPL exit commands:'
     echo g:repl_exit_commands

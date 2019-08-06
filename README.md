@@ -203,8 +203,10 @@ let g:repl_ipython_version = '6'
 or
 
 ```
-let g:repl_ipython_version = '7'
+let g:repl_ipython_version = '7.7'
 ```
+
+I have tested some version of ipython and find that this plugin cannot work on 7.0.1. Please use version >= 7.1.1
 
 **repl_exit_command**
 
