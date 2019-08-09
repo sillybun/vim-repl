@@ -126,7 +126,7 @@ use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
 ### How to debug python script?
 
-> Debug function need the support of vim-async and zytutil. Since I have to use a small program in C++ to delay some time, this function can only work on MacOS and Linux.
+> Debug function need the support of vim-async. Therefore you have to install `vim-async` by the install instruction and `+timers` feature is required.
 
 I suggest the following key binding:
 
