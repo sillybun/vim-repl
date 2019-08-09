@@ -1,5 +1,4 @@
 # vim-repl
-
    * [vim-repl](#vim-repl)
       * [Introduction](#introduction)
       * [Details](#details)
@@ -8,7 +7,7 @@
          * [How to open REPL](#how-to-open-repl)
          * [How to exit REPL](#how-to-exit-repl)
          * [How to send code to REPL](#how-to-send-code-to-repl)
-         * [How to change to REPL environment](#how-to-change-to-repl-environment)
+         * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
          * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
          * [How to debug python script?](#how-to-debug-python-script)
       * [Setting](#setting)
@@ -113,9 +112,9 @@ let g:repl_input_symbols = {
 ```
 
 
-### How to change to REPL environment
+### How to switch to REPL environment
 
-You can change buffer between file and REPL environment the same as change between two vim buffer. press `<C-W><C-w>` will change between file and REPL environment. `<C-w><C-h,j,k,l>` also work the way it should be
+You can switch buffer between file and REPL environment the same as change between two vim buffer. press `<C-W><C-w>` will change between file and REPL environment. `<C-w><C-h,j,k,l>` also work the way it should be
 
 ### How to hide the REPL environment
 
