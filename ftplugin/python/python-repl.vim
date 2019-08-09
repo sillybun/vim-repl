@@ -5,7 +5,7 @@ else
 endif
 
 function! s:REPLDebugRunAsync() abort
-    let l:code = ["wait repl#GetTerminalLine() == 'ipdb>'", 'call term_sendkeys("' . g:repl_console_name . '", "c\<Cr>")', "wait repl#GetTerminalLine() == 'ipdb>'", 'call g:REPLDebugMoveCursor()']
+    let l:code = ["wait repl#GetTerminalLine() == 'ipdb>'", 'call term_sendkeys("' . g:repl_console_name . '", "c\<Cr>")', "sleep 20ms", "wait repl#GetTerminalLine() == 'ipdb>'", 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, 'REPLDebugRunAsync')
 endfunction
 
@@ -16,8 +16,6 @@ function! s:REPLDebugRun() abort
             call term_wait(g:repl_console_name, 50)
         endif
         call s:REPLDebugRunAsync()
-        " let s:iter_dra = 0
-        " call s:WAIT_REPLDebugRunAsync()
     else
         call s:REPLDebugIPDB()
         call term_wait(g:repl_console_name, 50)
@@ -25,11 +23,8 @@ function! s:REPLDebugRun() abort
     endif
 endfunction
 
-function! s:REPLDebugWaitForInput() abort
-    call repl#WaitFor(['ipdb>'])
-endfunction
-
 function! g:REPLDebugMoveCursor() abort
+    " echom repl#GetTerminalLine()
     for l:currentlinenumber in range(repl#GetCurrentLineNumber(), 1, -1)
         let l:t = term_getline(g:repl_console_name, l:currentlinenumber)
         if stridx(l:t, '>') == 0
@@ -59,7 +54,7 @@ function! s:REPLDebugN() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "n\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "n\<Cr>")', 'sleep 10ms', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugN")
 endfunction
 
@@ -67,7 +62,7 @@ function! s:REPLDebugU() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "u\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "u\<Cr>")', 'sleep 10ms', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugU")
 endfunction
 
@@ -75,17 +70,8 @@ function! s:REPLDebugS() abort
     if !repl#REPLIsVisible()
         return
     endif
-    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "s\<Cr>")', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
+    let l:code = ['if repl#GetTerminalLine() != "ipdb>"', 'call term_sendkeys("' . g:repl_console_name . '", "\<Cr>")', 'endif', 'call term_sendkeys("' . g:repl_console_name . '", "s\<Cr>")', 'sleep 10ms', 'wait repl#GetTerminalLine() == "ipdb>"', 'call g:REPLDebugMoveCursor()']
     call AsyncCodeRun(l:code, "REPLDebugS")
-    " if repl#GetTerminalLine() != 'ipdb>'
-    "     call term_sendkeys('ZYTREPL', "\<Cr>")
-    "     call s:REPLDebugWaitForInput()
-    "     call term_sendkeys('ZYTREPL', "s\<Cr>")
-    " else
-    "     call term_sendkeys('ZYTREPL', "s\<Cr>")
-    " endif
-    " call s:REPLDebugWaitForInput()
-    " call s:REPLDebugMoveCursor()
 endfunction
 
 function! s:REPLDebugStopAtCurrentLine(...) abort

@@ -200,7 +200,7 @@ function! repl#REPLToggle(...)
 		call repl#REPLClose()
     elseif repl#REPLIsHidden()
         call repl#REPLUnhide()
-	else
+    else
         let l:cursor_pos = getpos('.')
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
