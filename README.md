@@ -34,34 +34,19 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 This plugin support all platforms (Windows, MacOS, Linux). Use your plugin manager of choice.
 
-For Windows Users:
+For MacOS, Windows and Linux Users:
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
   - Run `:PlugInstall`
 
-For MacOS and Linux Users:
-
-You can also use the minimum intalling setting:
+However, the following intalling setting use `vim-async` to provide more stable code sending performance (vim should have the `timers` support)
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
+  - Add `Plug 'sillybun/vim-async' to .vimrc
   - Run `:PlugInstall`
 
-However, the following intalling setting use C++ to boost the plugin.
-
-- [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
-  - Add `Plug 'sillybun/vim-repl'` to .vimrc
-  - Add `Plug 'sillybun/vim-async', {'do': './install.sh'}` to .vimrc
-  - Add `Plug 'sillybun/zytutil'` to .vimrc
-  - Run `:PlugInstall`
-
-- [Vundle](https://github.com/gmarik/vundle)
-  - Add `Plugin 'sillybun/vim-repl'` to .vimrc
-  - Add `Plugin 'sillybun/vim-async'` to .vimrc
-  - Add `Plugin 'sillybun/zytutil'` to .vimrc
-  - Run `:PluginInstall`
-  - And change to the plugin directory of vim-async and run in shell `./install.sh`
 
 ## Usage
 
@@ -294,6 +279,7 @@ let g:repl_position = 3
 ## 2019.8.9
 
 - Add limited support for vim without python or python3 support.
+- Rewrite `vim-async` using `timer_start`
 
 ## 2019.8.7
 
