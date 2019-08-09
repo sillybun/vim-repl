@@ -84,7 +84,7 @@ However, the following intalling setting use `vim-async` to provide more stable 
 ### How to send code to REPL
 
 - In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
-- In Normal Mode, move the cursor to the begin of a block and press `<leader>w` and the whole block will be sent to REPL
+- In Normal Mode, move the cursor to the begin of a block and press `<leader>w` and the whole block will be sent to REPL (By default, code block start with `def`, `class`, `while`, `for`, `if` will be automatically sent. You can control the definition of start of code block by setting `g:repl_auto_sends`)
 - In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
 
 Currently, asynchronous transmission is completed and it is supported for all language if you correctly set the input symbols of the corresponding language.
