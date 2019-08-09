@@ -14,6 +14,10 @@ function! repl#LStrip(string)
     return substitute(a:string, '^\s*', '', '')
 endfunction
 
+function! repl#Strip(string)
+    return repl#LStrip(repl#RStrip(a:string))
+endfunction
+
 function! repl#GetIndent(string)
     if trim(a:string) ==# ''
         return 9999
@@ -247,7 +251,7 @@ function! repl#ToREPLPythonCode(lines, pythonprogram)
         let l:version = -1
     endif
     if !has('python3') && !has('python') || g:repl_vimscript_engine
-        return a:lines
+        return formatpythoncode#Format_to_repl(a:lines, a:pythonprogram, l:version)
     elseif has('python3')
 python3 << EOF
 import vim
