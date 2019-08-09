@@ -283,7 +283,7 @@ let g:repl_position = 3
 
 ## 2019.8.9
 
-- Add limited support for vim without python or python3 support.
+- Add almost full support for vim without python or python3 support.
 - Rewrite `vim-async` using `timer_start`
 
 ## 2019.8.7
