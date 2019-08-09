@@ -282,7 +282,6 @@ let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
             \   'matplotlib': 'from matplotlib import pyplot as plt'
             \   }
-let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ']
 let g:repl_cursor_down = 1
 let g:repl_python_automerge = 1
 let g:repl_ipython_version = '7'
@@ -299,6 +298,7 @@ let g:repl_position = 3
 
 - Add almost full support for vim without `+python` or `+python3` support.
 - Rewrite `vim-async` using `timer_start`
+- Set default value of `g:repl_auto_sends` to `['class ', 'def ', 'for ', 'if ', 'while ']`
 
 ## 2019.8.7
 
