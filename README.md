@@ -194,7 +194,7 @@ let g:repl_program = {
 			\	}
 ```
 
-Since, ipython 7 and ipython 6 have a big difference, I have to treat them seperately and have to detect the version of ipython by `ipython --version` which will cause a obvious lagging. You have better to specify which version of ipython is used by setting:
+> For those who use `ipython` as REPL program: Since ipython 7 and ipython 6 have a big difference, I have to treat them seperately and have to detect the version of ipython by `ipython --version` which will cause a obvious lagging. You have better to **specify version of ipython** by setting:
 
 ```
 let g:repl_ipython_version = '6'
