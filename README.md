@@ -1,5 +1,7 @@
 # vim-repl
 
+[toc]
+
 ## Introduction
 
 Open the interactive environment with the code you are writing.
