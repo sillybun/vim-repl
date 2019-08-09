@@ -34,7 +34,7 @@ if !exists('g:repl_auto_sends')
 endif
 
 if !exists('g:repl_cursor_down')
-    let g:repl_cursor_down = 0
+    let g:repl_cursor_down = 1
 endif
 
 if !exists('g:repl_python_automerge')

@@ -298,7 +298,8 @@ let g:repl_position = 3
 
 - Add almost full support for vim without `+python` or `+python3` support.
 - Rewrite `vim-async` using `timer_start`
-- Set default value of `g:repl_auto_sends` to `['class ', 'def ', 'for ', 'if ', 'while ']`
+- Set the default value of `g:repl_auto_sends` to `['class ', 'def ', 'for ', 'if ', 'while ']`
+- Set the default value of `g:repl_cursor_down` to 1
 
 ## 2019.8.7
 
