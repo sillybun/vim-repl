@@ -65,6 +65,8 @@ However, the following intalling setting use `vim-async` to provide more stable 
 
 > If you bind `<lead>r` to `:REPLToggle` by `nnoremap <leader>r :REPLToggle`, you only need to press `<leader>r` to open or close REPL.
 
+> leader key is set by `let g:mapleader=' '`
+
 ### How to send code to REPL
 
 - In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
