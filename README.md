@@ -255,6 +255,13 @@ a = 1+\
 ```
 let g:repl_console_name = 'ZYTREPL'
 ```
+represents the name for repl console.
+
+```
+let g:repl_vimscript_engine = 0
+```
+
+If your vim doesn't support python or python3, I provides limited supported for it: it cannot work for `ipython` and `ptpython`, which means `g:repl_repl_program['python']='python'` is required.
 
 Name of REPL environment.
 
@@ -284,6 +291,10 @@ let g:repl_position = 3
 ```
 
 # Updates:
+
+## 2019.8.9
+
+- Add limited support for vim without python or python3 support.
 
 ## 2019.8.7
 

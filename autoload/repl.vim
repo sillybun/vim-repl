@@ -246,8 +246,9 @@ function! repl#ToREPLPythonCode(lines, pythonprogram)
     else
         let l:version = -1
     endif
-    if has('python3')
-
+    if !has('python3') && !has('python') || g:repl_vimscript_engine
+        return a:lines
+    elseif has('python3')
 python3 << EOF
 import vim
 import sys
@@ -260,9 +261,7 @@ version = vim.eval("l:version")
 newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
 EOF
         return py3eval('newcodes')
-
     elseif has('python')
-
 python << EOF
 import vim
 import sys
@@ -274,26 +273,13 @@ mergeunfinishline = int(vim.eval("g:repl_python_automerge"))
 version = vim.eval("l:version")
 newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
 EOF
-
         return pyeval('newcodes')
     endif
 endfunction
 
 function! repl#GetTerminalLine() abort
     let l:tl = term_getline(g:repl_console_name, '.')
-    if has('python3')
-python3 << EOF
-import vim
-line = vim.eval('l:tl').rstrip()
-EOF
-return py3eval('line')
-    elseif has('python')
-python << EOF
-import vim
-line = vim.eval('l:tl').rstrip()
-EOF
-return pyeval('line')
-    endif
+    return repl#RStrip(l:tl)
 endfunction
 
 function! repl#GetCurrentLineNumber() abort
@@ -437,8 +423,8 @@ function! repl#REPLDebug() abort
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
     echo 'Support python: ' . has('python')
-    if ! has('python3') && ! has('python')
-        echoerr "vim not supported with python or python3"
+    if ! has('python3') && ! has('python') && ! g:repl_vimscript_engine
+        echoerr "g:repl_vimscript_engine should be set to 1 for vim not supported with python or python3"
     endif
     if has('python3')
 python3 << EOF

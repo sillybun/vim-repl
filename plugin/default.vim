@@ -37,8 +37,8 @@ if !exists('g:repl_python_automerge')
     let g:repl_python_automerge = 0
 endif
 
-if !exists('g:repl_nopython_engine')
-    let g:repl_nopython_engine = 0
+if !exists('g:repl_vimscript_engine')
+    let g:repl_vimscript_engine = 0
 endif
 
 if !exists('g:repl_console_name')
