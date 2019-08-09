@@ -12,3 +12,4 @@ build
 .old.py
 deprecated
 .DS_Store
+gh-md-toc
