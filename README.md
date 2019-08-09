@@ -34,17 +34,17 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 This plugin support all platforms (Windows, MacOS, Linux). Use your plugin manager of choice.
 
-For MacOS, Windows and Linux Users:
+For MacOS, Windows and Linux Users (vim should have `+terminal` support):
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
   - Run `:PlugInstall`
 
-However, the following intalling setting use `vim-async` to provide more stable code sending performance (vim should have the `timers` support)
+However, the following intalling setting use `vim-async` to provide more stable code sending performance (vim should have the `+terminal` and `+timers` support)
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
-  - Add `Plug 'sillybun/vim-async' to .vimrc
+  - Add `Plug 'sillybun/vim-async'` to .vimrc
   - Run `:PlugInstall`
 
 
