@@ -32,7 +32,7 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 ## Installation
 
-This plugin support all platforms (Windows, MacOS, Linux) and vim with `python` or `python3` support is needed. Use your plugin manager of choice.
+This plugin support all platforms (Windows, MacOS, Linux). Use your plugin manager of choice.
 
 For Windows Users:
 
@@ -62,7 +62,6 @@ However, the following intalling setting use C++ to boost the plugin.
   - Add `Plugin 'sillybun/zytutil'` to .vimrc
   - Run `:PluginInstall`
   - And change to the plugin directory of vim-async and run in shell `./install.sh`
-
 
 ## Usage
 
