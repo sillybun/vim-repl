@@ -96,7 +96,7 @@ function! s:REPLDebugIPDB() abort
 	endif
     call term_wait(g:repl_console_name, 20)
     let l:n = 0
-    while l:n < 50
+    while l:n < 1000
         let l:tl = repl#Strip(repl#GetTerminalLine())
         if !(l:tl ==# 'ipdb>')
             call term_wait(g:repl_console_name, 20)
@@ -107,12 +107,9 @@ function! s:REPLDebugIPDB() abort
     endwhile
 endfunction
 
-command! -nargs=* REPLDebugStopAtCurrentLine silent call s:REPLDebugStopAtCurrentLine(<f-args>)
-command! REPLPDBC silent call s:REPLDebugRun()
-command! REPLPDBN silent call s:REPLDebugN()
-command! REPLPDBS silent call s:REPLDebugS()
-command! REPLPDBU silent call s:REPLDebugU()
-command! REPLDebug silent call s:REPLDebugIPDB()
-command! REPLAddCheckPoint silent call s:REPLAddCheckPoint()
-command! REPLSaveCheckPoint call s:REPLSaveCheckPoint()
-command! REPLLoadCheckPoint silent call s:REPLLoadCheckPoint()
+command! -nargs=* REPLDebugStopAtCurrentLine call s:REPLDebugStopAtCurrentLine(<f-args>)
+command! REPLPDBC call s:REPLDebugRun()
+command! REPLPDBN call s:REPLDebugN()
+command! REPLPDBS call s:REPLDebugS()
+command! REPLPDBU call s:REPLDebugU()
+command! REPLDebug call s:REPLDebugIPDB()
