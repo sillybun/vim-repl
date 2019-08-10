@@ -13,6 +13,7 @@
       * [Setting](#setting)
    * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
    * [Updates:](#updates)
+   * [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -339,3 +340,24 @@ let g:repl_position = 3
 
 - Add support for temporary hide the terminal window.
 If the REPL is already open. `:REPLToggle` will close REPL.
+
+# Troubleshooting
+
+- The python code cannot send porperly to REPL environment
+
+This trouble cann only happen for vim without `+python` or `+python3` support. Without python engine, vim-repl can only use vimscript to manipulate code to be sent, and it now cannot handle code seperated into multilines. For example, the following code cannot be sent porperly.
+
+```
+some_dict = {1:1,
+        2:2,
+        3:3}
+print(some_dict)
+```
+
+You should combine mulitlines code into one line to make the plugin work porperly as following:
+```
+some_dict = {1:1, 2:2, 3:3}
+print(some_dict)
+```
+
+For vim with `+python` or `+python3` support, this problem will not happen. If it happens, check whether `g:repl_vimscript_engine` is set to `0`. If `g:repl_vimscript_engine = 0`, there is a bug here. Please report the bug; If `g:repl_vimscript_engine=1`, search `let g:repl_vimscript_engine = 1` in vimrc and remove it.
