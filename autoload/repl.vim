@@ -227,13 +227,16 @@ function! repl#REPLToggle(...)
 	endif
 endfunction
 
-function! repl#SendCurrentLine() abort
+function! repl#SendCurrentLine()
 	if bufexists(g:repl_console_name)
         let l:cursor_pos = getpos('.')
         let l:code_tobe_sent = getline('.') . "\n"
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
-                call repl#SendWholeBlock()
+                let l:end_line_number = repl#SendWholeBlock()
+                if g:repl_cursor_down
+                    call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                endif
                 return
             endif
             if repl#REPLGetShortName() ==# 'ipython'
@@ -246,9 +249,8 @@ function! repl#SendCurrentLine() abort
                 let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
             endif
         endif
-		" exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\n")'
         call term_sendkeys(g:repl_console_name, l:code_tobe_sent)
-		exe "call term_wait('" . g:repl_console_name . ''',  50)'
+        call term_wait(g:repl_console_name, 50)
         if g:repl_cursor_down
             call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
         endif
@@ -432,6 +434,7 @@ function! repl#SendWholeBlock() abort
         endif
     endfor
     call repl#SendLines(l:begin_line_number, l:end_line_number)
+    return l:end_line_number
 endfunction
 
 function! repl#REPLDebug() abort
