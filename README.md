@@ -49,7 +49,7 @@ If the REPL is already open. `:REPLToggle` will close REPL.
 
 This plugin support all platforms (Windows, MacOS, Linux). Use your plugin manager of choice.
 
-For MacOS, Windows and Linux Users (vim should have `+terminal` support):
+For MacOS, Windows and Linux Users (vim should have `+terminal` and `+timers` support):
 
 - [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
@@ -118,8 +118,6 @@ You can switch buffer between file and REPL environment the same as change betwe
 use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
 ### How to debug python script?
-
-> This function need the `+timers` support.
 
 I suggest the following key binding:
 

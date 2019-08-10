@@ -325,17 +325,17 @@ function! repl#Sends(tasks, symbols)
     if len(a:tasks) == 0
         return
     end
-    if !has('timers')
-        call replforwin32#Sends(a:tasks, a:symbols)
-    else
-        let g:tasks = a:tasks
-        let g:waitforsymbols = repl#AsList(a:symbols)
-        let g:taskprocess = 0
-        let g:currentlinenumber = -1
-        let g:currentrepltype = repl#REPLGetShortName()
-        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
-        call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
-    endif
+    " if !has('timers')
+    "     call replforwin32#Sends(a:tasks, a:symbols)
+    " else
+    let g:tasks = a:tasks
+    let g:waitforsymbols = repl#AsList(a:symbols)
+    let g:taskprocess = 0
+    let g:currentlinenumber = -1
+    let g:currentrepltype = repl#REPLGetShortName()
+    let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+    call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
+    " endif
 endfunction
 
 function! repl#WaitForSymbolsHandler(channel)
@@ -441,6 +441,8 @@ function! repl#REPLDebug() abort
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
     echo 'Support python: ' . has('python')
+    echo 'has +terminal: ' . has('terminal')
+    echo 'has +timers:' . has('timers')
     if ! has('python3') && ! has('python') && ! g:repl_vimscript_engine
         echoerr "g:repl_vimscript_engine should be set to 1 for vim not supported with python or python3"
         echoerr 'you should add `let g:repl_vimscript_engine = 1` to vimrc'
@@ -470,5 +472,4 @@ EOF
     echo 'Current File Type: ' . &filetype
     echo 'Current Type: ' . repl#REPLGetName()
     echo 'Current Exit Commands: ' . repl#REPLGetExitCommand()
-    echo 'has timers:' . has('timers')
 endfunction
