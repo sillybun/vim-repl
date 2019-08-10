@@ -1,18 +1,3 @@
-# import sys
-# sys.path = ["/Users/zhangyiteng/miniconda3/lib/python3.6/site-packages/"] + sys.path
-# print(sys.path)
-
-# import llvmlite
-# print(llvmlite.__version__)
-# print(llvmlite.__path__)
-# import numba
-# print(numba.__version__)
-# print(numba.__path__)
-# import numpy as np
-
-# from numba import jit, jitclass, int32, intp
-# from numbastack import Stack, tokenrepl
-
 class PlainData:
     def __init__(self):
         self.tokentype = -1
@@ -50,7 +35,6 @@ class PlainStack:
         self.size = 0
 
 
-# @jit(nopython=True, cache=True)
 def indentofline(line):
     index = 0
     while index < len(line) and line[index] == ' ':

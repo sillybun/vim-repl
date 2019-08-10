@@ -55,14 +55,6 @@ For MacOS, Windows and Linux Users (vim should have `+terminal` support):
   - Add `Plug 'sillybun/vim-repl'` to .vimrc
   - Run `:PlugInstall`
 
-However, the following intalling setting use `vim-async` to provide more stable code sending performance (vim should have the `+terminal` and `+timers` support)
-
-- [vim-plug](https://github.com/junegunn/vim-plug) (**recommended**)
-  - Add `Plug 'sillybun/vim-repl'` to .vimrc
-  - Add `Plug 'sillybun/vim-async'` to .vimrc
-  - Run `:PlugInstall`
-
-
 ## Usage
 
 ### How to open REPL
@@ -127,7 +119,7 @@ use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
 ### How to debug python script?
 
-> Debug function need the support of vim-async. Therefore you have to install `vim-async` by the install instruction and `+timers` feature is required.
+> This function need the `+timers` support.
 
 I suggest the following key binding:
 
@@ -294,6 +286,10 @@ let g:repl_position = 3
 ```
 
 # Updates:
+
+## 2019.8.10
+
+- `vim-repl` no longer need the support of `vim-async` anymore.
 
 ## 2019.8.9
 

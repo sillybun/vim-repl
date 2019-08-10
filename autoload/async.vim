@@ -104,3 +104,7 @@ function! async#AsyncRunEngine(codelist, currentline, wait_time, channel) abort
         endif
     endwhile
 endfunction
+
+function! async#AsyncCodeRun(...)
+    call async#AsyncRunEngine(a:1, 0, 0, 0)
+endfunction
