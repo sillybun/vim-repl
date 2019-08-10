@@ -230,13 +230,24 @@ endfunction
 function! repl#SendCurrentLine() abort
 	if bufexists(g:repl_console_name)
         let l:cursor_pos = getpos('.')
+        let l:code_tobe_sent = getline('.') . "\n"
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
                 call repl#SendWholeBlock()
                 return
             endif
+            if repl#REPLGetShortName() ==# 'ipython'
+                let l:terminalline = repl#GetTerminalLine()
+                let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
+                let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+            elseif repl#REPLGetShortName() ==# 'ptpython'
+                let l:terminalline = repl#GetTerminalLine()
+                let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
+                let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+            endif
         endif
-		exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\n")'
+		" exe "call term_sendkeys('" . g:repl_console_name . ''', getline(".") . "\n")'
+        call term_sendkeys(g:repl_console_name, l:code_tobe_sent)
 		exe "call term_wait('" . g:repl_console_name . ''',  50)'
         if g:repl_cursor_down
             call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
@@ -283,7 +294,8 @@ endfunction
 
 function! repl#GetTerminalLine() abort
     let l:tl = term_getline(g:repl_console_name, '.')
-    return repl#RStrip(l:tl)
+    " return repl#RStrip(l:tl)
+    return l:tl
 endfunction
 
 function! repl#GetCurrentLineNumber() abort
