@@ -444,6 +444,7 @@ function! repl#REPLDebug() abort
     echo 'Support python: ' . has('python')
     if ! has('python3') && ! has('python') && ! g:repl_vimscript_engine
         echoerr "g:repl_vimscript_engine should be set to 1 for vim not supported with python or python3"
+        echoerr 'you should add `let g:repl_vimscript_engine = 1` to vimrc'
     endif
     if has('python3')
 python3 << EOF
