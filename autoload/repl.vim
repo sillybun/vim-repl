@@ -358,7 +358,19 @@ function! repl#WaitFor(symbols)
 endfunction
 
 function! repl#SendChunkLines() range abort
-    call repl#SendLines(a:firstline, a:lastline)
+    if a:firstline == a:lastline
+        let [l:line_start, l:column_start] = getpos("'<")[1:2]
+        let [l:line_end, l:column_end] = getpos("'>")[1:2]
+        let l:currentline = getline(a:firstline)
+        if l:column_end - l:column_start + 1 >= len(l:currentline)
+            call repl#SendLines(a:firstline, a:firstline)
+        else
+            let l:selected_content = l:currentline[l:column_start - 1 : l:column_end - 1]
+            call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+        endif
+    else
+        call repl#SendLines(a:firstline, a:lastline)
+    endif
     if g:repl_cursor_down
         call cursor(a:lastline+1, 0)
     endif
