@@ -325,7 +325,7 @@ function! repl#Sends(tasks, symbols)
     if len(a:tasks) == 0
         return
     end
-    if has('win32') || !exists('g:has_async_engine')
+    if !has('timers')
         call replforwin32#Sends(a:tasks, a:symbols)
     else
         let g:tasks = a:tasks
@@ -333,7 +333,6 @@ function! repl#Sends(tasks, symbols)
         let g:taskprocess = 0
         let g:currentlinenumber = -1
         let g:currentrepltype = repl#REPLGetShortName()
-        " echom len(g:tasks)
         let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
         call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     endif
@@ -471,9 +470,5 @@ EOF
     echo 'Current File Type: ' . &filetype
     echo 'Current Type: ' . repl#REPLGetName()
     echo 'Current Exit Commands: ' . repl#REPLGetExitCommand()
-    if has('win32') || !exists('g:has_async_engine')
-        echo 'Use Build-in Async Engine'
-    else
-        echo 'Use Vim-Async Engine'
-    endif
+    echo 'has timers:' . has('timers')
 endfunction
