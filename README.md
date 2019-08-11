@@ -45,6 +45,10 @@ The third way is to select some lines in visual mode and press `<leader>w`, the 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage-3.gif)
 If the REPL is already open. `:REPLToggle` will close REPL.
 
+The last way is to select some word in visual mode and press `<leader>w` and the selected word will be sent to REPL.
+
+![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage4.gif)
+
 ## Installation
 
 This plugin support all platforms (Windows, MacOS, Linux). Use your plugin manager of choice.
@@ -79,6 +83,7 @@ For MacOS, Windows and Linux Users (vim should have `+terminal` and `+timers` su
 - In Normal Mode, press `<leader>w`, code in the current line (including leading space and the end center) will be transmitted to REPL
 - In Normal Mode, move the cursor to the begin of a block and press `<leader>w` and the whole block will be sent to REPL (By default, code block start with `def`, `class`, `while`, `for`, `if` will be automatically sent. You can control the definition of start of code block by setting `g:repl_auto_sends`)
 - In Visual Mode, press `<leader>w`, selected code (whole line includeing leading space and the last center) will be trasmitted to REPL
+- In Visual Mode, selected a word and press `<leader>w`, and the selected word will be sent to REPL according to certain rules defined by `g:repl_sendvariable_template`.
 
 Currently, asynchronous transmission is completed and it is supported for all language if you correctly set the input symbols of the corresponding language.
 Setting for python is already done by author. Supported command shell for python include `python`, `ipython` and `ptpython`.
@@ -255,6 +260,16 @@ let g:repl_vimscript_engine = 0
 If your vim doesn't support python or python3, I provides limited supported for it:
 - It works for `python`
 - It also works for `ipython` and `ptpython` but every line of the codes to be send should be complete, which means if you seperate a line of code into two or more lines, the plugin will not handle it correctly.
+
+```
+let g:repl_sendvariable_template = {
+            \ 'python': 'print(<input>)',
+            \ 'ipython': 'print(<input>)',
+            \ 'ptpython': 'print(<input>)',
+            \ }
+```
+
+`g:repl_sendvariable_template` defines how word is sent to REPL. For example, by default, if you select `some_variable` and presss `<leader>w`, `print(some_variable)` will be sent to REPL. You can define your rule with the help of `g:repl_sendvariable_template`. `<input>` will be replaced by selected word and then be sent to REPL.
 
 
 Name of REPL environment.

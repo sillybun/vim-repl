@@ -53,6 +53,7 @@ if !exists('g:repl_exit_commands')
 	let g:repl_exit_commands = {
 				\	"python": "quit()",
                 \   "ptpython": "quit()",
+                \   "ipython": "quit()",
 				\	"bash": "exit",
 				\	"zsh": "exit",
                 \   "R": "q()",
@@ -77,4 +78,12 @@ endif
 
 if !exists('g:repl_checkpoint_notation')
     let g:repl_checkpoint_notation = "CHECKPOINT"
+endif
+
+if !exists('g:repl_sendvariable_template')
+    let g:repl_sendvariable_template = {
+                \ 'python': 'print(<input>)',
+                \ 'ipython': 'print(<input>)',
+                \ 'ptpython': 'print(<input>)',
+                \ }
 endif

@@ -366,7 +366,14 @@ function! repl#SendChunkLines() range abort
             call repl#SendLines(a:firstline, a:firstline)
         else
             let l:selected_content = l:currentline[l:column_start - 1 : l:column_end - 1]
-            call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+            let l:selected_content = repl#Strip(l:selected_content)
+            let l:repl_program = repl#REPLGetShortName()
+            if has_key(g:repl_sendvariable_template, l:repl_program)
+                let l:template = g:repl_sendvariable_template[l:repl_program]
+                call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\n")
+            else
+                call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+            endif
         endif
     else
         call repl#SendLines(a:firstline, a:lastline)
