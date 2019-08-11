@@ -32,20 +32,22 @@ Use vim to open a file, run `:REPLToggle` to open the REPL environment.
 By default, Python and Perl are supported. If you run `:REPLToggle` in a `python` file, you will get `python` in the terminal buffer. In a `perl` file, vim-repl will try to use `perlconsole`, `reply` and `re.pl` (in that order); so one of them should be installed.
 In order to support more languages, you will have to specify which program to run for each specific filetype.
 
-There are three ways to send codes to REPL environment, the first way: stay in normal mode and press `<leader>w` and the whole line of the cursor will be sent to REPL.
+There are three ways to send codes to REPL environment:
+
+- the first way: stay in normal mode and press `<leader>w` and the whole line of the cursor will be sent to REPL.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage-1.gif)
 
-The second way is that in normal mode, move the cursor to the first line of one block (start of a function: `def functionname(argv):`, start of a for/while loop, start of a if-else statement) and press `<leader>w`, the whole block will be sent to REPL automatically.
+- The second way is that in normal mode, move the cursor to the first line of one block (start of a function: `def functionname(argv):`, start of a for/while loop, start of a if-else statement) and press `<leader>w`, the whole block will be sent to REPL automatically.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage2.gif)
 
-The third way is to select some lines in visual mode and press `<leader>w`, the seleted code will be sent to REPL.
+- The third way is to select some lines in visual mode and press `<leader>w`, the seleted code will be sent to REPL.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage-3.gif)
 If the REPL is already open. `:REPLToggle` will close REPL.
 
-The last way is to select some word in visual mode and press `<leader>w` and the selected word will be sent to REPL.
+- The last way is to select some word in visual mode and press `<leader>w` and the selected word will be sent to REPL.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage4.gif)
 
@@ -374,3 +376,7 @@ print(some_dict)
 ```
 
 For vim with `+python` or `+python3` support, this problem will not happen. If it happens, check whether `g:repl_vimscript_engine` is set to `0`. If `g:repl_vimscript_engine = 0`, there is a bug here. Please report the bug; If `g:repl_vimscript_engine=1`, search `let g:repl_vimscript_engine = 1` in vimrc and remove it.
+
+- `<space>r` doesn't work for my vim
+
+`<space>` in the example mean the leader key. Check the your leader key mapping in vimrc. To set leader key to `<space>`, add `let g:mapleader=' '`
