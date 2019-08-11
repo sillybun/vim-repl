@@ -11,9 +11,9 @@
          * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
          * [How to debug python script?](#how-to-debug-python-script)
       * [Setting](#setting)
-   * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
-   * [Updates:](#updates)
-   * [Troubleshooting](#troubleshooting)
+      * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
+      * [Updates:](#updates)
+      * [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -274,7 +274,7 @@ let g:repl_sendvariable_template = {
 
 Name of REPL environment.
 
-# My Configuation for Vim-Repl
+## My Configuation for Vim-Repl
 
 ```
 Plug 'sillybun/vim-repl'
@@ -298,29 +298,33 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 let g:repl_position = 3
 ```
 
-# Updates:
+## Updates:
 
-## 2019.8.10
+### 2019.8.11
+
+- Add send selected word function and `g:repl_sendvariable_template`.
+
+### 2019.8.10
 
 - `vim-repl` no longer need the support of `vim-async` anymore.
 
-## 2019.8.9
+### 2019.8.9
 
 - Add almost full support for vim without `+python` or `+python3` support.
 - Rewrite `vim-async` using `timer_start`
 - Set the default value of `g:repl_auto_sends` to `['class ', 'def ', 'for ', 'if ', 'while ']`
 - Set the default value of `g:repl_cursor_down` to 1
 
-## 2019.8.7
+### 2019.8.7
 
 - Fix bug for windows
 - `g:repl_cursor_down` will also affect SendCurrentLine
 
-## 2019.8.6
+### 2019.8.6
 
 - Add support for ipython version >= 7
 
-## 2019.8.3
+### 2019.8.3
 
 - Rewrite the program to format python codes using python language
 - Abandon using C++ to handle python code
@@ -329,28 +333,28 @@ let g:repl_position = 3
 - Support both `python` and `python3`
 - Remove Checkpoint function
 
-## 2019.5.28
+### 2019.5.28
 
 - Support REPL environment for Windows.
 
-## 2019.5.14
+### 2019.5.14
 
 - `g:repl_cursor_down` is provided.
 
-## 2019.4.27
+### 2019.4.27
 
 - Async feature is provided by [vim-async](https://github.com/sillybun/vim-async)
 
-## 2018.7.7
+### 2018.7.7
 
 - Use job feature in vim 8.0 to provide better performance.
 
-## 2018.7.26
+### 2018.7.26
 
 - Add support for temporary hide the terminal window.
 If the REPL is already open. `:REPLToggle` will close REPL.
 
-# Troubleshooting
+## Troubleshooting
 
 - The python code cannot send porperly to REPL environment
 
