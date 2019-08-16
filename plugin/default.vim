@@ -1,13 +1,15 @@
 let g:REPLVIM_PATH = expand('<sfile>:p')
 let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
 
-if !exists("g:repl_program")
-	let g:repl_program = {
-				\	'python': 'python',
-				\	'default': 'bash',
-                \   'vim': 'vim -e',
-				\	}
+let s:repl_default_program = {
+            \	'python': 'python',
+            \	'default': 'bash',
+            \   'vim': 'vim -e',
+            \	}
+if exists("g:repl_program")
+    call extend(s:repl_default_program, g:repl_program)
 endif
+let g:repl_program = s:repl_default_program
 
 if g:repl_program['python'] == 'ipython' && !exists("g:repl_ipython_version")
     let temp = system('ipython --version')
@@ -50,26 +52,30 @@ if !exists('g:repl_console_name')
     let g:repl_console_name = 'ZYTREPL'
 endif
 
-if !exists('g:repl_exit_commands')
-	let g:repl_exit_commands = {
-				\	"python": "quit()",
-                \   "ptpython": "quit()",
-                \   "ipython": "quit()",
-				\	"bash": "exit",
-				\	"zsh": "exit",
-                \   "R": "q()",
-                \   'lua': 'os.exit()',
-                \   'vim': 'q',
-				\	"default": "exit",
-				\	}
+let s:repl_default_exit_commands = {
+            \	"python": "quit()",
+            \   "ptpython": "quit()",
+            \   "ipython": "quit()",
+            \	"bash": "exit",
+            \	"zsh": "exit",
+            \   "R": "q()",
+            \   'lua': 'os.exit()',
+            \   'vim': 'q',
+            \	"default": "exit",
+            \	}
+if exists('g:repl_exit_commands')
+    call extend(s:repl_default_exit_commands, g:repl_exit_commands)
 endif
+let g:repl_exit_commands = s:repl_default_exit_commands
 
-if !exists('g:repl_input_symbols')
-    let g:repl_input_symbols = {
-                \   'python': ['>>>', '>>>>', 'ipdb>', 'pdb', '...'],
-                \   'vim': [':'],
-                \   }
+let s:repl_default_input_symbols = {
+            \   'python': ['>>>', '>>>>', 'ipdb>', 'pdb', '...'],
+            \   'vim': [':'],
+            \   }
+if exists('g:repl_input_symbols')
+    call extend(s:repl_default_input_symbols, g:repl_input_symbols)
 end
+let g:repl_input_symbols = s:repl_default_input_symbols
 
 if !exists('g:repl_position')
 	let g:repl_position = 0
