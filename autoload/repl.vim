@@ -151,6 +151,9 @@ function! repl#REPLOpen(...)
         let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
 	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . g:repl_console_name . ''')) | q! | endif'
+    if !executable(split(repl#REPLGetName(), ' ')[0])
+        echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
+    endif
 	if g:repl_position == 0
 		if exists('g:repl_height')
 			exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetName()
