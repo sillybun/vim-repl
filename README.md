@@ -12,7 +12,7 @@
          * [How to debug python script?](#how-to-debug-python-script)
       * [Setting](#setting)
       * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
-      * [Updates:](#updates)
+      * [Updates](#updates)
       * [Troubleshooting](#troubleshooting)
 
 ## Introduction
