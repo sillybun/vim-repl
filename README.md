@@ -29,7 +29,7 @@ Read–Eval–Print Loop (REPL), also known as an interactive toplevel or langua
 
 Use vim to open a file, run `:REPLToggle` to open the REPL environment. If the REPL is already open. `:REPLToggle` will close REPL.
 
-By default, Python and Perl are supported. If you run `:REPLToggle` in a `python` file, you will get `python` in the terminal buffer. In a `perl` file, vim-repl will try to use `perlconsole`, `reply` and `re.pl` (in that order); so one of them should be installed.
+By default, Python Perl and Vimscript are supported. If you run `:REPLToggle` in a `python` file, you will get `python` in the terminal buffer. In a `perl` file, vim-repl will try to use `perlconsole`, `reply` and `re.pl` (in that order); so one of them should be installed. In a `vim` file, `vim-repl` will try to open `vim -e`.
 In order to support more languages, you will have to specify which program to run for each specific filetype.
 
 There are three ways to send codes to REPL environment:
@@ -284,6 +284,7 @@ let g:repl_program = {
             \   'default': 'zsh',
             \   'r': 'R',
             \   'lua': 'lua',
+            \   'vim': 'vim -e',
             \   }
 let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
@@ -299,7 +300,11 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 let g:repl_position = 3
 ```
 
-## Updates:
+## Updates
+
+### 2019.9.16
+
+- Add support for vimscript REPL.
 
 ### 2019.8.11
 
