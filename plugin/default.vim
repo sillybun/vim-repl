@@ -3,8 +3,9 @@ let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
 
 if !exists("g:repl_program")
 	let g:repl_program = {
-				\	"python": "python",
-				\	"default": "bash"
+				\	'python': 'python',
+				\	'default': 'bash',
+                \   'vim': 'vim -e',
 				\	}
 endif
 
@@ -58,6 +59,7 @@ if !exists('g:repl_exit_commands')
 				\	"zsh": "exit",
                 \   "R": "q()",
                 \   'lua': 'os.exit()',
+                \   'vim': 'q',
 				\	"default": "exit",
 				\	}
 endif
@@ -65,6 +67,7 @@ endif
 if !exists('g:repl_input_symbols')
     let g:repl_input_symbols = {
                 \   'python': ['>>>', '>>>>', 'ipdb>', 'pdb', '...'],
+                \   'vim': [':'],
                 \   }
 end
 

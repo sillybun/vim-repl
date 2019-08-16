@@ -257,6 +257,10 @@ function! repl#SendCurrentLine()
 	endif
 endfunction
 
+function! repl#ToVimScript(lines)
+    return formatvimscript#Format_to_repl(a:lines)
+endfunction
+
 function! repl#ToREPLPythonCode(lines, pythonprogram)
     if exists('g:repl_ipython_version')
         let l:version = g:repl_ipython_version
@@ -396,6 +400,8 @@ function! repl#SendLines(first, last) abort
             call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'ipython'), ['\.\.\.', 'In'])
         elseif l:sn =~# 'python' || l:sn =~# 'python3'
             call repl#Sends(repl#ToREPLPythonCode(getline(l:firstline, a:last), 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
+        elseif l:sn ==# 'vim'
+            call repl#Sends(repl#ToVimScript(getline(l:firstline, a:last)), [':'])
         elseif has_key(g:repl_input_symbols, l:sn)
             call repl#Sends(add(getline(l:firstline, a:last), ''), g:repl_input_symbols[l:sn])
         else
