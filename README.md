@@ -384,3 +384,7 @@ For vim with `+python` or `+python3` support, this problem will not happen. If i
 - `<space>r` doesn't work for my vim
 
 `<space>` in the example mean the leader key. Check the your leader key mapping in vimrc. To set leader key to `<space>`, add `let g:mapleader=' '`
+
+- Error detected while processing function repl#REPLToggle [10].. repl #REPLOpen
+
+The reason of this error is that vim-repl try to open the program which is not installed on your machine. For example, if you havn't install `ipython` and set `g:repl_program['python']='ipython`, this error will occur.
