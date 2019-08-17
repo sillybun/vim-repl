@@ -465,6 +465,7 @@ function! repl#SendWholeBlock() abort
 endfunction
 
 function! repl#REPLDebug() abort
+    echo "Version 2019.8.17"
     let l:os = substitute(system('uname'), "\n", "", "")
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
