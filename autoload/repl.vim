@@ -465,7 +465,7 @@ function! repl#SendWholeBlock() abort
 endfunction
 
 function! repl#REPLDebug() abort
-    echo "Version 2019.8.17"
+    echo "VIM-REPL, last update: 2019.8.17"
     let l:os = substitute(system('uname'), "\n", "", "")
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
@@ -489,6 +489,12 @@ EOF
     endif
     echo 'REPL program:'
     echo g:repl_program
+    for l:file in keys(g:repl_program)
+        let l:pro = g:repl_program[l:file]
+        if !executable(split(l:pro, ' ')[0])
+            echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
+        endif
+    endfor
     if g:repl_program['python'] == 'ipython'
         echo "ipython version: " . system('ipython --version')
         echo "setted ipython version" . g:repl_ipython_version
