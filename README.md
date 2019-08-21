@@ -259,8 +259,8 @@ let g:repl_vimscript_engine = 0
 ```
 
 If your vim doesn't support python or python3, I provides limited supported for it:
-- It works for `python`
-- It also works for `ipython` and `ptpython` but every line of the codes to be send should be complete, which means if you seperate a line of code into two or more lines, the plugin will not handle it correctly.
+- It works for `python` and `ipython`
+- It also works for `ptpython` but every line of the codes to be send should be complete, which means if you seperate a line of code into two or more lines, the plugin will not handle it correctly.
 
 ```
 let g:repl_sendvariable_template = {
