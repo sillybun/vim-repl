@@ -2,6 +2,7 @@
 __pycache__
 test/.mypy_cache
 test/__pycache__
+autoload/testspeedrawcode.txt
 *.out
 *.files
 :w

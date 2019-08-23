@@ -427,10 +427,18 @@ function! repl#SendLines(first, last) abort
             endwhile
             for line in getline(l:firstline, a:last)
                 let l:deletespaceline = line[l:i:]
-                exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
+                if has('win32')
+                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\r\n")'
+                else
+                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
+                endif
                 exe 'call term_wait("' . g:repl_console_name . '", 50)'
             endfor
-            exe "call term_sendkeys('" . g:repl_console_name . ''', "\n")'
+            if has('win32')
+                exe "call term_sendkeys('" . g:repl_console_name . ''', "\r\n")'
+            else
+                exe "call term_sendkeys('" . g:repl_console_name . ''', "\n")'
+            endif
         endif
 	endif
 endfunction
@@ -477,7 +485,7 @@ function! repl#SendWholeBlock() abort
 endfunction
 
 function! repl#REPLDebug() abort
-    echo "VIM-REPL, last update: 2019.8.17"
+    echo "VIM-REPL, last update: 2019.8.23"
     let l:os = substitute(system('uname'), "\n", "", "")
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
