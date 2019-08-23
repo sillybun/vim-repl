@@ -78,6 +78,15 @@ function! repl#REPLGetShortName()
     endif
 endfunction
 
+function! repl#REPLWin32Return()
+    let l:name = repl#REPLGetShortName()
+    if repl#REPLWin32Return()
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
 function! repl#REPLGetExitCommand()
 	let l:name = repl#REPLGetShortName()
 	if has_key(g:repl_exit_commands, l:name)
@@ -106,19 +115,19 @@ function! repl#REPLClose()
             exe "call term_sendkeys('" . g:repl_console_name . ''', "\<C-W>\<C-C>")'
             exe "call term_wait('" . g:repl_console_name . ''', 50)'
             if repl#REPLIsVisible()
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
                 else
                     exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
                 endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
                 else
                     exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
                 endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\r\n")'
                 else
                     exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\n")'
@@ -245,7 +254,7 @@ endfunction
 function! repl#SendCurrentLine()
 	if bufexists(g:repl_console_name)
         let l:cursor_pos = getpos('.')
-        if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+        if repl#REPLWin32Return()
             let l:code_tobe_sent = getline('.') . "\r\n"
         else
             let l:code_tobe_sent = getline('.') . "\n"
@@ -360,7 +369,7 @@ function! repl#Sends(tasks, symbols)
     let g:taskprocess = 0
     let g:currentlinenumber = -1
     let g:currentrepltype = repl#REPLGetShortName()
-    if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+    if repl#REPLWin32Return()
         let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     else
         let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
@@ -401,13 +410,13 @@ function! repl#SendChunkLines() range abort
             let l:repl_program = repl#REPLGetShortName()
             if has_key(g:repl_sendvariable_template, l:repl_program)
                 let l:template = g:repl_sendvariable_template[l:repl_program]
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\r\n")
                 else
                     call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\n")
                 endif
             else
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     call term_sendkeys(g:repl_console_name, l:selected_content . "\r\n")
                 else
                     call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
@@ -447,14 +456,14 @@ function! repl#SendLines(first, last) abort
             endwhile
             for line in getline(l:firstline, a:last)
                 let l:deletespaceline = line[l:i:]
-                if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+                if repl#REPLWin32Return()
                     exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\r\n")'
                 else
                     exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
                 endif
                 exe 'call term_wait("' . g:repl_console_name . '", 50)'
             endfor
-            if has('win32') && repl#REPLGetShortName() =~# 'python.*'
+            if repl#REPLWin32Return()
                 exe "call term_sendkeys('" . g:repl_console_name . ''', "\r\n")'
             else
                 exe "call term_sendkeys('" . g:repl_console_name . ''', "\n")'
