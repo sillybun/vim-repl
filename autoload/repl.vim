@@ -106,11 +106,23 @@ function! repl#REPLClose()
             exe "call term_sendkeys('" . g:repl_console_name . ''', "\<C-W>\<C-C>")'
             exe "call term_wait('" . g:repl_console_name . ''', 50)'
             if repl#REPLIsVisible()
-                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                if has('win32')
+                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
+                else
+                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                if has('win32')
+                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
+                else
+                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
-                exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\n")'
+                if has('win32')
+                    exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\r\n")'
+                else
+                    exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\n")'
+                endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
             endif
 		endif
@@ -389,9 +401,17 @@ function! repl#SendChunkLines() range abort
             let l:repl_program = repl#REPLGetShortName()
             if has_key(g:repl_sendvariable_template, l:repl_program)
                 let l:template = g:repl_sendvariable_template[l:repl_program]
-                call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\n")
+                if has('win32')
+                    call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\r\n")
+                else
+                    call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\n")
+                endif
             else
-                call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+                if has('win32')
+                    call term_sendkeys(g:repl_console_name, l:selected_content . "\r\n")
+                else
+                    call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+                endif
             endif
         endif
     else
