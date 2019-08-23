@@ -80,7 +80,7 @@ endfunction
 
 function! repl#REPLWin32Return()
     let l:name = repl#REPLGetShortName()
-    if repl#REPLWin32Return()
+    if has('win32') && l:name =~# '^python.*'
         return 1
     else
         return 0
