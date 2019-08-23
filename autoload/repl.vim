@@ -233,7 +233,11 @@ endfunction
 function! repl#SendCurrentLine()
 	if bufexists(g:repl_console_name)
         let l:cursor_pos = getpos('.')
-        let l:code_tobe_sent = getline('.') . "\n"
+        if has('win32')
+            let l:code_tobe_sent = getline('.') . "\r\n"
+        else
+            let l:code_tobe_sent = getline('.') . "\n"
+        endif
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
                 let l:end_line_number = repl#SendWholeBlock()
