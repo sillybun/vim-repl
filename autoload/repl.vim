@@ -518,12 +518,16 @@ endfunction
 
 function! repl#REPLDebug() abort
     echo "VIM-REPL, last update: 2019.8.23"
-    let l:os = substitute(system('uname'), "\n", "", "")
+    if has('win32')
+        let l:os = 'Windows'
+    else
+        let l:os = substitute(system('uname'), "\n", "", "")
+    endif
     echo 'Operation System: ' . l:os
     echo 'Support python3: ' . has('python3')
     echo 'Support python: ' . has('python')
     echo 'has +terminal: ' . has('terminal')
-    echo 'has +timers:' . has('timers')
+    echo 'has +timers: ' . has('timers')
     if ! has('python3') && ! has('python') && ! g:repl_vimscript_engine
         echoerr "g:repl_vimscript_engine should be set to 1 for vim not supported with python or python3"
         echoerr 'you should add `let g:repl_vimscript_engine = 1` to vimrc'
