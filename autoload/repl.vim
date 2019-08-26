@@ -85,6 +85,7 @@ function! repl#REPLWin32Return()
             return 0
         else
             return 1
+        endif
     else
         return 0
     endif
