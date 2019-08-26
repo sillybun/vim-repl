@@ -24,7 +24,11 @@ if !has_key(g:repl_program, 'perl')
   elseif executable('re.pl')
     let g:repl_program.perl = 're.pl'
   else
-    let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin/perl/psh'
+    if has('win32')
+        let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin\\perl\\psh'
+    else
+        let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin/perl/psh'
+    endif
   endif
 endif
 
