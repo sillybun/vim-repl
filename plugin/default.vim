@@ -1,11 +1,19 @@
 let g:REPLVIM_PATH = expand('<sfile>:p')
 let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
 
-let s:repl_default_program = {
-            \	'python': 'python',
-            \	'default': 'bash',
-            \   'vim': 'vim -e',
-            \	}
+if has('win32')
+    let s:repl_default_program = {
+                \	'python': 'python',
+                \	'default': 'cmd.exe',
+                \   'vim': 'vim -e',
+                \	}
+else
+    let s:repl_default_program = {
+                \	'python': 'python',
+                \	'default': 'bash',
+                \   'vim': 'vim -e',
+                \	}
+endif
 if exists("g:repl_program")
     call extend(s:repl_default_program, g:repl_program)
 endif
