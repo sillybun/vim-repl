@@ -302,7 +302,11 @@ let g:repl_position = 3
 
 ## Updates
 
-### 2019.9.16
+### 2019.8.27
+
+- Set the default program in Windows to `cmd.exe`
+
+### 2019.8.16
 
 - Add support for vimscript REPL.
 
