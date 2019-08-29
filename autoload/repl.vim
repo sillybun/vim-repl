@@ -71,6 +71,8 @@ function! repl#REPLGetShortName()
         return 'ptpython'
     elseif l:temp ==# 'ipython'
         return 'ipython'
+    elseif l:temp ==# 'ipython3'
+        return 'ipython'
     elseif l:temp =~# '.*python.*'
         return 'python'
     else
