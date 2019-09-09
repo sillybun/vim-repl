@@ -392,3 +392,15 @@ For vim with `+python` or `+python3` support, this problem will not happen. If i
 - Error detected while processing function repl#REPLToggle [10].. repl #REPLOpen
 
 The reason of this error is that vim-repl try to open the program which is not installed on your machine. For example, if you havn't install `ipython` and set `g:repl_program['python']='ipython`, this error will occur.
+
+- How to change to Normal Mode in REPL environment?
+
+In REPL environment, press `<C-W>N`. Or you can use the setting:
+
+```
+tnoremap <C-n> <C-w>N
+tnoremap <ScrollWheelUp> <C-w>Nk
+tnoremap <ScrollWheelDown> <C-w>Nj
+```
+
+And then you can press `<C-n>` to change to Normal Mode.
