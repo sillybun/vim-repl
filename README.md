@@ -125,6 +125,8 @@ use `REPLUnhide` or `REPLToggle` to reveal the hidden terminal.
 
 ### How to debug python script?
 
+You should have to install `ipdb` to debug python script.
+
 I suggest the following key binding:
 
 ```
