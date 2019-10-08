@@ -275,12 +275,21 @@ function! repl#SendCurrentLine()
             endif
             if repl#REPLGetShortName() ==# 'ipython'
                 let l:terminalline = repl#GetTerminalLine()
-                let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
-                let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+                if repl#StartWith(l:terminalline, "In [")
+                    let l:code_tobe_sent = repl#LStrip(l:code_tobe_sent)
+                else
+                    let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
+                    let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+                endif
             elseif repl#REPLGetShortName() ==# 'ptpython'
                 let l:terminalline = repl#GetTerminalLine()
                 let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
                 let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+            elseif repl#REPLGetShortName() ==# 'python' || repl#REPLGetShortName() ==# 'python2' || repl#REPLGetShortName() ==# 'python3'
+                let l:terminalline = repl#GetTerminalLine()
+                if repl#StartWith(l:terminalline, '>>> ')
+                    let l:code_tobe_sent = repl#LStrip(l:code_tobe_sent)
+                endif
             endif
         endif
         call term_sendkeys(g:repl_console_name, l:code_tobe_sent)
