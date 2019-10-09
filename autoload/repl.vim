@@ -93,8 +93,22 @@ function! repl#REPLWin32Return()
     endif
 endfunction
 
-function! repl#REPLGetExitCommand()
-	let l:name = repl#REPLGetShortName()
+function! repl#REPLGetShell()
+    if has_key(g:repl_program, 'default')
+        return g:repl_program['default']
+    elseif has('win32')
+        return 'cmd.exe'
+    else
+        return 'bash'
+    endif
+endfunction
+
+function! repl#REPLGetExitCommand(...)
+    if a:0 == 0
+        let l:name = repl#REPLGetShortName()
+    else
+        let l:name = a:1
+    end
 	if has_key(g:repl_exit_commands, l:name)
 		return g:repl_exit_commands[l:name]
 	elseif has_key(g:repl_exit_commands, 'default')
@@ -140,6 +154,17 @@ function! repl#REPLClose()
                 endif
                 exe "call term_wait('" . g:repl_console_name . ''', 50)'
             endif
+            let l:temp_return = "\n"
+            if has('win32')
+                let l:temp_return = "\r\n"
+            endif
+            if exists('g:REPL_VIRTUAL_ENVIRONMENT')
+                call term_sendkeys(g:repl_console_name, 'deactivate' . l:temp_return)
+                call term_wait(g:repl_console_name, 50)
+                call term_sendkeys(g:repl_console_name, repl#REPLGetExitCommand(repl#REPLGetShell()) . l:temp_return)
+                call term_wait(g:repl_console_name, 50)
+                unlet g:REPL_VIRTUAL_ENVIRONMENT
+            endif
 		endif
     elseif repl#REPLIsHidden()
         call repl#REPLUnhide()
@@ -177,9 +202,53 @@ function! repl#REPLOpen(...)
     else
         let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
+    let l:REPL_OPEN_TERMINAL = b:REPL_OPEN_TERMINAL
 	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . g:repl_console_name . ''')) | q! | endif'
     if !executable(split(repl#REPLGetName(), ' ')[0])
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
+    endif
+    if repl#REPLGetShortName() =~# '.*python.*'
+        for l:i in range(1, line('$'))
+            if repl#StartWith(getline(l:i), '#REPLENV:')
+                let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(getline(l:i)[strlen('#REPLENV:')+1: ])
+                if g:repl_position == 0
+                    if exists('g:repl_height')
+                        exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'bo term ++close ' . repl#REPLGetShell()
+                    endif
+                elseif g:repl_position == 1
+                    if exists('g:repl_height')
+                        exe 'to term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'to term ++close ' . repl#REPLGetShell()
+                    endif
+                elseif g:repl_position == 2
+                    if exists('g:repl_width')
+                        exe 'vert term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'vert term ++close ' . repl#REPLGetShell()
+                    endif
+                else
+                    if exists('g:repl_width')
+                        exe 'vert rightb term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'vert rightb term ++close ' . repl#REPLGetShell()
+                    endif
+                endif
+                exe 'file ' . g:repl_console_name
+                exe 'setlocal noswapfile'
+                if has('win32')
+                    let l:temp_return = "\r\n"
+                else
+                    let l:temp_return = "\n"
+                endif
+                call term_sendkeys(g:repl_console_name, 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                call term_wait(g:repl_console_name, 100)
+                call term_sendkeys(g:repl_console_name, l:REPL_OPEN_TERMINAL . l:temp_return)
+                return
+            endif
+        endfor
     endif
 	if g:repl_position == 0
 		if exists('g:repl_height')
