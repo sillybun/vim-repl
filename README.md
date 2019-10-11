@@ -10,6 +10,7 @@
          * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
          * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
          * [How to debug python script?](#how-to-debug-python-script)
+         * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
       * [Setting](#setting)
       * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
       * [Updates](#updates)
@@ -138,6 +139,27 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 To debug python code, move the cursor to certain line and press `<F12>`, and ipdb will be run and the program will be stopped at that line. Press `<F10>` will run a single line and Press `<F11>` will also run a single line but will jump into functions.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug-python.gif)
+
+### How to open python with virtual environment?
+
+There are two ways to open python with virtual environment.
+
+The first method (global) is that put:
+```
+g:repl_python_pre_launch_command = 'source /path_to_new_venv/bin/activate'
+```
+in `.vimrc`. And once you toggle python, the following command will be run:
+```
+:terminal [g:repl_program['default']/bash/cmd.exe]
+source /path_to_new_venv/bin/activate
+python/ipython/ptpython
+```
+
+The second method (specific virtual environment) is that put:
+```
+#REPLENV: /path_to_new_venv/bin/activate
+```
+in python script. If you open this python file with vim and toggle vim-repl, python will be run in specific virtual environment.
 
 ## Setting
 
