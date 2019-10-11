@@ -249,6 +249,47 @@ function! repl#REPLOpen(...)
                 return
             endif
         endfor
+        if exists('g:repl_python_pre_launch_command')
+            if g:repl_position == 0
+                if exists('g:repl_height')
+                    exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'bo term ++close ' . repl#REPLGetShell()
+                endif
+            elseif g:repl_position == 1
+                if exists('g:repl_height')
+                    exe 'to term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'to term ++close ' . repl#REPLGetShell()
+                endif
+            elseif g:repl_position == 2
+                if exists('g:repl_width')
+                    exe 'vert term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'vert term ++close ' . repl#REPLGetShell()
+                endif
+            else
+                if exists('g:repl_width')
+                    exe 'vert rightb term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'vert rightb term ++close ' . repl#REPLGetShell()
+                endif
+            endif
+            exe 'file ' . g:repl_console_name
+            exe 'setlocal noswapfile'
+            if has('win32')
+                let l:temp_return = "\r\n"
+            else
+                let l:temp_return = "\n"
+            endif
+            if repl#StartWith(g:repl_python_pre_launch_command, 'source ')
+                let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(g:repl_python_pre_launch_command[strlen('source '):])
+            endif
+            call term_sendkeys(g:repl_console_name, g:repl_python_pre_launch_command . l:temp_return)
+            call term_wait(g:repl_console_name, 100)
+            call term_sendkeys(g:repl_console_name, l:REPL_OPEN_TERMINAL . l:temp_return)
+            return
+        endif
     endif
 	if g:repl_position == 0
 		if exists('g:repl_height')
