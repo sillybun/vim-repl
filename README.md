@@ -304,6 +304,10 @@ let g:repl_position = 3
 
 ## Updates
 
+### 2019.10.14
+
+- Add support for python virtual environment.
+
 ### 2019.8.27
 
 - Set the default program in Windows to `cmd.exe`
