@@ -198,7 +198,7 @@ endfunction
 
 function! repl#REPLOpen(...)
     if a:0 == 0
-        unlet b:REPL_OPEN_TERMINAL
+        unlet! b:REPL_OPEN_TERMINAL
         let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
     else
         let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
