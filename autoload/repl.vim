@@ -6,6 +6,24 @@ function! repl#AsList(value)
     end
 endfunction
 
+function! repl#Trim(value)
+    if has('python3')
+python3 << EOF
+import vim
+value = vim.eval("a:value").strip()
+EOF
+        return py3eval("value")
+    elseif has('python')
+python << EOF
+import vim
+value = vim.eval("a:value").strip()
+EOF
+        return pyeval("value")
+    else
+        return trim(a:value)
+    end
+endfunction
+
 function! repl#RStrip(string)
     return substitute(a:string, '\s*$', '', '')
 endfunction
@@ -19,7 +37,7 @@ function! repl#Strip(string)
 endfunction
 
 function! repl#GetIndent(string)
-    if trim(a:string) ==# ''
+    if repl#Trim(a:string) ==# ''
         return 9999
     else
         return len(a:string) - len(repl#LStrip(a:string))
@@ -377,7 +395,7 @@ function! repl#SendCurrentLine()
             let l:code_tobe_sent = getline('.') . "\n"
         endif
         if repl#REPLGetShortName() =~# '.*python.*'
-            if exists('g:repl_auto_sends') && repl#StartWithAny(trim(getline('.')), g:repl_auto_sends)
+            if exists('g:repl_auto_sends') && repl#StartWithAny(repl#Trim(getline('.')), g:repl_auto_sends)
                 let l:end_line_number = repl#SendWholeBlock()
                 if g:repl_cursor_down
                     call cursor(l:end_line_number + 1, l:cursor_pos[2])
