@@ -659,6 +659,9 @@ endfunction
 
 function! repl#REPLDebug() abort
     echo "VIM-REPL, last update: 2019.8.23"
+    if  has('nvim')
+        echoerr "this plugin dosen't work on neovim. Please use vim >= 8.1 instead."
+    endif
     if has('win32')
         let l:os = 'Windows'
     else
