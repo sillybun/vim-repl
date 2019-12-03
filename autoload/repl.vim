@@ -514,9 +514,9 @@ function! repl#Sends(tasks, symbols)
     let g:currentlinenumber = -1
     let g:currentrepltype = repl#REPLGetShortName()
     if repl#REPLWin32Return()
-        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     else
-        let g:term_send_task_codes = ['LABEL Start', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     endif
     call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     " endif
@@ -624,12 +624,12 @@ function! repl#SendSession() abort
     let l:begin_line_number = line('.')
     let l:end_line_number = line('.')
     for i in range(1, line('.'))
-        if getline(i) == '# BEGIN'
+        if repl#StartWith(getline(i), '# BEGIN')
             let l:begin_line_number = i
         endif
     endfor
     for i in range(line('.'), line('$'))
-        if getline(i) == '# END'
+        if repl#StartWith(getline(i), '# END')
             let l:end_line_number = i
             break
         endif

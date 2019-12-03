@@ -80,7 +80,7 @@ function! async#AsyncRunEngine(codelist, currentline, wait_time, channel) abort
                 let l:index = l:index + 1
                 let l:wait_time = 0
             else
-                let l:sleep_time = 50 + 10 * l:wait_time
+                let l:sleep_time = 80 + 10 * l:wait_time
                 let l:wait_time = l:wait_time + 1
                 call timer_start(l:sleep_time, function('async#AsyncRunEngine', [a:codelist, l:index, l:wait_time]))
                 return
