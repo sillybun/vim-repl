@@ -248,7 +248,7 @@ Once user run `:REPLToggle` when the REPL environment is already open, this plug
 - if the program is not close, then send two `\n` and the `exit_command + \n` to the program.
 
 ```
-let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ']
+let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ', 'with ']
 ```
 
 If `g:repl_auto_sends` is defined, once user sends a line starts with any pattern contained in the list, whole block will be send automatically.

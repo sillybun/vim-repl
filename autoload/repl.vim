@@ -6,6 +6,14 @@ function! repl#AsList(value)
     end
 endfunction
 
+function! repl#GetConsoleName()
+    if tabpagenr() == 1
+        return g:repl_console_name
+    else
+        return g:repl_console_name . string(tabpagenr())
+    endif
+endfunction
+
 function! repl#Trim(value)
     if has('python3')
 python3 << EOF
@@ -147,40 +155,40 @@ endfunction
 function! repl#REPLClose()
 	if repl#REPLIsVisible()
         if index(split(repl#REPLGetName(), ' '), 'ipdb') != -1 || index(split(repl#REPLGetName(), ' '), 'pdb') != -1
-            call term_sendkeys(g:repl_console_name, "\<C-W>\<C-C>")
+            call term_sendkeys(repl#GetConsoleName(), "\<C-W>\<C-C>")
             call repl#Sends(['quit()'], ['ipdb>', 'pdb>'])
         else
-            exe "call term_sendkeys('" . g:repl_console_name . ''', "\<C-W>\<C-C>")'
-            exe "call term_wait('" . g:repl_console_name . ''', 50)'
+            exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "\<C-W>\<C-C>")'
+            exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
             if repl#REPLIsVisible()
                 if repl#REPLWin32Return()
-                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . "', \"\\r\\n\")"
                 else
-                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . "', \"\\n\")"
                 endif
-                exe "call term_wait('" . g:repl_console_name . ''', 50)'
+                exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
                 if repl#REPLWin32Return()
-                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\r\\n\")"
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . "', \"\\r\\n\")"
                 else
-                    exe "call term_sendkeys('" . g:repl_console_name . "', \"\\n\")"
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . "', \"\\n\")"
                 endif
-                exe "call term_wait('" . g:repl_console_name . ''', 50)'
+                exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
                 if repl#REPLWin32Return()
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\r\n")'
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "' . repl#REPLGetExitCommand() . '\r\n")'
                 else
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', "' . repl#REPLGetExitCommand() . '\n")'
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "' . repl#REPLGetExitCommand() . '\n")'
                 endif
-                exe "call term_wait('" . g:repl_console_name . ''', 50)'
+                exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
             endif
             let l:temp_return = "\n"
             if has('win32')
                 let l:temp_return = "\r\n"
             endif
             if exists('g:REPL_VIRTUAL_ENVIRONMENT')
-                call term_sendkeys(g:repl_console_name, 'deactivate' . l:temp_return)
-                call term_wait(g:repl_console_name, 50)
-                call term_sendkeys(g:repl_console_name, repl#REPLGetExitCommand(repl#REPLGetShell()) . l:temp_return)
-                call term_wait(g:repl_console_name, 50)
+                call term_sendkeys(repl#GetConsoleName(), 'deactivate' . l:temp_return)
+                call term_wait(repl#GetConsoleName(), 50)
+                call term_sendkeys(repl#GetConsoleName(), repl#REPLGetExitCommand(repl#REPLGetShell()) . l:temp_return)
+                call term_wait(repl#GetConsoleName(), 50)
                 unlet g:REPL_VIRTUAL_ENVIRONMENT
             endif
 		endif
@@ -195,7 +203,7 @@ endfunction
 
 function! repl#REPLHide()
 	if repl#REPLIsVisible()
-		call repl#REPLGoToWindowForBufferName(g:repl_console_name)
+		call repl#REPLGoToWindowForBufferName(repl#GetConsoleName())
         hide
 	endif
 endfunction
@@ -203,13 +211,13 @@ endfunction
 function! repl#REPLUnhide()
     if repl#REPLIsHidden()
         if g:repl_position == 0
-            exe 'bo unhide'
+            exe 'bo unhide 1'
         elseif g:repl_position == 1
-            exe 'to unhide'
+            exe 'to unhide 1'
         elseif g:repl_position == 2
-            exe 'vert unhide'
+            exe 'vert unhide 1'
         else
-            exe 'vert rightb unhide'
+            exe 'vert rightb unhide 1'
         endif
     endif
 endfunction
@@ -222,7 +230,7 @@ function! repl#REPLOpen(...)
         let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
     let l:REPL_OPEN_TERMINAL = b:REPL_OPEN_TERMINAL
-	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . g:repl_console_name . ''')) | q! | endif'
+	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . repl#GetConsoleName() . ''')) | q! | endif'
     if !executable(split(repl#REPLGetName(), ' ')[0])
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
     endif
@@ -255,16 +263,16 @@ function! repl#REPLOpen(...)
                         exe 'vert rightb term ++close ' . repl#REPLGetShell()
                     endif
                 endif
-                exe 'file ' . g:repl_console_name
+                exe 'file ' . repl#GetConsoleName()
                 exe 'setlocal noswapfile'
                 if has('win32')
                     let l:temp_return = "\r\n"
                 else
                     let l:temp_return = "\n"
                 endif
-                call term_sendkeys(g:repl_console_name, 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
-                call term_wait(g:repl_console_name, 100)
-                call term_sendkeys(g:repl_console_name, l:REPL_OPEN_TERMINAL . l:temp_return)
+                call term_sendkeys(repl#GetConsoleName(), 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                call term_wait(repl#GetConsoleName(), 100)
+                call term_sendkeys(repl#GetConsoleName(), l:REPL_OPEN_TERMINAL . l:temp_return)
                 return
             endif
         endfor
@@ -294,7 +302,7 @@ function! repl#REPLOpen(...)
                     exe 'vert rightb term ++close ' . repl#REPLGetShell()
                 endif
             endif
-            exe 'file ' . g:repl_console_name
+            exe 'file ' . repl#GetConsoleName()
             exe 'setlocal noswapfile'
             if has('win32')
                 let l:temp_return = "\r\n"
@@ -304,9 +312,9 @@ function! repl#REPLOpen(...)
             if repl#StartWith(g:repl_python_pre_launch_command, 'source ')
                 let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(g:repl_python_pre_launch_command[strlen('source '):])
             endif
-            call term_sendkeys(g:repl_console_name, g:repl_python_pre_launch_command . l:temp_return)
-            call term_wait(g:repl_console_name, 100)
-            call term_sendkeys(g:repl_console_name, l:REPL_OPEN_TERMINAL . l:temp_return)
+            call term_sendkeys(repl#GetConsoleName(), g:repl_python_pre_launch_command . l:temp_return)
+            call term_wait(repl#GetConsoleName(), 100)
+            call term_sendkeys(repl#GetConsoleName(), l:REPL_OPEN_TERMINAL . l:temp_return)
             return
         endif
     endif
@@ -335,12 +343,12 @@ function! repl#REPLOpen(...)
 			exe 'vert rightb term ++close ' . repl#REPLGetName()
 		endif
 	endif
-    exe 'file ' . g:repl_console_name
+    exe 'file ' . repl#GetConsoleName()
     exe 'setlocal noswapfile'
 endfunction
 
 function! repl#REPLIsHidden()
-    if bufnr(g:repl_console_name) == -1
+    if bufnr(repl#GetConsoleName()) == -1
         return 0
     elseif repl#REPLIsVisible() == 1
         return 0
@@ -350,7 +358,7 @@ function! repl#REPLIsHidden()
 endfunction
 
 function! repl#REPLIsVisible()
-	if bufwinnr(bufnr(g:repl_console_name)) != -1
+	if bufwinnr(bufnr(repl#GetConsoleName())) != -1
 		return 1
 	else
 		return 0
@@ -387,7 +395,7 @@ function! repl#REPLToggle(...)
 endfunction
 
 function! repl#SendCurrentLine()
-	if bufexists(g:repl_console_name)
+	if bufexists(repl#GetConsoleName())
         let l:cursor_pos = getpos('.')
         if repl#REPLWin32Return()
             let l:code_tobe_sent = getline('.') . "\r\n"
@@ -421,8 +429,8 @@ function! repl#SendCurrentLine()
                 endif
             endif
         endif
-        call term_sendkeys(g:repl_console_name, l:code_tobe_sent)
-        call term_wait(g:repl_console_name, 50)
+        call term_sendkeys(repl#GetConsoleName(), l:code_tobe_sent)
+        call term_wait(repl#GetConsoleName(), 50)
         if g:repl_cursor_down
             call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
         endif
@@ -475,13 +483,13 @@ EOF
 endfunction
 
 function! repl#GetTerminalLine() abort
-    let l:tl = term_getline(g:repl_console_name, '.')
+    let l:tl = term_getline(repl#GetConsoleName(), '.')
     " return repl#RStrip(l:tl)
     return l:tl
 endfunction
 
 function! repl#GetCurrentLineNumber() abort
-    return term_getcursor(g:repl_console_name)[0]
+    return term_getcursor(repl#GetConsoleName())[0]
 endfunction
 
 function! repl#CheckInputState()
@@ -514,9 +522,9 @@ function! repl#Sends(tasks, symbols)
     let g:currentlinenumber = -1
     let g:currentrepltype = repl#REPLGetShortName()
     if repl#REPLWin32Return()
-        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     else
-        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . g:repl_console_name . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     endif
     call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     " endif
@@ -555,15 +563,15 @@ function! repl#SendChunkLines() range abort
             if has_key(g:repl_sendvariable_template, l:repl_program)
                 let l:template = g:repl_sendvariable_template[l:repl_program]
                 if repl#REPLWin32Return()
-                    call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\r\n")
+                    call term_sendkeys(repl#GetConsoleName(), substitute(l:template, '<input>', l:selected_content, '') . "\r\n")
                 else
-                    call term_sendkeys(g:repl_console_name, substitute(l:template, '<input>', l:selected_content, '') . "\n")
+                    call term_sendkeys(repl#GetConsoleName(), substitute(l:template, '<input>', l:selected_content, '') . "\n")
                 endif
             else
                 if repl#REPLWin32Return()
-                    call term_sendkeys(g:repl_console_name, l:selected_content . "\r\n")
+                    call term_sendkeys(repl#GetConsoleName(), l:selected_content . "\r\n")
                 else
-                    call term_sendkeys(g:repl_console_name, l:selected_content . "\n")
+                    call term_sendkeys(repl#GetConsoleName(), l:selected_content . "\n")
                 endif
             endif
         endif
@@ -576,7 +584,7 @@ function! repl#SendChunkLines() range abort
 endfunction
 
 function! repl#SendLines(first, last) abort
-	if bufexists(g:repl_console_name)
+	if bufexists(repl#GetConsoleName())
 		let l:firstline = a:first
 		while(l:firstline <= a:last && strlen(getline(l:firstline)) == 0)
 			let l:firstline = l:firstline + 1
@@ -601,16 +609,16 @@ function! repl#SendLines(first, last) abort
             for line in getline(l:firstline, a:last)
                 let l:deletespaceline = line[l:i:]
                 if repl#REPLWin32Return()
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\r\n")'
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . ''', l:deletespaceline . "\r\n")'
                 else
-                    exe "call term_sendkeys('" . g:repl_console_name . ''', l:deletespaceline . "\n")'
+                    exe "call term_sendkeys('" . repl#GetConsoleName() . ''', l:deletespaceline . "\n")'
                 endif
-                exe 'call term_wait("' . g:repl_console_name . '", 50)'
+                exe 'call term_wait("' . repl#GetConsoleName() . '", 50)'
             endfor
             if repl#REPLWin32Return()
-                exe "call term_sendkeys('" . g:repl_console_name . ''', "\r\n")'
+                exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "\r\n")'
             else
-                exe "call term_sendkeys('" . g:repl_console_name . ''', "\n")'
+                exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "\n")'
             endif
         endif
 	endif
@@ -636,6 +644,9 @@ function! repl#SendSession() abort
     endfor
     if l:begin_line_number + 1 < l:end_line_number
         call repl#SendLines(l:begin_line_number+1, l:end_line_number-1)
+    endif
+    if g:repl_cursor_down
+        call cursor(l:end_line_number+1, 0)
     endif
 endfunction
 

@@ -257,6 +257,11 @@ class pythoncodes:
                             temp += ["", ""]
                         else:
                             temp += [""]
+                    elif self.blocks[i][0][0].startswith('with '):
+                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                            temp += ["", ""]
+                        else:
+                            temp += [""]
                 # print(temp)
                 self.blocks[i] = (temp, self.blocks[i][1])
         elif self.replprogram == "ptpython":
@@ -302,6 +307,8 @@ class pythoncodes:
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('if '):
                         temp += [""]
+                    elif self.blocks[i][0][0].startswith('with '):
+                        temp += [""]
                 # print(temp)
 
                 self.blocks[i] = (temp, self.blocks[i][1])
@@ -325,6 +332,8 @@ class pythoncodes:
                     elif self.blocks[i][0][0].startswith('try '):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('if '):
+                        temp += [""]
+                    elif self.blocks[i][0][0].startswith('with '):
                         temp += [""]
                 # print(temp)
 
