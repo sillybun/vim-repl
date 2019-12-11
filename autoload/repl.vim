@@ -7,11 +7,7 @@ function! repl#AsList(value)
 endfunction
 
 function! repl#GetConsoleName()
-    if tabpagenr() == 1
-        return g:repl_console_name
-    else
-        return g:repl_console_name . string(tabpagenr())
-    endif
+    return g:repl_console_name . string(tabpagenr())
 endfunction
 
 function! repl#Trim(value)
