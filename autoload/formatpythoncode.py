@@ -40,7 +40,32 @@ class pythoncodes:
         self.trunctindent()
         return self
 
-    # @profile
+    def tructcomments(self, line):
+        doublecomment = False
+        singlecomment = False
+        index = 0
+        while index < len(line):
+            if doublecomment:
+                if line[index] == "\\":
+                    index += 2
+                    continue
+                if line[index] == '"':
+                    doublecomment = False
+            elif singlecomment:
+                if line[index] == "\\":
+                    index += 2
+                    continue
+                if line[index] == "'":
+                    singlecomment = False
+            elif line[index] == '"':
+                doublecomment = True
+            elif line[index] == "'":
+                singlecomment = True
+            elif line[index] == "#":
+                return line[:index].rstrip()
+            index += 1
+        return line
+
     def removecomments(self):
         newrawcontents = list()
         i = 0
@@ -72,7 +97,7 @@ class pythoncodes:
                 # self.rawcontents = self.rawcontents[:i] + self.rawcontents[j+1:]
                 # self.removecomments()
                 # return
-            newrawcontents.append(self.rawcontents[i])
+            newrawcontents.append(self.tructcomments(self.rawcontents[i]))
             i += 1
         self.rawcontents = newrawcontents
 
@@ -349,7 +374,6 @@ class pythoncodes:
 
 # @profile
 def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False, version=""):
-    # print(codes, pythonprogram, mergeunfinishline, version)
     pc = pythoncodes(replprogram = pythonprogram, flag_mergefinishline = mergeunfinishline, version = version)
     pc.getcode(codes)
     return pc.generatecodes()
