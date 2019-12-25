@@ -175,6 +175,7 @@ function! repl#REPLClose()
                     exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "' . repl#REPLGetExitCommand() . '\n")'
                 endif
                 exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
+		exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "' . '\<CR>")'
             endif
             let l:temp_return = "\n"
             if has('win32')
