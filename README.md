@@ -437,4 +437,4 @@ And then you can press `<C-n>` to change to Normal Mode.
 
 If you like my plugin, please buy me a cup of coffee to support me!
 
-<img src="https://github.com/sillybun/vim-repl/blob/master/assets/wechat.JPG" width="300" height="300">
+<center><img src="https://github.com/sillybun/vim-repl/blob/master/assets/wechat.JPG" width="300"></center>
