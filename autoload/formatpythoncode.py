@@ -257,6 +257,11 @@ class pythoncodes:
                             temp += ["", ""]
                         else:
                             temp += [""]
+                    elif self.blocks[i][0][0].startswith('async def '):
+                        if currentindent - 4 * AutoStop(block[lastline]) == 0:
+                            temp += ["", ""]
+                        else:
+                            temp += [""]
                     elif self.blocks[i][0][0].startswith('class '):
                         if currentindent - 4 * AutoStop(block[lastline]) == 0:
                             temp += ["", ""]
@@ -322,6 +327,8 @@ class pythoncodes:
                 else:
                     if self.blocks[i][0][0].startswith('def '):
                         temp += [""]
+                    elif self.blocks[i][0][0].startswith('async def '):
+                        temp += [""]
                     elif self.blocks[i][0][0].startswith('class '):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('for '):
@@ -347,6 +354,8 @@ class pythoncodes:
                     pass
                 else:
                     if self.blocks[i][0][0].startswith('def '):
+                        temp += [""]
+                    elif self.blocks[i][0][0].startswith('async def '):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('class '):
                         temp += [""]
