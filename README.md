@@ -140,6 +140,32 @@ To debug python code, move the cursor to certain line and press `<F12>`, and ipd
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug-python.gif)
 
+### How to send code block to REPL?
+
+For python code, surround code block with `# BEGIN` and `# END`:
+
+```
+# BEGIN <name of block or just empty>
+
+block-of-code
+
+# END <you can add whatever you like here>
+```
+
+Example:
+
+```
+# BEGIN header
+import numpy as np
+import os
+
+def f(a, b):
+    return a + b
+# END
+```
+
+Place the cursor in the code block and run command `:REPLSendSession` and then the whole block will be sent to the REPL environment.
+
 ### How to open python with virtual environment?
 
 There are two ways to open python with virtual environment.
