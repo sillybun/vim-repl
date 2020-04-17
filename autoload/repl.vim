@@ -208,13 +208,13 @@ endfunction
 function! repl#REPLUnhide()
     if repl#REPLIsHidden()
         if g:repl_position == 0
-            exe 'bo unhide 1'
+            exe 'bo unhide'
         elseif g:repl_position == 1
-            exe 'to unhide 1'
+            exe 'to unhide'
         elseif g:repl_position == 2
-            exe 'vert unhide 1'
+            exe 'vert unhide'
         else
-            exe 'vert rightb unhide 1'
+            exe 'vert rightb unhide'
         endif
     endif
 endfunction
