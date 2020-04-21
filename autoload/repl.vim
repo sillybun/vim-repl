@@ -381,7 +381,6 @@ endfunction
 
 function! repl#REPLToggle(...)
 	if repl#REPLIsVisible()
-        let l:cursor_pos = getpos('.')
 		call repl#REPLClose()
     elseif repl#REPLIsHidden()
         call repl#REPLUnhide()
