@@ -19,11 +19,6 @@ if exists("g:repl_program")
 endif
 let g:repl_program = s:repl_default_program
 
-if g:repl_program['python'] == 'ipython' && !exists("g:repl_ipython_version")
-    let temp = system('ipython --version')
-    let g:repl_ipython_version = temp[0:2]
-endif
-
 if !has_key(g:repl_program, 'perl')
   if executable('perlconsole')
     let g:repl_program.perl = 'perlconsole'

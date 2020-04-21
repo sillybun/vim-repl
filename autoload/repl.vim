@@ -73,7 +73,20 @@ function! repl#REPLGetName()
     elseif &buftype ==# 'terminal'
 		return bufname('%')[1:]
 	elseif has_key(g:repl_program, &filetype)
-		return g:repl_program[&filetype]
+		let l:repl_options = g:repl_program[&filetype]
+        let l:count = len(l:repl_options)
+        if l:count == 1
+            return l:repl_options[0]
+        elseif l:count > 1
+            for i in range(1,l:count)
+                let choice = inputlist([ 'Select your REPL:' ]
+                                      \ + map(copy(l:repl_options), '(v:key+1).". ".v:val'))
+                if choice >= 1 && choice <= l:count
+                    redraw
+                    return l:repl_options[choice - 1]
+                endif
+            endfor
+        endif
 	elseif has_key(g:repl_program, 'default')
 		return g:repl_program['default']
 	else
@@ -232,6 +245,10 @@ function! repl#REPLOpen(...)
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
     endif
     if repl#REPLGetShortName() =~# '.*python.*'
+        if repl#REPLGetShortName() == 'ipython' && !exists("g:repl_ipython_version")
+            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let g:repl_ipython_version = temp[0:2]
+        endif
         for l:i in range(1, line('$'))
             if repl#StartWith(getline(l:i), '#REPLENV:')
                 let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(getline(l:i)[strlen('#REPLENV:')+1: ])
