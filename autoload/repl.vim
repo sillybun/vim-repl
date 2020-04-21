@@ -714,13 +714,21 @@ EOF
     echo 'REPL program:'
     echo g:repl_program
     for l:file in keys(g:repl_program)
-        let l:pro = g:repl_program[l:file]
-        if !executable(split(l:pro, ' ')[0])
-            echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
-        endif
+        let l:pros = g:repl_program[l:file]
+        for l:pro in l:pros
+            if !executable(split(l:pro, ' ')[0])
+                echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
+            endif
+        endfor
     endfor
-    if g:repl_program['python'] == 'ipython'
-        echo "ipython version: " . system('ipython --version')
+    unlet! b:REPL_OPEN_TERMINAL
+    let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+    if repl#REPLGetShortName() == 'ipython'
+        if !exists("g:repl_ipython_version")
+            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let g:repl_ipython_version = temp[0:2]
+            echo "ipython version: " . temp
+        endif
         echo "setted ipython version" . g:repl_ipython_version
         if g:repl_ipython_version == '7.0'
             echoerr "This plugin cannot work on ipython 7.01. Please use ipython >= 7.1.1"
