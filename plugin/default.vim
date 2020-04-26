@@ -19,23 +19,19 @@ if exists("g:repl_program")
 endif
 let g:repl_program = s:repl_default_program
 
-if g:repl_program['python'] == 'ipython' && !exists("g:repl_ipython_version")
-    let temp = system('ipython --version')
-    let g:repl_ipython_version = temp[0:2]
-endif
-
 if !has_key(g:repl_program, 'perl')
+  let g:repl_program.perl = []
   if executable('perlconsole')
-    let g:repl_program.perl = 'perlconsole'
+    let g:repl_program.perl = ['perlconsole']
   elseif executable('reply')
-    let g:repl_program.perl = 'reply'
+    let g:repl_program.perl = ['reply']
   elseif executable('re.pl')
-    let g:repl_program.perl = 're.pl'
+    let g:repl_program.perl = ['re.pl']
   else
     if has('win32')
-        let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin\\perl\\psh'
+        let g:repl_program.perl = [g:REPLVIM_PATH . 'ftplugin\\perl\\psh']
     else
-        let g:repl_program.perl = g:REPLVIM_PATH . 'ftplugin/perl/psh'
+        let g:repl_program.perl = [g:REPLVIM_PATH . 'ftplugin/perl/psh']
     endif
   endif
 endif

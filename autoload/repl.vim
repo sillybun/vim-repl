@@ -73,7 +73,20 @@ function! repl#REPLGetName()
     elseif &buftype ==# 'terminal'
 		return bufname('%')[1:]
 	elseif has_key(g:repl_program, &filetype)
-		return g:repl_program[&filetype]
+		let l:repl_options = g:repl_program[&filetype]
+        let l:count = len(l:repl_options)
+        if l:count == 1
+            return l:repl_options[0]
+        elseif l:count > 1
+            for i in range(1,l:count)
+                let choice = inputlist([ 'Select your REPL:' ]
+                                      \ + map(copy(l:repl_options), '(v:key+1).". ".v:val'))
+                if choice >= 1 && choice <= l:count
+                    redraw
+                    return l:repl_options[choice - 1]
+                endif
+            endfor
+        endif
 	elseif has_key(g:repl_program, 'default')
 		return g:repl_program['default']
 	else
@@ -232,6 +245,10 @@ function! repl#REPLOpen(...)
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
     endif
     if repl#REPLGetShortName() =~# '.*python.*'
+        if repl#REPLGetShortName() == 'ipython' && !exists("g:repl_ipython_version")
+            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let g:repl_ipython_version = temp[0:2]
+        endif
         for l:i in range(1, line('$'))
             if repl#StartWith(getline(l:i), '#REPLENV:')
                 let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(getline(l:i)[strlen('#REPLENV:')+1: ])
@@ -364,7 +381,6 @@ endfunction
 
 function! repl#REPLToggle(...)
 	if repl#REPLIsVisible()
-        let l:cursor_pos = getpos('.')
 		call repl#REPLClose()
     elseif repl#REPLIsHidden()
         call repl#REPLUnhide()
@@ -698,13 +714,21 @@ EOF
     echo 'REPL program:'
     echo g:repl_program
     for l:file in keys(g:repl_program)
-        let l:pro = g:repl_program[l:file]
-        if !executable(split(l:pro, ' ')[0])
-            echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
-        endif
+        let l:pros = g:repl_program[l:file]
+        for l:pro in l:pros
+            if !executable(split(l:pro, ' ')[0])
+                echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
+            endif
+        endfor
     endfor
-    if g:repl_program['python'] == 'ipython'
-        echo "ipython version: " . system('ipython --version')
+    unlet! b:REPL_OPEN_TERMINAL
+    let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+    if repl#REPLGetShortName() == 'ipython'
+        if !exists("g:repl_ipython_version")
+            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let g:repl_ipython_version = temp[0:2]
+            echo "ipython version: " . temp
+        endif
         echo "setted ipython version" . g:repl_ipython_version
         if g:repl_ipython_version == '7.0'
             echoerr "This plugin cannot work on ipython 7.01. Please use ipython >= 7.1.1"
