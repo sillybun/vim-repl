@@ -352,6 +352,10 @@ let g:repl_position = 3
 
 ## Updates
 
+### 2020.4.29
+
+- Add support for mulitiple repl program. Thanks to @roachsinai 's great work.
+
 ### 2019.10.14
 
 - Add support for python virtual environment.
