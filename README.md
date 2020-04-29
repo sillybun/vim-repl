@@ -176,7 +176,7 @@ g:repl_python_pre_launch_command = 'source /path_to_new_venv/bin/activate'
 ```
 in `.vimrc`. And once you toggle python, the following command will be run:
 ```
-:terminal [g:repl_program['default']/bash/cmd.exe]
+:terminal [g:repl_program['default'][0]/bash/cmd.exe]
 source /path_to_new_venv/bin/activate
 python/ipython/ptpython
 ```
@@ -236,8 +236,8 @@ It controls which program will be run for certain filetype. If there is no entry
 
 ```
 let g:repl_program = {
-			\	'python': 'python',
-			\	'default': 'bash'
+			\	'python': ['python'],
+			\	'default': ['bash']
 			\	}
 ```
 
@@ -330,11 +330,11 @@ Name of REPL environment.
 ```
 Plug 'sillybun/vim-repl'
 let g:repl_program = {
-            \   'python': 'ipython',
-            \   'default': 'zsh',
-            \   'r': 'R',
-            \   'lua': 'lua',
-            \   'vim': 'vim -e',
+            \   'python': ['ipython'],
+            \   'default': ['zsh'],
+            \   'r': ['R'],
+            \   'lua': ['lua'],
+            \   'vim': ['vim -e'],
             \   }
 let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
@@ -445,7 +445,7 @@ For vim with `+python` or `+python3` support, this problem will not happen. If i
 
 - Error detected while processing function repl#REPLToggle [10].. repl #REPLOpen
 
-The reason of this error is that vim-repl try to open the program which is not installed on your machine. For example, if you havn't install `ipython` and set `g:repl_program['python']='ipython`, this error will occur.
+The reason of this error is that vim-repl try to open the program which is not installed on your machine. For example, if you havn't install `ipython` and set `g:repl_program['python']=['ipython']`, this error will occur.
 
 - How to change to Normal Mode in REPL environment?
 
