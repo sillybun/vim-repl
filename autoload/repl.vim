@@ -74,18 +74,22 @@ function! repl#REPLGetName()
 		return bufname('%')[1:]
 	elseif has_key(g:repl_program, &filetype)
 		let l:repl_options = g:repl_program[&filetype]
-        let l:count = len(l:repl_options)
-        if l:count == 1
-            return l:repl_options[0]
-        elseif l:count > 1
-            for i in range(1,l:count)
-                let choice = inputlist([ 'Select your REPL:' ]
-                                      \ + map(copy(l:repl_options), '(v:key+1).". ".v:val'))
-                if choice >= 1 && choice <= l:count
-                    redraw
-                    return l:repl_options[choice - 1]
-                endif
-            endfor
+        if type(l:repl_options) == 1
+            return l:repl_options
+        else
+            let l:count = len(l:repl_options)
+            if l:count == 1
+                return l:repl_options[0]
+            elseif l:count > 1
+                for i in range(1,l:count)
+                    let choice = inputlist([ 'Select your REPL:' ]
+                                          \ + map(copy(l:repl_options), '(v:key+1).". ".v:val'))
+                    if choice >= 1 && choice <= l:count
+                        redraw
+                        return l:repl_options[choice - 1]
+                    endif
+                endfor
+            endif
         endif
 	elseif has_key(g:repl_program, 'default')
 		return g:repl_program['default']
