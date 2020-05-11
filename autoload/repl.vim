@@ -92,7 +92,10 @@ function! repl#REPLGetName()
             endif
         endif
 	elseif has_key(g:repl_program, 'default')
-		return g:repl_program['default']
+        if type(g:repl_program) == 3
+            return g:repl_program['default'][0]
+        else
+            return g:repl_program['default']
 	else
 		return 'bash'
 	endif
