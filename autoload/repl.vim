@@ -83,19 +83,22 @@ function! repl#REPLGetName()
             elseif l:count > 1
                 for i in range(1,l:count)
                     let choice = inputlist([ 'Select your REPL:' ]
-                                          \ + map(copy(l:repl_options), '(v:key+1).". ".v:val'))
-                    if choice >= 1 && choice <= l:count
-                        redraw
+                                          \ + map(copy(l:repl_options), '(v:key+1).". ".v:val')) - 1
+                    redraw
+                    if choice < 0 || choice >= l:count
+                        throw "Esc-received"
+                    else
                         return l:repl_options[choice - 1]
                     endif
                 endfor
             endif
         endif
 	elseif has_key(g:repl_program, 'default')
-        if type(g:repl_program) == 3
-            return g:repl_program['default'][0]
+		let l:repl_options = g:repl_program['default']
+        if type(l:repl_options) == 3
+            return l:repl_options[0]
         else
-            return g:repl_program['default']
+            return l:repl_options
 	else
 		return 'bash'
 	endif
@@ -395,7 +398,12 @@ function! repl#REPLToggle(...)
         let l:cursor_pos = getpos('.')
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
-        call call(function('repl#REPLOpen'), a:000)
+        try
+            call call(function('repl#REPLOpen'), a:000)
+        catch /Esc-received/
+            echom "Esc received, REPL launce abort."
+            return
+        endtry
         exe 'setlocal nonu'
         if g:repl_stayatrepl_when_open == 0
             exe bufwinnr(g:repl_target_n) . 'wincmd w'
@@ -729,7 +737,12 @@ EOF
         endfor
     endfor
     unlet! b:REPL_OPEN_TERMINAL
-    let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+    try
+        let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+    catch /Esc-received/
+        echom "Esc received, REPL Debug abort."
+        return
+    endtry
     if repl#REPLGetShortName() == 'ipython'
         if !exists("g:repl_ipython_version")
             let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
