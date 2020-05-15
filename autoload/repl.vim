@@ -423,6 +423,9 @@ function! repl#REPLToggle(...)
 endfunction
 
 function! repl#SendCurrentLine()
+    if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
+        call repl#REPLUnhide()
+    endif
 	if bufexists(repl#GetConsoleName())
         let l:cursor_pos = getpos('.')
         if repl#REPLWin32Return()
@@ -578,6 +581,9 @@ function! repl#WaitFor(symbols)
 endfunction
 
 function! repl#SendChunkLines() range abort
+    if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
+        call repl#REPLUnhide()
+    endif
     if a:firstline == a:lastline
         let [l:line_start, l:column_start] = getpos("'<")[1:2]
         let [l:line_end, l:column_end] = getpos("'>")[1:2]
@@ -657,6 +663,9 @@ function! repl#SendAll() abort
 endfunction
 
 function! repl#SendSession() abort
+    if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
+        call repl#REPLUnhide()
+    endif
     let l:begin_line_number = line('.')
     let l:end_line_number = line('.')
     for i in range(1, line('.'))

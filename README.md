@@ -322,6 +322,12 @@ let g:repl_sendvariable_template = {
 
 `g:repl_sendvariable_template` defines how word is sent to REPL. For example, by default, if you select `some_variable` and presss `<leader>w`, `print(some_variable)` will be sent to REPL. You can define your rule with the help of `g:repl_sendvariable_template`. `<input>` will be replaced by selected word and then be sent to REPL.
 
+```
+let g:repl_unhide_when_send_lines = 0
+```
+
+If `g:repl_unhide_when_send_lines = 1`, when REPL is hidden and you want to send lines, REPL environment will be unhiden before the code is sent.
+
 
 Name of REPL environment.
 

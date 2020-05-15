@@ -100,3 +100,7 @@ if !exists('g:repl_sendvariable_template')
                 \ 'ptpython': 'print(<input>)',
                 \ }
 endif
+
+if !exists('g:repl_unhide_when_send_lines')
+    let g:repl_unhide_when_send_lines = 1
+endif
