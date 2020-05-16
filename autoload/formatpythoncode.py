@@ -249,6 +249,8 @@ class pythoncodes:
                                 temp.append(''.join(["\b" * lastback]) + block[j].strip())
                             else:
                                 temp.append(block[j].strip())
+                # print("temp", temp)
+
                 if i == len(self.blocks) - 1 and self.codeindent[self.blocks[i][1][-1]][1] == False:
                     pass
                 else:
@@ -277,7 +279,7 @@ class pythoncodes:
                             temp += ["", ""]
                         else:
                             temp += [""]
-                    elif self.blocks[i][0][0].startswith('try '):
+                    elif self.blocks[i][0][0].startswith('try:'):
                         if currentindent - 4 * AutoStop(block[lastline]) == 0:
                             temp += ["", ""]
                         else:
@@ -335,7 +337,7 @@ class pythoncodes:
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('while '):
                         temp += [""]
-                    elif self.blocks[i][0][0].startswith('try '):
+                    elif self.blocks[i][0][0].startswith('try:'):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('if '):
                         temp += [""]
@@ -363,13 +365,12 @@ class pythoncodes:
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('while '):
                         temp += [""]
-                    elif self.blocks[i][0][0].startswith('try '):
+                    elif self.blocks[i][0][0].startswith('try:'):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('if '):
                         temp += [""]
                     elif self.blocks[i][0][0].startswith('with '):
                         temp += [""]
-                # print(temp)
 
                 self.blocks[i] = (temp, self.blocks[i][1])
 
@@ -383,7 +384,7 @@ class pythoncodes:
 
 # @profile
 def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False, version=""):
-    pc = pythoncodes(replprogram = pythonprogram, flag_mergefinishline = mergeunfinishline, version = version)
+    pc = pythoncodes(replprogram=pythonprogram, flag_mergefinishline=mergeunfinishline, version=version)
     pc.getcode(codes)
     return pc.generatecodes()
 
