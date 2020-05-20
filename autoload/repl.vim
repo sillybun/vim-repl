@@ -86,9 +86,9 @@ function! repl#REPLGetName()
                                           \ + map(copy(l:repl_options), '(v:key+1).". ".v:val')) - 1
                     redraw
                     if choice < 0 || choice >= l:count
-                        throw "Esc-received"
+                        throw "Unexpected-input-received"
                     else
-                        return l:repl_options[choice - 1]
+                        return l:repl_options[choice]
                     endif
                 endfor
             endif
@@ -400,8 +400,8 @@ function! repl#REPLToggle(...)
 		let g:repl_target_f = @%
         try
             call call(function('repl#REPLOpen'), a:000)
-        catch /Esc-received/
-            echom "Esc received, REPL launce abort."
+        catch /Unexpected-input-received/
+            echom "Unexpected input received, REPL launch abort."
             return
         endtry
         exe 'setlocal nonu'
@@ -748,8 +748,8 @@ EOF
     unlet! b:REPL_OPEN_TERMINAL
     try
         let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
-    catch /Esc-received/
-        echom "Esc received, REPL Debug abort."
+    catch /Unexpected-input-received/
+        echom "Unexpected input received, REPL Debug abort."
         return
     endtry
     if repl#REPLGetShortName() == 'ipython'
