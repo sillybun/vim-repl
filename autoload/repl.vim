@@ -463,7 +463,12 @@ function! repl#SendCurrentLine()
         call term_sendkeys(repl#GetConsoleName(), l:code_tobe_sent)
         call term_wait(repl#GetConsoleName(), 50)
         if g:repl_cursor_down
-            call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
+            " call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
+            let l:next_line_number = l:cursor_pos[1] + 1
+            while l:next_line_number <= line("$") && repl#Strip(getline(l:next_line_number)) == ""
+                let l:next_line_number = l:next_line_number + 1
+            endwhile
+            call cursor(l:next_line_number, l:cursor_pos[2])
         endif
 	endif
 endfunction
