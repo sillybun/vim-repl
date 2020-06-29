@@ -460,7 +460,11 @@ function! repl#SendCurrentLine()
                 endif
             endif
         endif
-        call term_sendkeys(repl#GetConsoleName(), l:code_tobe_sent)
+        if repl#REPLGetShortName() ==# "ipython"
+            call repl#Sends(repl#ToREPLPythonCode([l:code_tobe_sent], 'ipython'), ['\.\.\.', 'In'])
+        else
+            call term_sendkeys(repl#GetConsoleName(), l:code_tobe_sent)
+        endif
         call term_wait(repl#GetConsoleName(), 50)
         if g:repl_cursor_down
             " call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
@@ -530,7 +534,7 @@ endfunction
 
 function! repl#CheckInputState()
     let l:tl = repl#GetTerminalLine()
-    if g:currentrepltype ==# 'ipython' && g:taskprocess != 0 && g:tasks[g:taskprocess-1] ==# '' && g:tasks[g:taskprocess] !=# ''
+    if g:currentrepltype ==# 'ipython' && (g:taskprocess == 0 || g:tasks[g:taskprocess-1] ==# '') && (g:taskprocess == len(g:tasks) || (g:tasks[g:taskprocess] !=# ''))
         if match(l:tl, 'In') != -1
             return 1
         else
@@ -546,12 +550,10 @@ function! repl#CheckInputState()
 endfunction
 
 function! repl#Sends(tasks, symbols)
+    echom a:tasks
     if len(a:tasks) == 0
         return
     end
-    " if !has('timers')
-    "     call replforwin32#Sends(a:tasks, a:symbols)
-    " else
     let g:tasks = a:tasks
     let g:waitforsymbols = repl#AsList(a:symbols)
     let g:taskprocess = 0
@@ -562,6 +564,10 @@ function! repl#Sends(tasks, symbols)
     else
         let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'return', 'endif', 'GOTO Start']
     endif
+    if exists("g:repl_output_copy_to_register") && repl#REPLGetShortName() ==# "ipython"
+        let g:term_send_task_codes = g:term_send_task_codes[:-4] + ["sleep 300", "wait repl#CheckInputState()", "call repl#GetTerminalLastOutput('" . g:repl_output_copy_to_register . "')"] + g:term_send_task_codes[-3:]
+    endif
+    " echom g:term_send_task_codes
     call async#AsyncCodeRun(g:term_send_task_codes, "term_send_task")
     " endif
 endfunction
@@ -708,6 +714,39 @@ function! repl#SendWholeBlock() abort
     endfor
     call repl#SendLines(l:begin_line_number, l:end_line_number)
     return l:end_line_number
+endfunction
+
+function! repl#GetTerminalContent() abort
+    return getbufline(repl#GetConsoleName(), 1, "$")
+endfunction
+
+function! repl#GetTerminalLastOutput(...) abort
+    let l:terminal_content = repl#GetTerminalContent()
+    if has('python3')
+python3 << EOF
+import vim
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+from replpython import GetLastOutput
+terminal_content = vim.eval("l:terminal_content")
+last_out = GetLastOutput(terminal_content, "ipython")
+print("terminal content", terminal_content)
+print("last_out", last_out)
+EOF
+        if a:0 == 1
+            execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+        endif
+    elseif has('python')
+python << EOF
+import vim
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+from replpython import GetLastOutput
+terminal_content = vim.eval("l:terminal_content")
+last_out = GetLastOutput(terminal_content, "ipython")
+EOF
+        if a:0 == 1
+            execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
+        endif
+    endif
 endfunction
 
 function! repl#REPLDebug() abort

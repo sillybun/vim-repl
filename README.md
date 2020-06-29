@@ -328,19 +328,22 @@ let g:repl_unhide_when_send_lines = 0
 
 If `g:repl_unhide_when_send_lines = 1`, when REPL is hidden and you want to send lines, REPL environment will be unhiden before the code is sent.
 
+```
+g:repl_output_copy_to_register
+```
 
-Name of REPL environment.
+If `g:repl_output_copy_to_register` is set to a letter (a-z), then output of REPL program will be copied to the corresponding register. (Currently only support ipython)
 
 ## My Configuation for Vim-Repl
 
 ```
 Plug 'sillybun/vim-repl'
 let g:repl_program = {
-            \   'python': ['ipython'],
-            \   'default': ['zsh'],
-            \   'r': ['R'],
-            \   'lua': ['lua'],
-            \   'vim': ['vim -e'],
+            \   'python': 'ipython',
+            \   'default': 'zsh',
+            \   'r': 'R',
+            \   'lua': 'lua',
+            \   'vim': 'vim -e',
             \   }
 let g:repl_predefine_python = {
             \   'numpy': 'import numpy as np',
@@ -349,7 +352,9 @@ let g:repl_predefine_python = {
 let g:repl_cursor_down = 1
 let g:repl_python_automerge = 1
 let g:repl_ipython_version = '7'
+let g:repl_output_copy_to_register = "t"
 nnoremap <leader>r :REPLToggle<Cr>
+nnoremap <leader>e :REPLSendSession<Cr>
 autocmd Filetype python nnoremap <F12> <Esc>:REPLDebugStopAtCurrentLine<Cr>
 autocmd Filetype python nnoremap <F10> <Esc>:REPLPDBN<Cr>
 autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>

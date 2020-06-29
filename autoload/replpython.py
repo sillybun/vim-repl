@@ -1,3 +1,5 @@
+import re
+
 class PlainData:
     def __init__(self):
         self.tokentype = -1
@@ -474,6 +476,49 @@ def getpythonindent_multiline(codes):
             unfinishedtype = -1
         multi_indent.append((indentlevel, finishflag, unfinishedtype))
     return multi_indent
+
+def GetLastOutput(buffer, pythonprogram):
+    if pythonprogram == "ipython":
+        blocks = list()
+        current = []
+        flag = False
+        for line in buffer:
+            if re.fullmatch(r"In \[\d+\]:.*", line):
+                if flag == True:
+                    while current and current[-1].strip() == "":
+                        current = current[:-1]
+                    blocks.append(current)
+                current = [line]
+                flag = True
+            else:
+                current.append(line)
+        for block in blocks[::-1]:
+            out = GetOutputOfBlock(block, pythonprogram)
+            if out:
+                return out
+        return ""
+
+def GetOutputOfBlock(content, pythonprogram):
+    if not content:
+        return ""
+    if pythonprogram == "ipython":
+        assert re.fullmatch(r"In \[\d+\]:.*", content[0])
+        index = 1
+        while index < len(content):
+            # if content[index] and content[index][0] != " ":
+            #     break
+            if re.fullmatch(" {3,}\.\.\.:.*", content[index]):
+                index += 1
+                continue
+            m = re.fullmatch(r"Out\[\d+\]:(.*)", content[index])
+            if m:
+                return m.group(1).strip()
+            if content[index]:
+                break
+            index += 1
+        else:
+            return ""
+    return "\n".join(content[index:])
 
 def main():
     code = ["if a:", "    b = 1", "else:", "    b = 2"]
