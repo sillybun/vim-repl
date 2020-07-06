@@ -550,7 +550,7 @@ function! repl#CheckInputState()
 endfunction
 
 function! repl#Sends(tasks, symbols)
-    echom a:tasks
+    " echom a:tasks
     if len(a:tasks) == 0
         return
     end
@@ -717,7 +717,7 @@ function! repl#SendWholeBlock() abort
 endfunction
 
 function! repl#GetTerminalContent() abort
-    return getbufline(repl#GetConsoleName(), 1, "$")
+    return getbufline(repl#GetConsoleName(), max([1, line("$", bufwinid(repl#GetConsoleName())) - 300]), "$")
 endfunction
 
 function! repl#GetTerminalLastOutput(...) abort
