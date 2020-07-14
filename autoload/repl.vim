@@ -88,6 +88,7 @@ function! repl#REPLGetName()
                     if l:choice < 0 || l:choice >= l:count
                         throw "Unexpected-input-received"
                     else
+                        let g:repl_program[&filetype] = l:repl_options[l:choice]
                         return l:repl_options[l:choice]
                     endif
                 endfor
