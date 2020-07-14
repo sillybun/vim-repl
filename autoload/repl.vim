@@ -729,11 +729,13 @@ sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 from replpython import GetLastOutput
 terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
-print("terminal content", terminal_content)
-print("last_out", last_out)
 EOF
         if a:0 == 1
-            execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+            try
+                execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+            catch /.*/
+                echom v:exception
+            endtry
         endif
     elseif has('python')
 python << EOF
@@ -744,7 +746,11 @@ terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
 EOF
         if a:0 == 1
-            execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
+            try
+                execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+            catch /.*/
+                echom v:exception
+            endtry
         endif
     endif
 endfunction

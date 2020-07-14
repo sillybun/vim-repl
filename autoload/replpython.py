@@ -497,6 +497,7 @@ def GetLastOutput(buffer, pythonprogram):
             if out:
                 return out
         return ""
+    return ""
 
 def GetOutputOfBlock(content, pythonprogram):
     if not content:
