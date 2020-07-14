@@ -68,8 +68,8 @@ function! repl#StartWithAny(string, substringlist)
 endfunction
 
 function! repl#REPLGetName()
-    if exists('b:REPL_OPEN_TERMINAL')
-        return b:REPL_OPEN_TERMINAL
+    if exists('t:REPL_OPEN_TERMINAL')
+        return t:REPL_OPEN_TERMINAL
     elseif &buftype ==# 'terminal'
 		return bufname('%')[1:]
 	elseif has_key(g:repl_program, &filetype)
@@ -88,7 +88,6 @@ function! repl#REPLGetName()
                     if l:choice < 0 || l:choice >= l:count
                         throw "Unexpected-input-received"
                     else
-                        let g:repl_program[&filetype] = l:repl_options[l:choice]
                         return l:repl_options[l:choice]
                     endif
                 endfor
@@ -219,7 +218,7 @@ function! repl#REPLClose()
         return
 	endif
     exe bufwinnr(g:repl_target_n) . 'wincmd w'
-    unlet b:REPL_OPEN_TERMINAL
+    unlet t:REPL_OPEN_TERMINAL
 endfunction
 
 function! repl#REPLHide()
@@ -245,19 +244,19 @@ endfunction
 
 function! repl#REPLOpen(...)
     if a:0 == 0
-        unlet! b:REPL_OPEN_TERMINAL
-        let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+        unlet! t:REPL_OPEN_TERMINAL
+        let t:REPL_OPEN_TERMINAL = repl#REPLGetName()
     else
-        let b:REPL_OPEN_TERMINAL = join(a:000, ' ')
+        let t:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
-    let l:REPL_OPEN_TERMINAL = b:REPL_OPEN_TERMINAL
+    let l:REPL_OPEN_TERMINAL = t:REPL_OPEN_TERMINAL
 	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . repl#GetConsoleName() . ''')) | q! | endif'
     if !executable(split(repl#REPLGetName(), ' ')[0])
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
     endif
     if repl#REPLGetShortName() =~# '.*python.*'
         if repl#REPLGetShortName() == 'ipython' && !exists("g:repl_ipython_version")
-            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let temp = system(t:REPL_OPEN_TERMINAL . ' --version')
             let g:repl_ipython_version = temp[0:2]
         endif
         for l:i in range(1, line('$'))
@@ -796,16 +795,16 @@ EOF
             endif
         endfor
     endfor
-    unlet! b:REPL_OPEN_TERMINAL
+    unlet! t:REPL_OPEN_TERMINAL
     try
-        let b:REPL_OPEN_TERMINAL = repl#REPLGetName()
+        let t:REPL_OPEN_TERMINAL = repl#REPLGetName()
     catch /Unexpected-input-received/
         echom "Unexpected input received, REPL Debug abort."
         return
     endtry
     if repl#REPLGetShortName() == 'ipython'
         if !exists("g:repl_ipython_version")
-            let temp = system(b:REPL_OPEN_TERMINAL . ' --version')
+            let temp = system(t:REPL_OPEN_TERMINAL . ' --version')
             let g:repl_ipython_version = temp[0:2]
             echo "ipython version: " . temp
         endif
