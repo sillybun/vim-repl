@@ -202,7 +202,7 @@ function! repl#REPLClose()
             endif
             let l:temp_return = "\n"
             if has('win32')
-                let l:temp_return = "\r\n"
+                let l:temp_return = "\r"
             endif
             if exists('g:REPL_VIRTUAL_ENVIRONMENT')
                 call term_sendkeys(repl#GetConsoleName(), 'deactivate' . l:temp_return)
@@ -329,12 +329,18 @@ function! repl#REPLOpen(...)
             exe 'file ' . repl#GetConsoleName()
             exe 'setlocal noswapfile'
             if has('win32')
-                let l:temp_return = "\r\n"
+                let l:temp_return = "\r"
             else
                 let l:temp_return = "\n"
             endif
-            if repl#StartWith(g:repl_python_pre_launch_command, 'source ')
-                let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(g:repl_python_pre_launch_command[strlen('source '):])
+            if has('win32')
+                if repl#StartWith(g:repl_python_pre_launch_command, 'conda ')
+                    let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(g:repl_python_pre_launch_command[strlen('conda '):])
+                endif
+            else
+                if repl#StartWith(g:repl_python_pre_launch_command, 'source ')
+                    let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(g:repl_python_pre_launch_command[strlen('source '):])
+                endif
             endif
             call term_sendkeys(repl#GetConsoleName(), g:repl_python_pre_launch_command . l:temp_return)
             call term_wait(repl#GetConsoleName(), 100)
