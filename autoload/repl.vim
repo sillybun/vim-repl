@@ -679,13 +679,14 @@ function! repl#SendSession() abort
     endif
     let l:begin_line_number = line('.')
     let l:end_line_number = line('.')
-    for i in range(1, line('.'))
-        if repl#StartWith(getline(i), '# BEGIN')
+    for i in reverse(range(1, line('.')))
+        if repl#StartWith(getline(i), g:repl_code_block_begin)
             let l:begin_line_number = i
+            break
         endif
     endfor
     for i in range(line('.'), line('$'))
-        if repl#StartWith(getline(i), '# END')
+        if repl#StartWith(getline(i), g:repl_code_block_end)
             let l:end_line_number = i
             break
         endif
