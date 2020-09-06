@@ -81,16 +81,14 @@ function! repl#REPLGetName()
             if l:count == 1
                 return l:repl_options[0]
             elseif l:count > 1
-                for i in range(1,l:count)
-                    let l:choice = inputlist([ 'Select your REPL:' ]
-                                          \ + map(copy(l:repl_options), '(v:key+1).". ".v:val')) - 1
-                    redraw
-                    if l:choice < 0 || l:choice >= l:count
-                        throw "Unexpected-input-received"
-                    else
-                        return l:repl_options[l:choice]
-                    endif
-                endfor
+                let l:choice = inputlist([ 'Select your REPL:' ]
+                                      \ + map(copy(l:repl_options), '(v:key+1).". ".v:val')) - 1
+                redraw
+                if l:choice < 0 || l:choice >= l:count
+                    throw "Unexpected-input-received"
+                else
+                    return l:repl_options[l:choice]
+                endif
             endif
         endif
 	elseif has_key(g:repl_program, 'default')
