@@ -33,6 +33,8 @@ class pythoncodes:
     def getcode(self, code):
         self.rawcontents = [line for line in code if len(line.strip()) != 0]
         self.removecomments()
+        if len(self.rawcontents) == 0:
+            return self
         if self.flag_mergefinishline == 1:
             self.mergeunfinishline()
         self.analysepythonindent()
@@ -376,8 +378,10 @@ class pythoncodes:
 
 
     def generatecodes(self):
-        self.addbackspace()
         newcode = list()
+        if len(self.rawcontents) == 0:
+            return newcode
+        self.addbackspace()
         for i in range(len(self.blocks)):
             newcode += self.blocks[i][0]
         return newcode
