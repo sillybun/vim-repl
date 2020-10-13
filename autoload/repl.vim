@@ -424,8 +424,9 @@ function! repl#REPLToggle(...)
             if repl#REPLGetShortName() =~# '.*python.*' && g:repl_python_auto_import
                 let l:code_tobe_sent = []
                 for l:line_number in range(1, line("$"))
-                    if getline(l:line_number) =~# 'import .*'
-                        let l:code_tobe_sent = l:code_tobe_sent + [getline(l:line_number)]
+                    let l:gl = repl#Strip(getline(l:line_number))
+                    if l:gl =~# '^import ' || l:gl =~# '^from .* import .*'
+                        let l:code_tobe_sent = l:code_tobe_sent + [l:gl]
                     endif
                 endfor
                 let l:sn = repl#REPLGetShortName()
