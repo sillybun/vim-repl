@@ -93,6 +93,10 @@ if !exists('g:repl_stayatrepl_when_open')
 	let g:repl_stayatrepl_when_open = 0
 endif
 
+if !exists('g:repl_python_auto_import')
+    let g:repl_python_auto_import = 1
+endif
+
 if !exists('g:repl_sendvariable_template')
     let g:repl_sendvariable_template = {
                 \ 'python': 'print(<input>)',

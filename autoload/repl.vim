@@ -421,6 +421,22 @@ function! repl#REPLToggle(...)
                 endfor
                 call repl#Sends(l:precode, ['>>>', '...', 'ipdb>', 'pdb>'])
             endif
+            if repl#REPLGetShortName() =~# '.*python.*' && g:repl_python_auto_import
+                let l:code_tobe_sent = []
+                for l:line_number in range(1, line("$"))
+                    if getline(l:line_number) =~# 'import .*'
+                        let l:code_tobe_sent = l:code_tobe_sent + [getline(l:line_number)]
+                    endif
+                endfor
+                let l:sn = repl#REPLGetShortName()
+                if l:sn ==# 'ptpython'
+                    call repl#Sends(repl#ToREPLPythonCode(l:code_tobe_sent, 'ptpython'), ['\.\.\.', '>>>', 'ipdb>', 'pdb>'])
+                elseif l:sn ==# 'ipython'
+                    call repl#Sends(repl#ToREPLPythonCode(l:code_tobe_sent, 'ipython'), ['\.\.\.', 'In'])
+                elseif l:sn =~# 'python' || l:sn =~# 'python3'
+                    call repl#Sends(repl#ToREPLPythonCode(l:code_tobe_sent, 'python'), ['>>>', '...', 'ipdb>', 'pdb>'])
+                endif
+            endif
             call cursor(l:cursor_pos[1], l:cursor_pos[2])
         endif
 	endif

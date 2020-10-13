@@ -286,6 +286,12 @@ let g:repl_cursor_down = 1
 If `g:repl_cursor_down` is 1, once user sends code blocks using visual selection, the cursor will move to the next line of the last line of the code blocks.
 
 ```
+let g:repl_python_auto_import = 1
+```
+
+If `g:repl_python_auto_import` is 1, once user toggle python REPL environment, all import code will be automatically send to the REPL environment
+
+```
 let g:repl_python_automerge = 0
 ```
 
