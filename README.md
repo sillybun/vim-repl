@@ -12,7 +12,7 @@
          * [How to debug python script?](#how-to-debug-python-script)
          * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
       * [Setting](#setting)
-      * [My Configuation for Vim-Repl](#my-configuation-for-vim-repl)
+      * [My Configuration for Vim-Repl](#my-configuration-for-vim-repl)
       * [Updates](#updates)
       * [Troubleshooting](#troubleshooting)
 
@@ -340,7 +340,7 @@ g:repl_output_copy_to_register
 
 If `g:repl_output_copy_to_register` is set to a letter (a-z), then output of REPL program will be copied to the corresponding register. (Currently only support ipython)
 
-## My Configuation for Vim-Repl
+## My Configuration for Vim-Repl
 
 ```
 Plug 'sillybun/vim-repl'
