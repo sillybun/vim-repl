@@ -4,10 +4,15 @@ import os
 currentpath = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(currentpath)
 
+"""
+sys.path.append("/Users/zhangyiteng/.vim/plugged/vim-repl/autoload")
+"""
+
 # try:
 #     import afpython as replpython
 # except Exception:
 import replpython
+from filemanager import path
 
 class UnfinishType:
     LEFT_PARAENTHESE = 1 # (
@@ -23,11 +28,13 @@ class UnfinishType:
     DICTVALUE = 9 # {1:2}
 
 class pythoncodes:
-    def __init__(self, replprogram = "ipython", flag_mergefinishline = False, version=""):
+    def __init__(self, replprogram = "ipython", flag_mergefinishline = False, version="", filepath=""):
         self.rawcontents = list()
         self.replprogram = replprogram
         self.flag_mergefinishline = flag_mergefinishline
         self.version = version
+        self.filepath = filepath
+        self.blocks = list() # List[List[str], List[int]]
 
     # @profile
     def getcode(self, code):
@@ -40,7 +47,35 @@ class pythoncodes:
         self.analysepythonindent()
         self.seperateintoblocks()
         self.trunctindent()
+        self.expand_import_from_relative_path()
         return self
+
+    def expand_import_from_relative_path(self):
+        if self.filepath == "":
+            return
+        # print(self.blocks)
+        for index in range(len(self.blocks)):
+            block = self.blocks[index]
+            # print(block)
+            if len(block[0]) == 1 and (block[0][0].lstrip().startswith("import .") or block[0][0].lstrip().startswith("from .")):
+                # print(block)
+                code = block[0][0]
+                p = path(self.filepath)
+                dot_number = len(code.split()[1]) - len(code.split()[1].lstrip("."))
+                for _ in range(dot_number - 1):
+                    p = p.parent
+                # print(p)
+                if "__init__.py" not in [t[-1] for t in p.ls()]:
+                    temp = code[:code.index(".")] + code[code.index(".")+dot_number:]
+                else:
+                    extra = ""
+                    while p and "__init__.py" in [t[-1] for t in p.ls()]:
+                        extra = p.name + "." + extra
+                        p = p.parent
+                    temp = code[:code.index(".")] + extra + code[code.index(".") + dot_number:]
+                self.blocks[index] = ([temp], self.blocks[index][1])
+                # print(self.blocks)
+        # print(self.blocks)
 
     def tructcomments(self, line):
         doublecomment = False
@@ -376,7 +411,6 @@ class pythoncodes:
 
                 self.blocks[i] = (temp, self.blocks[i][1])
 
-
     def generatecodes(self):
         newcode = list()
         if len(self.rawcontents) == 0:
@@ -387,8 +421,8 @@ class pythoncodes:
         return newcode
 
 # @profile
-def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False, version=""):
-    pc = pythoncodes(replprogram=pythonprogram, flag_mergefinishline=mergeunfinishline, version=version)
+def format_to_repl(codes, pythonprogram = "ipython", mergeunfinishline=False, version="", filepath=""):
+    pc = pythoncodes(replprogram=pythonprogram, flag_mergefinishline=mergeunfinishline, version=version, filepath=filepath)
     pc.getcode(codes)
     return pc.generatecodes()
 

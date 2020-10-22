@@ -67,6 +67,10 @@ function! repl#StartWithAny(string, substringlist)
     return 0
 endfunction
 
+function! repl#CurrentFilePath()
+    return expand("%:p:h")
+endfunction
+
 function! repl#REPLGetName()
     if exists('t:REPL_OPEN_TERMINAL')
         return t:REPL_OPEN_TERMINAL
@@ -524,7 +528,7 @@ codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
 mergeunfinishline = int(vim.eval("g:repl_python_automerge"))
 version = vim.eval("l:version")
-newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version, vim.eval("repl#CurrentFilePath()"))
 EOF
         return py3eval('newcodes')
     elseif has('python')
@@ -537,7 +541,7 @@ codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
 mergeunfinishline = int(vim.eval("g:repl_python_automerge"))
 version = vim.eval("l:version")
-newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version)
+newcodes = formatpythoncode.format_to_repl(codes, pythonprogram, mergeunfinishline, version, vim.eval("repl#CurrentFilePath()"))
 EOF
         return pyeval('newcodes')
     endif
