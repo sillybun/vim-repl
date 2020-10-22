@@ -372,7 +372,7 @@ let g:repl_position = 3
 ### 2020.10.22
 
 - Add support for auto import package for python file
-- Add support for import from relative path. For example, if in package 'python_package', there are two file 'a.py' and 'b.py' and a '__init__.py'. If you import 'B.py' in 'A.py' through `import .B`. Then if you edit `A.py` using vim and run `vim-repl`. `import .B` will be automatically transformed into `import python_package.B` and be sent to REPL environment.
+- Add support for import from relative path. For example, if in package 'python_package', there are two file 'a.py' and 'b.py' and a `__init__.py`. If you import 'B.py' in 'A.py' through `import .B`. Then if you edit `A.py` using vim and run `vim-repl`. `import .B` will be automatically transformed into `import python_package.B` and be sent to REPL environment.
 
 ### 2020.4.29
 
