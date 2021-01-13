@@ -702,25 +702,30 @@ function! repl#SendSession() abort
     if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
         call repl#REPLUnhide()
     endif
-    let l:begin_line_number = line('.')
-    let l:end_line_number = line('.')
-    for i in reverse(range(1, line('.')))
-        if repl#StartWith(getline(i), g:repl_code_block_begin)
-            let l:begin_line_number = i
-            break
-        endif
-    endfor
-    for i in range(line('.'), line('$'))
-        if repl#StartWith(getline(i), g:repl_code_block_end)
-            let l:end_line_number = i
-            break
-        endif
-    endfor
-    if l:begin_line_number + 1 < l:end_line_number
-        call repl#SendLines(l:begin_line_number+1, l:end_line_number-1)
+    call cursor(0, col("$"))
+    let l:begin_line_number = search('^' . g:repl_code_block_begin, 'bnW')
+    if l:begin_line_number == 0
+        let l:begin_line_number = 1
+    endif
+    let l:end_line_number = search('^' . g:repl_code_block_end, 'nW')
+    if l:end_line_number == 0
+        let l:end_line_number = line("$")
+    endif
+    if l:begin_line_number == l:end_line_number
+        echo "No more blocks below."
+        return
     endif
     if g:repl_cursor_down
         call cursor(l:end_line_number+1, 0)
+    endif
+    if getline(l:begin_line_number) =~ '^' . g:repl_code_block_begin
+        let l:begin_line_number += 1
+    endif
+    if getline(l:end_line_number) =~ '^' . g:repl_code_block_end
+        let l:end_line_number -= 1
+    endif
+    if l:begin_line_number <= l:end_line_number
+        call repl#SendLines(l:begin_line_number, l:end_line_number)
     endif
 endfunction
 
