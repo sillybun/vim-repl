@@ -142,7 +142,7 @@ class pythoncodes:
         tempcodeindent = replpython.getpythonindent_multiline(self.rawcontents)
         newrawcontents = list()
         i = 0
-        while i < len(tempcodeindent):
+        while i < len(self.rawcontents):
             tempcodeline = ""
             j = i
             while True:

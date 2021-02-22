@@ -28,6 +28,14 @@ EOF
     end
 endfunction
 
+function! repl#ReverseStr(string)
+pythonx << EOF
+import vim
+value = vim.eval("a:string")[::-1]
+EOF
+return pyxeval("value")
+endfunction
+
 function! repl#RStrip(string)
     return substitute(a:string, '\s*$', '', '')
 endfunction
@@ -56,6 +64,19 @@ function! repl#StartWith(string, substring)
     else
         return 0
     endif
+endfunction
+
+function! repl#EndWith(string, substring)
+    return repl#StartWith(repl#ReverseStr(a:string), repl#ReverseStr(a:substring))
+endfunction
+
+function! repl#EndWithAny(string, substringlist)
+    for l:substring in a:substringlist
+        if repl#EndWith(a:string, l:substring)
+            return 1
+        endif
+    endfor
+    return 0
 endfunction
 
 function! repl#StartWithAny(string, substringlist)
@@ -460,6 +481,13 @@ function! repl#SendCurrentLine()
         endif
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(repl#Trim(getline('.')), g:repl_auto_sends)
+                let l:end_line_number = repl#SendWholeBlock()
+                if g:repl_cursor_down
+                    call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                endif
+                return
+            endif
+            if exists('g:repl_auto_sends') && repl#EndWith(repl#RStrip(getline(".")), "\\")
                 let l:end_line_number = repl#SendWholeBlock()
                 if g:repl_cursor_down
                     call cursor(l:end_line_number + 1, l:cursor_pos[2])
