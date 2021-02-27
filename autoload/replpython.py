@@ -483,7 +483,7 @@ def GetLastOutput(buffer, pythonprogram):
         current = []
         flag = False
         for line in buffer:
-            if re.fullmatch(r"In \[\d+\]:.*", line):
+            if re.match(r"^In \[\d+\]:.*$", line):
                 if flag == True:
                     while current and current[-1].strip() == "":
                         current = current[:-1]
@@ -503,15 +503,15 @@ def GetOutputOfBlock(content, pythonprogram):
     if not content:
         return ""
     if pythonprogram == "ipython":
-        assert re.fullmatch(r"In \[\d+\]:.*", content[0])
+        assert re.match(r"^In \[\d+\]:.*$", content[0])
         index = 1
         while index < len(content):
             # if content[index] and content[index][0] != " ":
             #     break
-            if re.fullmatch(" {3,}\.\.\.:.*", content[index]):
+            if re.match("^ {3,}\.\.\.:.*$", content[index]):
                 index += 1
                 continue
-            m = re.fullmatch(r"Out\[\d+\]:(.*)", content[index])
+            m = re.match(r"^Out\[\d+\]:(.*)$", content[index])
             if m:
                 return m.group(1).strip()
             if content[index]:
