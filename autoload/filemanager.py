@@ -45,7 +45,7 @@ class path(str):
         def __or__(self, k): return self[[x|k for x in self]]
         def __sub__(self, y): return path.pathList([x - y for x in self])
         def __neg__(self): return self - self.main_folder
-        def __matmul__(self, k): return path.pathList([x @ k for x in self])
+        def __matmul__(self, k): return path.pathList([x.matmul(k) for x in self])
         def __mod__(self, k): return path.pathList([x % k for x in self])
         def __getitem__(self, i):
             if callable(i): return self[[i(x) for x in self]]
@@ -92,8 +92,8 @@ class path(str):
     def __add__(x, y):
         y = str(y)
         if x.isfilepath():
-            file_name = x@path.File
-            folder_name = x@path.Folder
+            file_name = x.matmul(path.File)
+            folder_name = x.matmul(path.Folder)
             parts = file_name.split(path.extsep)
             if parts[-1].lower() in ('zip', 'gz', 'rar') and len(parts) > 2: brk = -2
             else: brk = -1
@@ -104,8 +104,8 @@ class path(str):
     def __xor__(x, y):
         y = str(y)
         if x.isfilepath():
-            file_name = x@path.File
-            folder_name = x@path.Folder
+            file_name = x.matmul(path.File)
+            folder_name = x.matmul(path.Folder)
             parts = file_name.split(path.extsep)
             if parts[-1].lower() in ('zip', 'gz', 'rar') and len(parts) > 2: brk = -2
             else: brk = -1
@@ -132,7 +132,11 @@ class path(str):
         return re.fullmatch(y.lower(), x[-1].lower()) is not None
         # return x.lower().endswith(x.extsep + y.lower())
     def __eq__(x, y): return str(x) == str(y)
-    def __matmul__(self, k):
+    # def __matmul__(self, k):
+    #     if k == path.Folder: return path(self[:-1])
+    #     elif k == path.File: return path(self[-1:])
+    #     return
+    def matmul(self, k):
         if k == path.Folder: return path(self[:-1])
         elif k == path.File: return path(self[-1:])
         return
@@ -154,7 +158,7 @@ class path(str):
 
     @property
     def ext(self):
-        file_name = self@path.File
+        file_name = self.matmul(path.File)
         parts = file_name.split(path.extsep)
         if parts[-1].lower() in ('zip', 'gz', 'rar') and len(parts) > 2: brk = -2
         elif len(parts) > 1: brk = -1
@@ -162,7 +166,7 @@ class path(str):
         return path.extsep.join(parts[brk:])
     @property
     def name(self):
-        file_name = self@path.File
+        file_name = self.matmul(path.File)
         parts = file_name.split(path.extsep)
         if parts[-1].lower() in ('zip', 'gz', 'rar') and len(parts) > 2: brk = -2
         elif len(parts) > 1: brk = -1
@@ -186,7 +190,7 @@ class path(str):
             if self.isabs():
                 return new_folder.abs()
             return new_folder
-        elif (new_folder @ path.Folder).isdir():
+        elif (new_folder.matmul(path.Folder)).isdir():
             # raise NotADirectoryError("%s doesn't exist, all available folder is: %s" % (new_folder, (new_folder @ path.Folder).ls().filter(lambda x: x.isdir()).map(lambda x: x.name)))
             raise NotADirectoryError("%s doesn't exist" % new_folder)
         else:
@@ -209,7 +213,7 @@ class path(str):
             self.parent.cmd("open %s" % self)
     @property
     def parent(self):
-        return self @ path.Folder
+        return self.matmul(path.Folder)
     # end changed by zhangyiteng
     def isabs(self): return os.path.isabs(self)
     def exists(self): return os.path.exists(self)
@@ -221,9 +225,9 @@ class path(str):
         cumpath = path(os.path.curdir)
         if self.isabs(): cumpath = cumpath.abs()
         fp = self - cumpath
-        if to == path.Folder: fp = fp@path.Folder
+        if to == path.Folder: fp = fp.matmul(path.Folder)
         elif to == path.File: pass
-        elif self.isfilepath(): fp = fp@path.Folder
+        elif self.isfilepath(): fp = fp.matmul(path.Folder)
         for p in fp.split():
             cumpath /= p
             if not cumpath.exists(): os.mkdir(cumpath)
