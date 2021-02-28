@@ -10,7 +10,6 @@ __all__ = """
 """.split()
 
 import os, re, struct
-from typing import TextIO
 
 """
 from pyctlib.system.filemanager import *
