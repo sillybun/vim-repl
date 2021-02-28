@@ -2,7 +2,7 @@ import sys
 import os
 
 currentpath = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(currentpath)
+sys.path = [currentpath] + sys.path
 
 """
 sys.path.append("/Users/zhangyiteng/.vim/plugged/vim-repl/autoload")
@@ -13,6 +13,9 @@ sys.path.append("/Users/zhangyiteng/.vim/plugged/vim-repl/autoload")
 # except Exception:
 import replpython
 from filemanager import path
+import filemanager
+
+# print(filemanager.__file__)
 
 class UnfinishType:
     LEFT_PARAENTHESE = 1 # (
@@ -63,15 +66,15 @@ class pythoncodes:
                 p = path(self.filepath)
                 dot_number = len(code.split()[1]) - len(code.split()[1].lstrip("."))
                 for _ in range(dot_number - 1):
-                    p = p.parent
+                    p = p.parent()
                 # print(p)
                 if "__init__.py" not in [t[-1] for t in p.ls()]:
                     temp = code[:code.index(".")] + code[code.index(".")+dot_number:]
                 else:
                     extra = ""
                     while p and "__init__.py" in [t[-1] for t in p.ls()]:
-                        extra = p.name + "." + extra
-                        p = p.parent
+                        extra = p.name() + "." + extra
+                        p = p.parent()
                     temp = code[:code.index(".")] + extra + code[code.index(".") + dot_number:]
                 self.blocks[index] = ([temp], self.blocks[index][1])
                 # print(self.blocks)
