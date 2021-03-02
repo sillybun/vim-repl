@@ -7,7 +7,6 @@ def gcd(a, b):
         return gcd(b, a % b)
 
 
-
 gcd(10, 13)
 gcd(10, 13)
 gcd(10, 13)

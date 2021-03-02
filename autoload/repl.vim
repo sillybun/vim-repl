@@ -28,6 +28,14 @@ EOF
     end
 endfunction
 
+function! repl#ReverseStr(string)
+pythonx << EOF
+import vim
+value = vim.eval("a:string")[::-1]
+EOF
+return pyxeval("value")
+endfunction
+
 function! repl#RStrip(string)
     return substitute(a:string, '\s*$', '', '')
 endfunction
@@ -56,6 +64,19 @@ function! repl#StartWith(string, substring)
     else
         return 0
     endif
+endfunction
+
+function! repl#EndWith(string, substring)
+    return repl#StartWith(repl#ReverseStr(a:string), repl#ReverseStr(a:substring))
+endfunction
+
+function! repl#EndWithAny(string, substringlist)
+    for l:substring in a:substringlist
+        if repl#EndWith(a:string, l:substring)
+            return 1
+        endif
+    endfor
+    return 0
 endfunction
 
 function! repl#StartWithAny(string, substringlist)
@@ -429,7 +450,7 @@ function! repl#REPLToggle(...)
                 let l:code_tobe_sent = []
                 for l:line_number in range(1, line("$"))
                     let l:gl = repl#Strip(getline(l:line_number))
-                    if l:gl =~# '^import ' || l:gl =~# '^from .* import .*'
+                    if l:gl =~# '^import ' || l:gl =~# '^from .* import .*' || l:gl =~# '^sys.path '
                         let l:code_tobe_sent = l:code_tobe_sent + [l:gl]
                     endif
                 endfor
@@ -466,6 +487,13 @@ function! repl#SendCurrentLine()
                 endif
                 return
             endif
+            if exists('g:repl_auto_sends') && repl#EndWith(repl#RStrip(getline(".")), "\\")
+                let l:end_line_number = repl#SendWholeBlock()
+                if g:repl_cursor_down
+                    call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                endif
+                return
+            endif
             if repl#REPLGetShortName() ==# 'ipython'
                 let l:terminalline = repl#GetTerminalLine()
                 if repl#StartWith(l:terminalline, "In [")
@@ -494,7 +522,7 @@ function! repl#SendCurrentLine()
         if g:repl_cursor_down
             " call cursor(l:cursor_pos[1] + 1, l:cursor_pos[2])
             let l:next_line_number = l:cursor_pos[1] + 1
-            while l:next_line_number <= line("$") && repl#Strip(getline(l:next_line_number)) == ""
+            while l:next_line_number <= line("$") && (repl#Strip(getline(l:next_line_number)) == "" || repl#StartWith(repl#Strip(getline(l:next_line_number)), "#"))
                 let l:next_line_number = l:next_line_number + 1
             endwhile
             call cursor(l:next_line_number, l:cursor_pos[2])
@@ -559,7 +587,7 @@ endfunction
 
 function! repl#CheckInputState()
     let l:tl = repl#GetTerminalLine()
-    if g:currentrepltype ==# 'ipython' && (g:taskprocess == 0 || g:tasks[g:taskprocess-1] ==# '') && (g:taskprocess == len(g:tasks) || (g:tasks[g:taskprocess] !=# ''))
+    if g:currentrepltype ==# 'ipython' && (g:taskprocess == 0 || g:tasks[g:taskprocess-1] ==# '') && (g:taskprocess == len(g:tasks) || (g:tasks[g:taskprocess] !=# '')) && (len(g:tasks) > 1)
         if match(l:tl, 'In') != -1
             return 1
         else
@@ -702,25 +730,30 @@ function! repl#SendSession() abort
     if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
         call repl#REPLUnhide()
     endif
-    let l:begin_line_number = line('.')
-    let l:end_line_number = line('.')
-    for i in reverse(range(1, line('.')))
-        if repl#StartWith(getline(i), g:repl_code_block_begin)
-            let l:begin_line_number = i
-            break
-        endif
-    endfor
-    for i in range(line('.'), line('$'))
-        if repl#StartWith(getline(i), g:repl_code_block_end)
-            let l:end_line_number = i
-            break
-        endif
-    endfor
-    if l:begin_line_number + 1 < l:end_line_number
-        call repl#SendLines(l:begin_line_number+1, l:end_line_number-1)
+    call cursor(0, col("$"))
+    let l:begin_line_number = search('^' . g:repl_code_block_begin, 'bnW')
+    if l:begin_line_number == 0
+        let l:begin_line_number = 1
+    endif
+    let l:end_line_number = search('^' . g:repl_code_block_end, 'nW')
+    if l:end_line_number == 0
+        let l:end_line_number = line("$")
+    endif
+    if l:begin_line_number == l:end_line_number
+        echo "No more blocks below."
+        return
     endif
     if g:repl_cursor_down
         call cursor(l:end_line_number+1, 0)
+    endif
+    if getline(l:begin_line_number) =~ '^' . g:repl_code_block_begin
+        let l:begin_line_number += 1
+    endif
+    if getline(l:end_line_number) =~ '^' . g:repl_code_block_end
+        let l:end_line_number -= 1
+    endif
+    if l:begin_line_number <= l:end_line_number
+        call repl#SendLines(l:begin_line_number, l:end_line_number)
     endif
 endfunction
 
@@ -776,7 +809,7 @@ last_out = GetLastOutput(terminal_content, "ipython")
 EOF
         if a:0 == 1
             try
-                execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+                execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
             catch /.*/
                 echom v:exception
             endtry
