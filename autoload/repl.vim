@@ -809,7 +809,7 @@ last_out = GetLastOutput(terminal_content, "ipython")
 EOF
         if a:0 == 1
             try
-                execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+                execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
             catch /.*/
                 echom v:exception
             endtry
