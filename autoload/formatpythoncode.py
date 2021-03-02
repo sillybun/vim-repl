@@ -76,7 +76,6 @@ class pythoncodes:
                         extra = p.name + ("." if extra else "") + extra
                         p = p.parent
                     temp = code[:code.index(".")] + extra + ("." if not code[code.index(".") + dot_number:].startswith(" ") else "") + code[code.index(".") + dot_number:]
->>>>>>> bc4573579785a46466b259dc93578fce69e1f5a2
                 self.blocks[index] = ([temp], self.blocks[index][1])
                 # print(self.blocks)
         # print(self.blocks)
