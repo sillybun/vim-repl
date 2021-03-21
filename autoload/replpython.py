@@ -494,6 +494,8 @@ def GetLastOutput(buffer, pythonprogram):
                 current.append(line)
         for block in blocks[::-1]:
             out = GetOutputOfBlock(block, pythonprogram)
+            if "Error" in out and "Traceback" in out:
+                return ""
             if out:
                 return out
         return ""
@@ -506,8 +508,6 @@ def GetOutputOfBlock(content, pythonprogram):
         assert re.match(r"^In \[\d+\]:.*$", content[0])
         index = 1
         while index < len(content):
-            # if content[index] and content[index][0] != " ":
-            #     break
             if re.match("^ {3,}\.\.\.:.*$", content[index]):
                 index += 1
                 continue

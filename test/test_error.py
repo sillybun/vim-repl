@@ -10,3 +10,4 @@ func(1, 0)
 import math
 
 math.sqrt(-1)
+
