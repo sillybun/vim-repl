@@ -150,7 +150,7 @@ class pythoncodes:
                 if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING}:
                     tobeadded = tobeadded.rstrip()
                 if tempcodeindent[j][2] in {UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
-                    tobeadded = tobeadded + "\\n"
+                    tobeadded = tobeadded + '"""' + ' "\\n" ' + '"""'
                     Flag_NeedMerge = True
                 if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING} and self.rawcontents[j][-1] == "\\":
                     if tempcodeindent[j][2] not in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE}:
