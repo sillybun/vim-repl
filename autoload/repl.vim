@@ -784,7 +784,8 @@ endfunction
 
 function! repl#GetTerminalLastOutput(...) abort
     let l:terminal_content = repl#GetTerminalContent()
-    if has('python3')
+    try
+        if has('python3')
 python3 << EOF
 import vim
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
@@ -792,14 +793,14 @@ from replpython import GetLastOutput
 terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
 EOF
-        if a:0 == 1
-            try
-                execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
-            catch /.*/
-                echom v:exception
-            endtry
-        endif
-    elseif has('python')
+            if a:0 == 1
+                try
+                    execute "let @" . a:1 . " = '" . py3eval("last_out") . "'"
+                catch /.*/
+                    echom v:exception
+                endtry
+            endif
+        elseif has('python')
 python << EOF
 import vim
 sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
@@ -807,14 +808,17 @@ from replpython import GetLastOutput
 terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
 EOF
-        if a:0 == 1
-            try
-                execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
-            catch /.*/
-                echom v:exception
-            endtry
+            if a:0 == 1
+                try
+                    execute "let @" . a:1 . " = '" . pyeval("last_out") . "'"
+                catch /.*/
+                    echom v:exception
+                endtry
+            endif
         endif
-    endif
+    catch /.*/
+        echo 'Something went wrong, but I do not know what'
+    endtry
 endfunction
 
 function! repl#REPLDebug() abort
