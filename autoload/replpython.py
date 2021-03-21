@@ -55,6 +55,8 @@ class UnfinishType:
     TYPEALPHA = 10
     DEFAULTVALUE = 8 # def f(a=1)
     DICTVALUE = 9 # {1:2}
+    RAWLONGSTRING = 12
+    RAWCOMMENT = 13
 
 # @jit(nopython=True, cache=True)
 def getpythonindent(codes):
@@ -73,11 +75,13 @@ def getpythonindent(codes):
     DOUBLEQUOTE = 4 # "
     SINGLEQUOTE = 5 # '
     LONGSTRING = 11 # '''
+    RAWLONGSTRING = 12
     COMMENT = 6 # """
     TYPEHINT = 7 # def f(a: int)
     TYPEALPHA = 10
     DEFAULTVALUE = 8 # def f(a=1)
     DICTVALUE = 9 # {1:2}
+    RAWCOMMENT = 13
     for rownumber in range(len(codes)):
         line = codes[rownumber]
         # flag = True
@@ -109,14 +113,25 @@ def getpythonindent(codes):
                     conditionstack.push(LEFT_BRACE, rownumber)
                     continue
                 elif character == '"':
+                    # print(line, line[col - 2])
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, rownumber)
                     else:
                         conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 else:
                     # print("############################")
@@ -137,14 +152,25 @@ def getpythonindent(codes):
                     conditionstack.pop()
                     continue
                 elif character == '"':
+                    # print(line, line[col - 2])
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, rownumber)
                     else:
                         conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -167,14 +193,25 @@ def getpythonindent(codes):
                     conditionstack.pop()
                     continue
                 elif character == '"':
+                    # print(line, line[col - 2])
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(DOUBLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -197,18 +234,25 @@ def getpythonindent(codes):
                     conditionstack.pop()
                     continue
                 elif character == '"':
+                    # print(line, line[col - 2])
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(DOUBLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    if col + 1 < len(line) and line[col: col + 2] == "''":
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
                         col += 2
-                        conditionstack.push(LONGSTRING, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -235,13 +279,13 @@ def getpythonindent(codes):
                     continue
                 else:
                     continue
-            elif conditionstack.top().tokentype == COMMENT:
+            elif conditionstack.top().tokentype in {COMMENT, RAWCOMMENT}:
                 if col + 1 < len(line) and line[col - 1:col + 2] == '"""':
                     conditionstack.pop()
                 elif character == '\\':
                     col += 1
                 continue
-            elif conditionstack.top().tokentype == LONGSTRING:
+            elif conditionstack.top().tokentype in {LONGSTRING, RAWLONGSTRING}:
                 if col + 1 < len(line) and line[col - 1:col + 2] == "'''":
                     conditionstack.pop()
                 elif character == '\\':
@@ -284,6 +328,8 @@ def getpythonindent_multiline(codes):
     DOUBLEQUOTE = 4 # "
     SINGLEQUOTE = 5 # '
     LONGSTRING = 11 # '''
+    RAWLONGSTRING = 12
+    RAWCOMMENT = 13
     COMMENT = 6 # """
     TYPEHINT = 7 # def f(a: int)
     TYPEALPHA = 10
@@ -320,14 +366,25 @@ def getpythonindent_multiline(codes):
                     conditionstack.push(LEFT_BRACE, rownumber)
                     continue
                 elif character == '"':
+                    # print(line, line[col - 2])
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, rownumber)
                     else:
                         conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 else:
                     # print("############################")
@@ -349,13 +406,23 @@ def getpythonindent_multiline(codes):
                     continue
                 elif character == '"':
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, rownumber)
                     else:
                         conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -379,13 +446,23 @@ def getpythonindent_multiline(codes):
                     continue
                 elif character == '"':
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(DOUBLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
+                        col += 2
+                    else:
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -409,17 +486,23 @@ def getpythonindent_multiline(codes):
                     continue
                 elif character == '"':
                     if col + 1 < len(line) and line[col:col + 2] == '""':
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWCOMMENT, rownumber)
+                        else:
+                            conditionstack.push(COMMENT, rownumber)
                         col += 2
-                        conditionstack.push(COMMENT, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(DOUBLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(DOUBLEQUOTE, rownumber)
                     continue
                 elif character == "'":
-                    if col + 1 < len(line) and line[col: col + 2] == "''":
+                    if col + 1 < len(line) and line[col:col + 2] == "''":
+                        if col-2 > 0 and line[col - 2] == "r":
+                            conditionstack.push(RAWLONGSTRING, rownumber)
+                        else:
+                            conditionstack.push(LONGSTRING, rownumber)
                         col += 2
-                        conditionstack.push(LONGSTRING, conditionstack.top().rownumber)
                     else:
-                        conditionstack.push(SINGLEQUOTE, conditionstack.top().rownumber)
+                        conditionstack.push(SINGLEQUOTE, rownumber)
                     continue
                 elif character == "#":
                     break
@@ -446,13 +529,13 @@ def getpythonindent_multiline(codes):
                     continue
                 else:
                     continue
-            elif conditionstack.top().tokentype == COMMENT:
+            elif conditionstack.top().tokentype in {COMMENT, RAWCOMMENT}:
                 if col + 1 < len(line) and line[col - 1:col + 2] == '"""':
                     conditionstack.pop()
                 elif character == '\\':
                     col += 1
                 continue
-            elif conditionstack.top().tokentype == LONGSTRING:
+            elif conditionstack.top().tokentype in {LONGSTRING, RAWLONGSTRING}:
                 if col + 1 < len(line) and line[col - 1:col + 2] == "'''":
                     conditionstack.pop()
                 elif character == '\\':

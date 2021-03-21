@@ -24,6 +24,8 @@ class UnfinishType:
     DOUBLEQUOTE = 4 # "
     SINGLEQUOTE = 5 # '
     LONGSTRING = 11 # '''
+    RAWLONGSTRING = 12
+    RAWCOMMENT = 13
     COMMENT = 6 # """
     TYPEHINT = 7 # def f(a: int)
     TYPEALPHA = 10
@@ -117,7 +119,7 @@ class pythoncodes:
                 indentlevel, finishflag, unfinishtype = (0, False, -1)
             else:
                 indentlevel, finishflag, unfinishtype = multi_indent[i - 1]
-            if unfinishtype in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+            if unfinishtype in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT, UnfinishType.RAWCOMMENT, UnfinishType.RAWLONGSTRING}:
                 newrawcontents.append(self.rawcontents[i])
                 i += 1
                 continue
@@ -145,14 +147,20 @@ class pythoncodes:
             while j < len(self.rawcontents):
                 tobeadded = self.rawcontents[j]
                 Flag_NeedMerge = not tempcodeindent[j][1]
-                if j != i and tempcodeindent[j-1][2] not in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+                if j != i and tempcodeindent[j-1][2] not in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE, UnfinishType.LONGSTRING, UnfinishType.COMMENT, UnfinishType.RAWLONGSTRING}:
                     tobeadded = tobeadded.lstrip()
-                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING}:
+                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING, UnfinishType.COMMENT, UnfinishType.RAWCOMMENT, UnfinishType.RAWLONGSTRING}:
                     tobeadded = tobeadded.rstrip()
                 if tempcodeindent[j][2] in {UnfinishType.LONGSTRING, UnfinishType.COMMENT}:
+                    tobeadded = tobeadded + "\\n"
+                    Flag_NeedMerge = True
+                if tempcodeindent[j][2] in {UnfinishType.RAWCOMMENT}:
                     tobeadded = tobeadded + '"""' + ' "\\n" ' + '"""'
                     Flag_NeedMerge = True
-                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING} and self.rawcontents[j][-1] == "\\":
+                if tempcodeindent[j][2] in {UnfinishType.RAWLONGSTRING}:
+                    tobeadded = tobeadded + "'''" + ' "\\n" ' + "'''"
+                    Flag_NeedMerge = True
+                if tempcodeindent[j][2] not in {UnfinishType.LONGSTRING, UnfinishType.COMMENT, UnfinishType.RAWCOMMENT, UnfinishType.RAWLONGSTRING} and self.rawcontents[j][-1] == "\\":
                     if tempcodeindent[j][2] not in {UnfinishType.DOUBLEQUOTE, UnfinishType.SINGLEQUOTE}:
                         tobeadded = tobeadded[:-1] + " "
                     else:

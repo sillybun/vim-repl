@@ -34,7 +34,7 @@ Loopback0                  10.1.1.1        YES manual up                    up
 Loopback100                100.0.0.1       YES manual up                    up
 """
 
-output2 = r"""
+output2 = """
 R1#show ip interface brief
 Interface                  IP-Address      OK? Method Status                Protocol
 FastEthernet0/0            15.0.15.1       YES manual up                    up
@@ -44,3 +44,25 @@ FastEthernet0/3            unassigned      YES unset  up                    up
 Loopback0                  10.1.1.1        YES manual up                    up
 Loopback100                100.0.0.1       YES manual up                    up
 """
+
+output3 = r'''
+R1#show ip interface brief
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            15.0.15.1       YES manual up                    up
+FastEthernet0/1            10.0.12.1       YES manual up                    up
+FastEthernet0/2            10.0.13.1       YES manual up                    up
+FastEthernet0/3            unassigned      YES unset  up                    up
+Loopback0                  10.1.1.1        YES manual up                    up
+Loopback100                100.0.0.1       YES manual up                    up
+'''
+
+output4 = '''
+R1#show ip interface brief
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            15.0.15.1       YES manual up                    up
+FastEthernet0/1            10.0.12.1       YES manual up                    up
+FastEthernet0/2            10.0.13.1       YES manual up                    up
+FastEthernet0/3            unassigned      YES unset  up                    up
+Loopback0                  10.1.1.1        YES manual up                    up
+Loopback100                100.0.0.1       YES manual up                    up
+'''
