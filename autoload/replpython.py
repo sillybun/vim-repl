@@ -427,9 +427,6 @@ def getpythonindent_multiline(codes):
                 elif character == "#":
                     break
                 else:
-                    # print("############################")
-                    # print("Error found: {}".format(line))
-                    # print("############################")
                     continue
             elif conditionstack.top().tokentype == LEFT_BRACKET:
                 if character == '(':
@@ -467,9 +464,6 @@ def getpythonindent_multiline(codes):
                 elif character == "#":
                     break
                 else:
-                    # print("############################")
-                    # print("Error found: {}".format(line))
-                    # print("############################")
                     continue
             elif conditionstack.top().tokentype == LEFT_BRACE:
                 if character == '(':
