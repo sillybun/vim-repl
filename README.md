@@ -280,6 +280,19 @@ let g:repl_auto_sends = ['class ', 'def ', 'for ', 'if ', 'while ', 'with ', 'as
 If `g:repl_auto_sends` is defined, once user sends a line starts with any pattern contained in the list, whole block will be send automatically.
 
 ```
+let g:repl_python_auto_send_unfinish_line = 1
+```
+
+If `g:repl_python_auto_send_unfinish_line` is set to 1, once user sends a line that is not finished yet, complete line will be send automatically. For example, for codes:
+
+```
+f(1,
+        2)
+```
+
+press `<leader>w` in the first line, `f(1,2)` will be sent automatically.
+
+```
 let g:repl_cursor_down = 1
 ```
 
@@ -368,6 +381,10 @@ let g:repl_position = 3
 ```
 
 ## Updates
+
+### 2021.3.23
+
+- Add support for auto send uncompleted line
 
 ### 2020.10.22
 
