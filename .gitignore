@@ -33,6 +33,8 @@ build/
 *.out
 *.files
 *.lprof
+*.swp
+*~
 deprecated
 autoload/testspeedrawcode.txt
 gh-md-toc
