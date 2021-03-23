@@ -482,15 +482,37 @@ function! repl#SendCurrentLine()
         if repl#REPLGetShortName() =~# '.*python.*'
             if exists('g:repl_auto_sends') && repl#StartWithAny(repl#Trim(getline('.')), g:repl_auto_sends)
                 let l:end_line_number = repl#SendWholeBlock()
+                " if g:repl_cursor_down
+                "     call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                " endif
                 if g:repl_cursor_down
-                    call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                    let l:next_line_number = l:end_line_number + 1
+                    while l:next_line_number <= line("$") && (repl#Strip(getline(l:next_line_number)) == "" || repl#StartWith(repl#Strip(getline(l:next_line_number)), "#"))
+                        let l:next_line_number = l:next_line_number + 1
+                    endwhile
+                    call cursor(l:next_line_number, l:cursor_pos[2])
                 endif
                 return
             endif
             if exists('g:repl_auto_sends') && repl#EndWith(repl#RStrip(getline(".")), "\\")
                 let l:end_line_number = repl#SendWholeBlock()
                 if g:repl_cursor_down
-                    call cursor(l:end_line_number + 1, l:cursor_pos[2])
+                    let l:next_line_number = l:end_line_number + 1
+                    while l:next_line_number <= line("$") && (repl#Strip(getline(l:next_line_number)) == "" || repl#StartWith(repl#Strip(getline(l:next_line_number)), "#"))
+                        let l:next_line_number = l:next_line_number + 1
+                    endwhile
+                    call cursor(l:next_line_number, l:cursor_pos[2])
+                endif
+                return
+            endif
+            if exists('g:repl_python_auto_send_unfinish_line') && !repl#IsCodeFinish(repl#Strip(getline(".")))
+                let l:end_line_number = repl#SendCompleteLine()
+                if g:repl_cursor_down
+                    let l:next_line_number = l:end_line_number + 1
+                    while l:next_line_number <= line("$") && (repl#Strip(getline(l:next_line_number)) == "" || repl#StartWith(repl#Strip(getline(l:next_line_number)), "#"))
+                        let l:next_line_number = l:next_line_number + 1
+                    endwhile
+                    call cursor(l:next_line_number, l:cursor_pos[2])
                 endif
                 return
             endif
@@ -532,6 +554,38 @@ endfunction
 
 function! repl#ToVimScript(lines)
     return formatvimscript#Format_to_repl(a:lines)
+endfunction
+
+function! repl#IsCodeFinish(code)
+    if has('python3')
+python3 << EOF
+import vim
+import sys
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+import replpython
+code = vim.eval("a:code")
+if isinstance(code, list):
+    finish_flag = int(replpython.getpythonindent(code)[1])
+else:
+    finish_flag = int(replpython.getpythonindent([code])[1])
+EOF
+        return py3eval("finish_flag")
+    elseif has('python')
+python << EOF
+import vim
+import sys
+sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+import replpython
+code = vim.eval("a:code")
+if isinstance(code, list):
+    finish_flag = int(replpython.getpythonindent(code)[1])
+else:
+    finish_flag = int(replpython.getpythonindent([code])[1])
+EOF
+        return pyeval("finish_flag")
+    else
+        return 1
+    end
 endfunction
 
 function! repl#ToREPLPythonCode(lines, pythonprogram)
@@ -771,6 +825,26 @@ function! repl#SendWholeBlock() abort
                 continue
             endif
             let l:end_line_number = i - 1
+            break
+        endif
+    endfor
+    call repl#SendLines(l:begin_line_number, l:end_line_number)
+    return l:end_line_number
+endfunction
+
+function! repl#SendCompleteLine() abort
+    let l:begin_line = getline('.')
+    let l:begin_line_number = line('.')
+    let l:end_line_number = line('$')
+    let l:codes = [getline('.')]
+    for i in range(line('.') + 1, line('$'))
+        let l:codes = l:codes + [getline(i)]
+        if repl#IsCodeFinish(l:codes)
+            let l:end_line_number = i
+            break
+        endif
+        if i > line('.') + 100
+            let l:end_line_number = l:begin_line_number
             break
         endif
     endfor

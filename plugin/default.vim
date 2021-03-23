@@ -97,6 +97,10 @@ if !exists('g:repl_python_auto_import')
     let g:repl_python_auto_import = 1
 endif
 
+if !exists('g:repl_python_auto_send_unfinish_line')
+    let g:repl_python_auto_send_unfinish_line = 1
+endif
+
 if !exists('g:repl_sendvariable_template')
     let g:repl_sendvariable_template = {
                 \ 'python': 'print(<input>)',
