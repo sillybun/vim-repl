@@ -764,7 +764,7 @@ function! repl#SendWholeBlock() abort
     let l:end_line_number = line('$')
     for i in range(line('.') + 1, line('$'))
         if repl#GetIndent(getline(i)) <= l:begin_indent
-            if repl#GetIndent(getline(i)) == l:begin_indent && repl#StartWithAny(repl#LStrip(getline(i)), ['else:', 'elif '])
+            if repl#GetIndent(getline(i)) == l:begin_indent && repl#StartWithAny(repl#LStrip(getline(i)), ['else:', 'elif ', 'except:', 'finally:'])
                 continue
             end
             if i == l:begin_line_number + 1 && repl#StartWith(repl#LStrip(l:begin_line), "@") && repl#StartWith(repl#LStrip(getline(i)), 'def ')
