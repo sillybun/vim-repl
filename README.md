@@ -385,6 +385,7 @@ let g:repl_position = 3
 ### 2021.3.23
 
 - Add support for auto send uncompleted line
+- Fix the bug that continuously send lines to REPL will cause former codes missing.
 
 ### 2020.10.22
 
