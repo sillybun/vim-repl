@@ -1,4 +1,4 @@
-let s:VaildCommand = ['let ', 'echo ', 'echom ', 'execute ', 'call ', 'unlet ', 'map', 'umap', 'imap', 'nmap', 'vmap', 'inoremap ', 'nnoremap ', 'vnoremap ', 'autocmd ', 'Plug ', 'au ', 'set ', 'filetype ', 'syntax ']
+let s:VaildCommand = ['let ', 'unlet ', 'echo ', 'echom ', 'execute ', 'call ', 'unlet ', 'map', 'umap', 'imap', 'nmap', 'vmap', 'inoremap ', 'nnoremap ', 'vnoremap ', 'autocmd ', 'Plug ', 'au ', 'set ', 'filetype ', 'syntax ']
 
 let s:filename=expand('<sfile>:p:h')
 
