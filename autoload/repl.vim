@@ -641,7 +641,7 @@ endfunction
 
 function! repl#CheckInputState()
     let l:tl = repl#GetTerminalLine()
-    if g:currentrepltype ==# 'ipython' && (!exists("g:tasks") || (g:taskprocess == 0 || g:tasks[g:taskprocess-1] ==# '') && (g:taskprocess == len(g:tasks) || (g:tasks[g:taskprocess] !=# '')) && (len(g:tasks) > 1))
+    if g:currentrepltype ==# 'ipython' && (!exists("g:repl_tasks") || (g:taskprocess == 0 || g:repl_tasks[g:taskprocess-1] ==# '') && (g:taskprocess == len(g:repl_tasks) || (g:repl_tasks[g:taskprocess] !=# '')) && (len(g:repl_tasks) > 1))
         if match(l:tl, 'In') != -1
             return 1
         else
@@ -661,19 +661,19 @@ function! repl#Sends(tasks, symbols)
     if len(a:tasks) == 0
         return
     end
-    if exists("g:tasks")
-        let g:tasks = g:tasks + a:tasks
+    if exists("g:repl_tasks")
+        let g:repl_tasks = g:repl_tasks + a:tasks
         return
     endif
-    let g:tasks = a:tasks
+    let g:repl_tasks = a:tasks
     let g:waitforsymbols = repl#AsList(a:symbols)
     let g:taskprocess = 0
     let g:currentlinenumber = -1
     let g:currentrepltype = repl#REPLGetShortName()
     if repl#REPLWin32Return()
-        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'unlet g:tasks', 'return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:repl_tasks[g:taskprocess] . "\r\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:repl_tasks)', 'unlet g:repl_tasks', 'return', 'endif', 'GOTO Start']
     else
-        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:tasks)', 'unlet g:tasks','return', 'endif', 'GOTO Start']
+        let g:term_send_task_codes = ['LABEL Start', 'sleep 10', 'wait repl#CheckInputState()', 'call term_sendkeys("' . repl#GetConsoleName() . '", g:repl_tasks[g:taskprocess] . "\n")', 'let g:taskprocess = g:taskprocess + 1', 'if g:taskprocess == len(g:repl_tasks)', 'unlet g:repl_tasks','return', 'endif', 'GOTO Start']
     endif
     if exists("g:repl_output_copy_to_register") && repl#REPLGetShortName() ==# "ipython"
         let g:term_send_task_codes = g:term_send_task_codes[:-4] + ["sleep 300", "wait repl#CheckInputState()", "call repl#GetTerminalLastOutput('" . g:repl_output_copy_to_register . "')"] + g:term_send_task_codes[-3:]
