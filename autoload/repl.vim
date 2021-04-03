@@ -450,7 +450,7 @@ function! repl#REPLToggle(...)
                 let l:code_tobe_sent = []
                 for l:line_number in range(1, line("$"))
                     let l:gl = repl#Strip(getline(l:line_number))
-                    if l:gl =~# '^import ' || l:gl =~# '^from .* import .*' || l:gl =~# '^sys.path '
+                    if l:gl =~# '^import ' || l:gl =~# '^from .* import .*' || l:gl =~# '^sys\.path'
                         let l:code_tobe_sent = l:code_tobe_sent + [l:gl]
                     endif
                 endfor
