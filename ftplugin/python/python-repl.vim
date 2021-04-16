@@ -89,7 +89,7 @@ function! s:REPLDebugIPDB() abort
 	else
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
-        call repl#REPLOpen('python -m ipdb %')
+        call repl#REPLOpen('python3 -m ipdb %')
 	endif
 	if g:repl_stayatrepl_when_open == 0
 		exe bufwinnr(g:repl_target_n) . 'wincmd w'
