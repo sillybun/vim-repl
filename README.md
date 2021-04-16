@@ -138,6 +138,8 @@ if not installed, install it via:
 python -m pip install ipdb
 ```
 
+The default debugger is `python3 -m pip`, you can specify it through adding `'python-debug' : '<debugger program, such as ipdb3>'` to `g:repl_program`
+
 I suggest the following key binding:
 
 ```
