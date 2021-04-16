@@ -4,6 +4,7 @@ let g:REPLVIM_PATH = g:REPLVIM_PATH[:strridx(g:REPLVIM_PATH, "plugin") - 1]
 if has('win32')
     let s:repl_default_program = {
                 \	'python': 'python',
+                \   'python-debug': 'python3 -m ipdb'
                 \	'default': 'cmd.exe',
                 \   'vim': 'vim -e',
                 \	}

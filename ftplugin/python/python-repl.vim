@@ -89,8 +89,13 @@ function! s:REPLDebugIPDB() abort
 	else
 		let g:repl_target_n = bufnr('')
 		let g:repl_target_f = @%
-        call repl#REPLOpen('python3 -m ipdb %')
-	endif
+        " call repl#REPLOpen('python3 -m ipdb %')
+        if !has_key(g:repl_program, 'python-debug')
+            echo "please specify debug procedure for python"
+            echo "for example: adding `'python-debug': 'python3 -m ipdb'` to g:repl_program"
+        endif
+        call repl#REPLOpen(g:repl_program['python-debug'] . ' %')
+    endif
 	if g:repl_stayatrepl_when_open == 0
 		exe bufwinnr(g:repl_target_n) . 'wincmd w'
 	endif
