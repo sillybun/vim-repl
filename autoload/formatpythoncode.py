@@ -43,7 +43,7 @@ class pythoncodes:
         self.blocks = list() # List[List[str], List[int]]
 
     def getcode(self, code):
-        self.rawcontents = [line for line in code if len(line.strip()) != 0]
+        self.rawcontents = [line.replace("\t", "    ") for line in code if len(line.strip()) != 0]
         self.removecomments()
         if len(self.rawcontents) == 0:
             return self

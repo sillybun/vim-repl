@@ -49,6 +49,7 @@ function! repl#Strip(string)
 endfunction
 
 function! repl#GetIndent(string)
+    let l:string = substitute(a:string, "\t", "    ", "g")
     if repl#Trim(a:string) ==# ''
         return 9999
     else
