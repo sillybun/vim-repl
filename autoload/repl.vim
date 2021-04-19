@@ -825,7 +825,7 @@ function! repl#SendWholeBlock() abort
             if repl#GetIndent(getline(i)) == l:begin_indent && repl#StartWithAny(repl#LStrip(getline(i)), ['else:', 'elif ', 'except:', 'finally:'])
                 continue
             end
-            if i == l:begin_line_number + 1 && repl#StartWith(repl#LStrip(l:begin_line), "@") && repl#StartWith(repl#LStrip(getline(i)), 'def ')
+            if i == l:begin_line_number + 1 && repl#StartWith(repl#LStrip(l:begin_line), "@") && repl#StartWithAny(repl#LStrip(getline(i)), ['def ', 'class '])
                 continue
             endif
             let l:end_line_number = i - 1
