@@ -5,7 +5,7 @@ load_dotenv(dotenv_path=find_dotenv(), verbose=True)
 
 try:
     cur_path = dirname(realpath(__file__))
-except:
+except Exception as e:
     cur_path = dirname(realpath('__file__'))
 else:
     print(cur_path)
