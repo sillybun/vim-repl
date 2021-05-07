@@ -562,7 +562,7 @@ function! repl#IsCodeFinish(code)
 python3 << EOF
 import vim
 import sys
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import replpython
 code = vim.eval("a:code")
 if isinstance(code, list):
@@ -575,7 +575,7 @@ EOF
 python << EOF
 import vim
 import sys
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import replpython
 code = vim.eval("a:code")
 if isinstance(code, list):
@@ -605,7 +605,7 @@ function! repl#ToREPLPythonCode(lines, pythonprogram)
 python3 << EOF
 import vim
 import sys
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
@@ -618,7 +618,7 @@ EOF
 python << EOF
 import vim
 import sys
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 import formatpythoncode
 codes = vim.eval("a:lines")
 pythonprogram = vim.eval("a:pythonprogram")
@@ -867,7 +867,7 @@ function! repl#GetTerminalLastOutput(...) abort
         if has('python3')
 python3 << EOF
 import vim
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 from replpython import GetLastOutput
 terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
@@ -882,7 +882,7 @@ EOF
         elseif has('python')
 python << EOF
 import vim
-sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
+# sys.path.append(vim.eval("g:REPLVIM_PATH") + "autoload/")
 from replpython import GetLastOutput
 terminal_content = vim.eval("l:terminal_content")
 last_out = GetLastOutput(terminal_content, "ipython")
@@ -923,22 +923,31 @@ function! repl#REPLDebug() abort
 python3 << EOF
 import sys
 print(sys.version)
+print(sys.path)
 EOF
     elseif has('python')
 python << EOF
 import sys
 print sys.version
+print sys.path
 EOF
     endif
     echo 'REPL program:'
     echo g:repl_program
     for l:file in keys(g:repl_program)
         let l:pros = g:repl_program[l:file]
-        for l:pro in l:pros
+        if type(l:pros) == 3
+            for l:pro in l:pros
+                if !executable(split(l:pro, ' ')[0])
+                    echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
+                endif
+            endfor
+        elseif type(l:pros) == 1
+            let l:pro = l:pros
             if !executable(split(l:pro, ' ')[0])
                 echo split(l:pro, ' ')[0] . ' for ' . l:file . ' is not executable.'
             endif
-        endfor
+        endif
     endfor
     unlet! t:REPL_OPEN_TERMINAL
     try
