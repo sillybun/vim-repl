@@ -201,6 +201,10 @@ function! repl#REPLClose()
             call term_sendkeys(repl#GetConsoleName(), "\<C-W>\<C-C>")
             call repl#Sends(['quit()'], ['ipdb>', 'pdb>'])
         else
+            call repl#REPLGoToWindowForBufferName(repl#GetConsoleName())
+            if mode() ==# 'n'
+                execute "normal! i"
+            endif
             exe "call term_sendkeys('" . repl#GetConsoleName() . ''', "\<C-W>\<C-C>")'
             exe "call term_wait('" . repl#GetConsoleName() . ''', 50)'
             if repl#REPLIsVisible()
