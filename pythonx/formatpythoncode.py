@@ -1,8 +1,8 @@
 import sys
 import os
 
-currentpath = os.path.dirname(os.path.abspath(__file__))
-sys.path = [currentpath] + sys.path
+# currentpath = os.path.dirname(os.path.abspath(__file__))
+# sys.path = [currentpath] + sys.path
 
 """
 sys.path.append("/Users/zhangyiteng/.vim/plugged/vim-repl/autoload")
