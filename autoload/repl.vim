@@ -790,6 +790,12 @@ function! repl#SendSession() abort
         call repl#REPLUnhide()
     endif
     call cursor(0, col("$"))
+    let g:repl_code_block_begin = get(g:repl_code_block_fences, &ft, '# %%')
+    if exists("g:repl_code_block_fences_end") && has_key(g:repl_code_block_fences_end, &ft)
+        let g:repl_code_block_end = g:repl_code_block_fences_end[&ft]
+    else
+        let g:repl_code_block_end = g:repl_code_block_begin
+    endif
     let l:begin_line_number = search('^' . g:repl_code_block_begin, 'bnW')
     if l:begin_line_number == 0
         let l:begin_line_number = 1

@@ -115,10 +115,10 @@ if !exists('g:repl_unhide_when_send_lines')
     let g:repl_unhide_when_send_lines = 1
 endif
 
-if !exists('g:repl_code_block_begin')
-  let g:repl_code_block_begin = '# BEGIN'
+if !exists('g:repl_code_block_fences')
+    let g:repl_code_block_fences = {'python': '# %%', 'zsh': '# %%', 'markdown': '```'}
 endif
 
-if !exists('g:repl_code_block_end')
-    let g:repl_code_block_end = '# END'
-endif
+" if !exists('g:repl_code_block_end')
+"     let g:repl_code_block_end = '# END'
+" endif
