@@ -290,6 +290,9 @@ function! repl#REPLOpen(...)
         for l:i in range(1, line('$'))
             if repl#StartWith(getline(l:i), '#REPLENV:')
                 let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(getline(l:i)[strlen('#REPLENV:')+1: ])
+                if repl#StartWith(getline(l:i+1), "#PYTHONPATH:")
+                    let l:REPL_OPEN_TERMINAL = repl#Strip(getline(l:i+1)[strlen('#PYTHONPATH:')+1: ])
+                endif
                 if g:repl_position == 0
                     if exists('g:repl_height')
                         exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
@@ -322,7 +325,11 @@ function! repl#REPLOpen(...)
                 else
                     let l:temp_return = "\n"
                 endif
-                call term_sendkeys(repl#GetConsoleName(), 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                if repl#StartWith(g:REPL_VIRTUAL_ENVIRONMENT, "conda")
+                    call term_sendkeys(repl#GetConsoleName(), g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                else
+                    call term_sendkeys(repl#GetConsoleName(), 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                endif
                 call term_wait(repl#GetConsoleName(), 100)
                 call term_sendkeys(repl#GetConsoleName(), l:REPL_OPEN_TERMINAL . l:temp_return)
                 return
