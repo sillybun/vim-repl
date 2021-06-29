@@ -37,23 +37,6 @@
       * [2018.7.26](#2018726)
    * [Troubleshooting](#troubleshooting)
 
-   * [vim-repl](#vim-repl)
-      * [Introduction](#introduction)
-      * [Details](#details)
-      * [Installation](#installation)
-      * [Usage](#usage)
-         * [How to open REPL](#how-to-open-repl)
-         * [How to exit REPL](#how-to-exit-repl)
-         * [How to send code to REPL](#how-to-send-code-to-repl)
-         * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
-         * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
-         * [How to debug python script?](#how-to-debug-python-script)
-         * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
-      * [Setting](#setting)
-      * [My Configuration for Vim-Repl](#my-configuration-for-vim-repl)
-      * [Updates](#updates)
-      * [Troubleshooting](#troubleshooting)
-
 ## Introduction
 
 Open the interactive environment with the code you are writing.
