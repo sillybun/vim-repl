@@ -11,7 +11,6 @@
       * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
       * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
       * [How to debug python script?](#how-to-debug-python-script)
-      * [How to send code block to REPL?](#how-to-send-code-block-to-repl)
       * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
       * [How to send python code block seperated by # %% or other tag](#how-to-send-python-code-block-seperated-by---or-other-tag)
       * [How to just send right hand side of current line to REPL environment?](#how-to-just-send-right-hand-side-of-current-line-to-repl-environment)
@@ -172,32 +171,6 @@ autocmd Filetype python nnoremap <F11> <Esc>:REPLPDBS<Cr>
 To debug python code, (don't open python REPL environment via `:REPLToggle`), move the cursor to certain line and press `<F12>`, and ipdb will be run and the program will be stopped at that line. Press `<F10>` will run a single line and Press `<F11>` will also run a single line but will jump into functions.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug-python.gif)
-
-### How to send code block to REPL?
-
-For python code, surround code block with `# BEGIN` and `# END`:
-
-```
-# BEGIN <name of block or just empty>
-
-block-of-code
-
-# END <you can add whatever you like here>
-```
-
-Example:
-
-```
-# BEGIN header
-import numpy as np
-import os
-
-def f(a, b):
-    return a + b
-# END
-```
-
-Place the cursor in the code block and run command `:REPLSendSession` and then the whole block will be sent to the REPL environment.
 
 ### How to open python with virtual environment?
 
