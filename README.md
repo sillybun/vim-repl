@@ -199,6 +199,45 @@ The second method (specific virtual environment) is that put:
 ```
 in python script. If you open this python file with vim and toggle vim-repl, python will be run in specific virtual environment.
 
+### How to send python code block seperated by # %% or other tag
+
+If you have the following code seperated into two blocks:
+
+```
+# %%
+print(1)
+print(2)
+
+# %%
+print(3)
+print(5)
+```
+
+Just move cursor to some code block and use command `:REPLSendSession`, whole block will be sent to the REPL environment (e.g. Both `print(1)` and `print(2)`)
+
+Code block seperator are defined by
+
+```
+let g:repl_code_block_fences = {'python': '# %%', 'zsh': '# %%', 'markdown': '```'}
+```
+
+and `g:repl_code_block_fences_end` (by default the latter is the same as the former). So if you want to seperate code block by `###`, just put:
+
+```
+let g:repl_code_block_fences = {'python': '###', 'zsh': '# %%', 'markdown': '```'}
+```
+
+to `.vimrc`
+
+If you want to start code block with `### Start` and end it with `### End`, just put:
+
+```
+let g:repl_code_block_fences = {'python': '### Start', 'zsh': '# %%', 'markdown': '```'}
+let g:repl_code_block_fences_end = {'python': '### End', 'zsh': '# %%', 'markdown': '```'}
+```
+
+to `.vimrc`
+
 ## Setting
 
 you can bind the `REPLToggle` command to a certain key to make it more convenience.
