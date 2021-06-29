@@ -238,6 +238,16 @@ let g:repl_code_block_fences_end = {'python': '### End', 'zsh': '# %%', 'markdow
 
 to `.vimrc`
 
+### How to just send right hand side of current line to REPL environment?
+
+If your cursor is on line, for example:
+
+```
+return [x for x in range(10)]
+```
+
+and you only want to send `[x for x in range(10)]` to REPL environment and to check result of it, You can use command `:REPLSendRHSofCurrentLine<Cr>`.
+
 ## Setting
 
 you can bind the `REPLToggle` command to a certain key to make it more convenience.

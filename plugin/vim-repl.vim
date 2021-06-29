@@ -5,7 +5,7 @@ silent! exe 'vnoremap <silent> ' . invoke_key . ' :SendLineToREPL<Cr>'
 
 command! -range SendLineToREPL <line1>,<line2>call repl#SendChunkLines()
 command! SendCurrentLine call repl#SendCurrentLine()
-command! SendRHSofCurrentLine call repl#SendRHSofCurrentLine()
+command! REPLSendRHSofCurrentLine call repl#SendRHSofCurrentLine()
 command! -nargs=* REPLToggle call repl#REPLToggle(<f-args>)
 command! REPLDebugInfo call repl#REPLDebug()
 command! REPLIsVisible echo repl#REPLIsVisible()
