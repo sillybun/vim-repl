@@ -596,7 +596,7 @@ function! repl#SendRHSofCurrentLine()
             endif
         endif
         if repl#REPLGetShortName() ==# "ipython"
-            call repl#Sends(repl#RHSPythonCode(l:code_tobe_sent), ['\.\.\.', 'In'])
+            call repl#Sends([repl#RHSPythonCode(l:code_tobe_sent)], ['\.\.\.', 'In'])
         else
             call term_sendkeys(repl#GetConsoleName(), repl#RHSPythonCode(l:code_tobe_sent))
         endif
