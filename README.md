@@ -1,20 +1,40 @@
 # vim-repl
-   * [vim-repl](#vim-repl)
-      * [Introduction](#introduction)
-      * [Details](#details)
-      * [Installation](#installation)
-      * [Usage](#usage)
-         * [How to open REPL](#how-to-open-repl)
-         * [How to exit REPL](#how-to-exit-repl)
-         * [How to send code to REPL](#how-to-send-code-to-repl)
-         * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
-         * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
-         * [How to debug python script?](#how-to-debug-python-script)
-         * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
-      * [Setting](#setting)
-      * [My Configuration for Vim-Repl](#my-configuration-for-vim-repl)
-      * [Updates](#updates)
-      * [Troubleshooting](#troubleshooting)
+
+* [vim-repl](#vim-repl)
+   * [Introduction](#introduction)
+   * [Details](#details)
+   * [Installation](#installation)
+   * [Usage](#usage)
+      * [How to open REPL](#how-to-open-repl)
+      * [How to exit REPL](#how-to-exit-repl)
+      * [How to send code to REPL](#how-to-send-code-to-repl)
+      * [How to switch to REPL environment](#how-to-switch-to-repl-environment)
+      * [How to hide the REPL environment](#how-to-hide-the-repl-environment)
+      * [How to debug python script?](#how-to-debug-python-script)
+      * [How to open python with virtual environment?](#how-to-open-python-with-virtual-environment)
+      * [How to send python code block seperated by # %% or other tag](#how-to-send-python-code-block-seperated-by---or-other-tag)
+      * [How to just send right hand side of current line to REPL environment?](#how-to-just-send-right-hand-side-of-current-line-to-repl-environment)
+   * [Setting](#setting)
+   * [My Configuration for Vim-Repl](#my-configuration-for-vim-repl)
+   * [Updates](#updates)
+      * [2021.3.23](#2021323)
+      * [2020.10.22](#20201022)
+      * [2020.4.29](#2020429)
+      * [2019.10.14](#20191014)
+      * [2019.8.27](#2019827)
+      * [2019.8.16](#2019816)
+      * [2019.8.11](#2019811)
+      * [2019.8.10](#2019810)
+      * [2019.8.9](#201989)
+      * [2019.8.7](#201987)
+      * [2019.8.6](#201986)
+      * [2019.8.3](#201983)
+      * [2019.5.28](#2019528)
+      * [2019.5.14](#2019514)
+      * [2019.4.27](#2019427)
+      * [2018.7.7](#201877)
+      * [2018.7.26](#2018726)
+   * [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -152,32 +172,6 @@ To debug python code, (don't open python REPL environment via `:REPLToggle`), mo
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/debug-python.gif)
 
-### How to send code block to REPL?
-
-For python code, surround code block with `# BEGIN` and `# END`:
-
-```
-# BEGIN <name of block or just empty>
-
-block-of-code
-
-# END <you can add whatever you like here>
-```
-
-Example:
-
-```
-# BEGIN header
-import numpy as np
-import os
-
-def f(a, b):
-    return a + b
-# END
-```
-
-Place the cursor in the code block and run command `:REPLSendSession` and then the whole block will be sent to the REPL environment.
-
 ### How to open python with virtual environment?
 
 There are two ways to open python with virtual environment.
@@ -198,6 +192,55 @@ The second method (specific virtual environment) is that put:
 #REPLENV: /path_to_new_venv/bin/activate
 ```
 in python script. If you open this python file with vim and toggle vim-repl, python will be run in specific virtual environment.
+
+### How to send python code block seperated by # %% or other tag
+
+If you have the following code seperated into two blocks:
+
+```
+# %%
+print(1)
+print(2)
+
+# %%
+print(3)
+print(5)
+```
+
+Just move cursor to some code block and use command `:REPLSendSession`, whole block will be sent to the REPL environment (e.g. Both `print(1)` and `print(2)`)
+
+Code block seperator are defined by
+
+```
+let g:repl_code_block_fences = {'python': '# %%', 'zsh': '# %%', 'markdown': '```'}
+```
+
+and `g:repl_code_block_fences_end` (by default the latter is the same as the former). So if you want to seperate code block by `###`, just put:
+
+```
+let g:repl_code_block_fences = {'python': '###', 'zsh': '# %%', 'markdown': '```'}
+```
+
+to `.vimrc`
+
+If you want to start code block with `### Start` and end it with `### End`, just put:
+
+```
+let g:repl_code_block_fences = {'python': '### Start', 'zsh': '# %%', 'markdown': '```'}
+let g:repl_code_block_fences_end = {'python': '### End', 'zsh': '# %%', 'markdown': '```'}
+```
+
+to `.vimrc`
+
+### How to just send right hand side of current line to REPL environment?
+
+If your cursor is on line, for example:
+
+```
+return [x for x in range(10)]
+```
+
+and you only want to send `[x for x in range(10)]` to REPL environment and to check result of it, You can use command `:REPLSendRHSofCurrentLine<Cr>`.
 
 ## Setting
 

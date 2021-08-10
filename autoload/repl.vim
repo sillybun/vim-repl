@@ -290,6 +290,9 @@ function! repl#REPLOpen(...)
         for l:i in range(1, line('$'))
             if repl#StartWith(getline(l:i), '#REPLENV:')
                 let g:REPL_VIRTUAL_ENVIRONMENT = repl#Strip(getline(l:i)[strlen('#REPLENV:')+1: ])
+                if repl#StartWith(getline(l:i+1), "#PYTHONPATH:")
+                    let l:REPL_OPEN_TERMINAL = repl#Strip(getline(l:i+1)[strlen('#PYTHONPATH:')+1: ])
+                endif
                 if g:repl_position == 0
                     if exists('g:repl_height')
                         exe 'bo term ++close ++rows=' . float2nr(g:repl_height) . ' ' . repl#REPLGetShell()
@@ -322,7 +325,11 @@ function! repl#REPLOpen(...)
                 else
                     let l:temp_return = "\n"
                 endif
-                call term_sendkeys(repl#GetConsoleName(), 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                if repl#StartWith(g:REPL_VIRTUAL_ENVIRONMENT, "conda")
+                    call term_sendkeys(repl#GetConsoleName(), g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                else
+                    call term_sendkeys(repl#GetConsoleName(), 'source ' . g:REPL_VIRTUAL_ENVIRONMENT . l:temp_return)
+                endif
                 call term_wait(repl#GetConsoleName(), 100)
                 call term_sendkeys(repl#GetConsoleName(), l:REPL_OPEN_TERMINAL . l:temp_return)
                 return
@@ -557,6 +564,53 @@ function! repl#SendCurrentLine()
 	endif
 endfunction
 
+function! repl#SendRHSofCurrentLine()
+    if g:repl_unhide_when_send_lines && repl#REPLIsHidden()
+        call repl#REPLUnhide()
+    endif
+	if bufexists(repl#GetConsoleName())
+        let l:cursor_pos = getpos('.')
+        if repl#REPLWin32Return()
+            let l:code_tobe_sent = getline('.') . "\r\n"
+        else
+            let l:code_tobe_sent = getline('.') . "\n"
+        endif
+        if repl#REPLGetShortName() =~# '.*python.*'
+            if repl#REPLGetShortName() ==# 'ipython'
+                let l:terminalline = repl#GetTerminalLine()
+                if repl#StartWith(l:terminalline, "In [")
+                    let l:code_tobe_sent = repl#LStrip(l:code_tobe_sent)
+                else
+                    let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
+                    let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+                endif
+            elseif repl#REPLGetShortName() ==# 'ptpython'
+                let l:terminalline = repl#GetTerminalLine()
+                let l:bs_number = len(l:terminalline) - len(repl#RStrip(l:terminalline)) - 2
+                let l:code_tobe_sent = repeat("\<bs>", l:bs_number) . l:code_tobe_sent
+            elseif repl#REPLGetShortName() ==# 'python' || repl#REPLGetShortName() ==# 'python2' || repl#REPLGetShortName() ==# 'python3'
+                let l:terminalline = repl#GetTerminalLine()
+                if repl#StartWith(l:terminalline, '>>> ')
+                    let l:code_tobe_sent = repl#LStrip(l:code_tobe_sent)
+                endif
+            endif
+        endif
+        if repl#REPLGetShortName() ==# "ipython"
+            call repl#Sends([repl#RHSPythonCode(l:code_tobe_sent)], ['\.\.\.', 'In'])
+        else
+            call term_sendkeys(repl#GetConsoleName(), repl#RHSPythonCode(l:code_tobe_sent))
+        endif
+        call term_wait(repl#GetConsoleName(), 50)
+        if g:repl_cursor_down
+            let l:next_line_number = l:cursor_pos[1] + 1
+            while l:next_line_number <= line("$") && (repl#Strip(getline(l:next_line_number)) == "" || repl#StartWith(repl#Strip(getline(l:next_line_number)), "#"))
+                let l:next_line_number = l:next_line_number + 1
+            endwhile
+            call cursor(l:next_line_number, l:cursor_pos[2])
+        endif
+	endif
+endfunction
+
 function! repl#ToVimScript(lines)
     return formatvimscript#Format_to_repl(a:lines)
 endfunction
@@ -591,6 +645,44 @@ EOF
     else
         return 1
     end
+endfunction
+
+function! repl#RHSPythonCode(line)
+    if  has('python3')
+python3 << EOF
+import vim
+import re
+code = vim.eval("a:line").strip()
+ret = code
+regex = re.compile(r"[\w.]+[ ]*=[ ]*(.+)")
+if code.startswith("return "):
+    ret = code[len("return "):].strip()
+elif code.startswith("yield "):
+    ret = code[len("yield "):].strip()
+else:
+    m = regex.fullmatch(code)
+    if m:
+        ret = m.group(1)
+EOF
+        return py3eval('ret')
+    elseif has('python')
+python << EOF
+import vim
+import re
+code = vim.eval("a:line").strip()
+ret = code
+regex = re.compile(r"[\w.]+[ ]*=[ ]*(.+)")
+if code.startswith("return "):
+    ret = code[len("return "):].strip()
+elif code.startswith("yield "):
+    ret = code[len("yield "):].strip()
+else:
+    m = regex.fullmatch(code)
+    if m:
+        ret = m.group(1)
+EOF
+        return pyeval('ret')
+    endif
 endfunction
 
 function! repl#ToREPLPythonCode(lines, pythonprogram)
