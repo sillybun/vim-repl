@@ -42,6 +42,7 @@ Open the interactive environment with the code you are writing.
 
 Read–Eval–Print Loop (REPL), also known as an interactive toplevel or language shell, is extremely useful in python coding. However, it's difficult to interact with REPL when writing python with vim. Therefore, I write this plugin to provide a better repl environment for coding python or other file in vim. It use the terminal feature for vim8. So your vim version must be no less than 8.0 and support termianl function to use this plugin.
 
+
 如果您想阅读中文文档，请移步：[知乎-vim-repl](https://zhuanlan.zhihu.com/p/37231865)
 
 ## Details
@@ -70,6 +71,8 @@ There are three ways to send codes to REPL environment:
 - The last way is to select some word in visual mode and press `<leader>w` and the selected word will be sent to REPL.
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/usage4.gif)
+
+Note: currently this plugin doesn't support NeoVim.
 
 ## Installation
 
