@@ -278,7 +278,7 @@ function! repl#REPLOpen(...)
         let t:REPL_OPEN_TERMINAL = join(a:000, ' ')
     endif
     let l:REPL_OPEN_TERMINAL = t:REPL_OPEN_TERMINAL
-	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(''' . repl#GetConsoleName() . ''')) | q! | endif'
+	exe 'autocmd bufenter * if (winnr("$") == 1 && (&buftype == ''terminal'') && bufexists(repl#GetConsoleName())) | q! | endif'
     if !executable(split(repl#REPLGetName(), ' ')[0])
         echoerr 'The program ' . split(repl#REPLGetName(), ' ')[0] . ' is not executable.'
     endif
