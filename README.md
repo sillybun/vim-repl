@@ -45,6 +45,8 @@ Read–Eval–Print Loop (REPL), also known as an interactive toplevel or langua
 
 如果您想阅读中文文档，请移步：[知乎-vim-repl](https://zhuanlan.zhihu.com/p/37231865)
 
+Stand with Ukraine
+
 ## Details
 
 ![usage](https://github.com/sillybun/vim-repl/blob/master/assets/repl.gif)
