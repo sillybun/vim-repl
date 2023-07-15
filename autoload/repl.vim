@@ -285,7 +285,13 @@ function! repl#REPLOpen(...)
     if repl#REPLGetShortName() =~# '.*python.*'
         if repl#REPLGetShortName() == 'ipython' && !exists("g:repl_ipython_version")
             let temp = system(t:REPL_OPEN_TERMINAL . ' --version')
-            let g:repl_ipython_version = temp[0:2]
+			"This truncation was removed in part of fixing Issue #148
+			"I (shawsa) am not sure what purpose this served, and I can only
+			"test this on my particular configuration. It doesn't seem to have
+			"broken anything, but I'll leave the old code in in case it needs
+			"to be reverted (without reverting the other code in this commit).
+            let g:repl_ipython_version = temp
+			"let g:repl_ipython_version = temp[0:2]
         endif
         for l:i in range(1, line('$'))
             if repl#StartWith(getline(l:i), '#REPLENV:')
