@@ -266,7 +266,7 @@ class pythoncodes:
             elif self.replprogram == "ipython":
                 version = Version(self.version)
                 # print(f'{version=}, {self.version=}')
-                if version > Version('7.0'):
+                if version >= Version('7.1'):
                     return False
                 if line.startswith("pass ") or line.startswith("return ") or line.startswith("raise ") or line.startswith("continue ") or line.startswith("break "):
                     return True
