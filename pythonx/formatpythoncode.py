@@ -15,8 +15,45 @@ import replpython
 from filemanager import path
 import filemanager
 
+from itertools import zip_longest
+
 THREE_DOUBLEQUOTE = '"' * 3
 THREE_SINGLEQUOTE = '"' * 3
+
+class Version:
+    def __init__(self, version_string: str, name: str=None):
+        self.nums = tuple(map(int, version_string.split('.')))
+
+    def __repr__(self):
+        return f'Version({".".join(map(str, self.nums))})'
+
+    @property
+    def major(self):
+        return str(self.nums[0])
+
+    @property
+    def minor(self):
+        if len(self.nums) < 2:
+            return None
+        return '.'.join(map(str, self.nums[1:]))
+
+    def __iter__(self):
+        yield from self.nums
+
+    def __eq__(self, ver2):
+        return all(v1 == v2 for v1, v2 in zip_longest(self, ver2, fillvalue=0))
+
+    def __gt__(self, ver2):
+        for num1, num2 in zip_longest(self, ver2, fillvalue=0):
+            if num1 > num2:
+                return True
+            if num1 < num2:
+                return False
+        return False
+
+    def __ge__(self, ver2):
+        return self==ver2 or self>ver2
+
 
 class UnfinishType:
     LEFT_PARAENTHESE = 1 # (
@@ -227,7 +264,9 @@ class pythoncodes:
                 else:
                     return False
             elif self.replprogram == "ipython":
-                if self.version[0] == "7" and self.version != "7.0":
+                version = Version(self.version)
+                # print(f'{version=}, {self.version=}')
+                if version >= Version('7.1'):
                     return False
                 if line.startswith("pass ") or line.startswith("return ") or line.startswith("raise ") or line.startswith("continue ") or line.startswith("break "):
                     return True
