@@ -272,7 +272,8 @@ it controls the location where REPL windows will appear
 - 1 represents top
 - 2 represents left
 - 3 represents right
-
+- 4 represents right most
+- 5 represents left most
 ```
 let g:repl_position = 0
 ```

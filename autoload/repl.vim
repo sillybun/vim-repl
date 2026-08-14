@@ -264,8 +264,12 @@ function! repl#REPLUnhide()
             exe 'to unhide'
         elseif g:repl_position == 2
             exe 'vert unhide'
-        else
+        elseif g:repl_position == 3
             exe 'vert rightb unhide'
+        elseif g:repl_position == 4
+            exe 'vert bo unhide'
+        else
+            exe 'vert to unhide'
         endif
     endif
 endfunction
@@ -317,11 +321,23 @@ function! repl#REPLOpen(...)
                     else
                         exe 'vert term ++close ' . repl#REPLGetShell()
                     endif
-                else
+                elseif g:repl_position == 3
                     if exists('g:repl_width')
                         exe 'vert rightb term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
                     else
                         exe 'vert rightb term ++close ' . repl#REPLGetShell()
+                    endif
+                elseif g:repl_position == 4
+                    if exists('g:repl_width')
+                        exe 'vert bo term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'vert bo term ++close ' . repl#REPLGetShell()
+                    endif
+                else
+                    if exists('g:repl_width')
+                        exe 'vert to term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                    else
+                        exe 'vert to term ++close ' . repl#REPLGetShell()
                     endif
                 endif
                 exe 'file ' . repl#GetConsoleName()
@@ -360,11 +376,23 @@ function! repl#REPLOpen(...)
                 else
                     exe 'vert term ++close ' . repl#REPLGetShell()
                 endif
-            else
+            elseif g:repl_position == 3
                 if exists('g:repl_width')
                     exe 'vert rightb term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
                 else
                     exe 'vert rightb term ++close ' . repl#REPLGetShell()
+                endif
+            elseif g:repl_position == 4
+                if exists('g:repl_width')
+                    exe 'vert bo term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'vert bo term ++close ' . repl#REPLGetShell()
+                endif
+            else
+                if exists('g:repl_width')
+                    exe 'vert to term ++close ++cols=' . float2nr(g:repl_width) . ' ' . repl#REPLGetShell()
+                else
+                    exe 'vert to term ++close ' . repl#REPLGetShell()
                 endif
             endif
             exe 'file ' . repl#GetConsoleName()
