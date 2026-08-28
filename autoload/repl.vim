@@ -142,6 +142,12 @@ function! repl#REPLGetShortName()
         return 'ipython'
     elseif l:temp ==# 'ipython3'
         return 'ipython'
+    elseif stridx(l:name, '--kernel=') != -1
+		if stridx(l:name, '--kernel=python') != -1
+			return 'ipython'
+		else
+			return 'R'
+		endif
     elseif l:temp =~# '.*python.*'
         return 'python'
     else
@@ -582,7 +588,8 @@ function! repl#SendCurrentLine()
             endif
         endif
         if repl#REPLGetShortName() ==# "ipython"
-            call repl#Sends(repl#ToREPLPythonCode([l:code_tobe_sent], 'ipython'), ['\.\.\.', 'In'])
+            let l:code_line = substitute(l:code_tobe_sent, '\r\?\n$', '', '')
+            call repl#Sends([l:code_line], ['\.\.\.', 'In'])
         else
             call term_sendkeys(repl#GetConsoleName(), l:code_tobe_sent)
         endif
